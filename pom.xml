@@ -35,9 +35,9 @@
     <description>Mock implementation of selected JCR APIs.</description>
 
     <scm>
-        <connection>scm:svn:http://svn.apache.org/repos/asf/sling/trunk/testing/mocks/jcr-mock</connection>
-        <developerConnection>scm:svn:https://svn.apache.org/repos/asf/sling/trunk/testing/mocks/jcr-mock</developerConnection>
-        <url>http://svn.apache.org/viewvc/sling/trunk/testing/mocks/jcr-mock</url>
+        <connection>scm:git:https://gitbox.apache.org/repos/asf/sling-org-apache-sling-testing-jcr-mock.git</conncetion>
+        <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/sling-org-apache-sling-testing-jcr-mock.git</developerConnection>
+        <url>https://gitbox.apache.org/repos/asf?p=sling-org-apache-sling-testing-jcr-mock.git</url>
     </scm>
 
     <dependencies>
