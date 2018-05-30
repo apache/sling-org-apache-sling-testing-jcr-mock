@@ -136,17 +136,6 @@ public class MockSessionTest {
     }
 
     @Test
-    public void testRevertFalse() throws RepositoryException {
-        Session session = MockJcr.newSession();
-        Node rootNode = session.getRootNode();
-        rootNode.addNode("node1");
-        assertTrue(session.itemExists("/node1"));
-        session.refresh(false);
-        assertFalse(session.itemExists("/node1"));
-        assertFalse(rootNode.getNodes().hasNext());
-    }
-
-    @Test
     public void testNodesWithSpecialNames() throws RepositoryException {
         Session session = MockJcr.newSession();
 
@@ -261,7 +250,6 @@ public class MockSessionTest {
         assertFalse(session.hasPendingChanges());
         session.save();
         session.refresh(true);
-        session.refresh(false);
     }
 
     @Test
