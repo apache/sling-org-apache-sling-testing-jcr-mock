@@ -294,6 +294,9 @@ class MockSession implements Session {
 
     @Override
     public void refresh(final boolean keepChanges) throws RepositoryException {
+        if (!keepChanges){
+            this.items.clear();
+        }
         // do nothing
         checkLive();
     }
