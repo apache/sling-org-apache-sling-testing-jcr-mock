@@ -250,6 +250,26 @@ public class MockSessionTest {
         assertFalse(session.hasPendingChanges());
         session.save();
         session.refresh(true);
+        session.refresh(false);
+    }
+
+    @Test
+    public void testRefreshFalse() throws RepositoryException {
+        Session session = MockJcr.newSession();
+        session.getRootNode().addNode("1");
+        session.getRootNode().addNode("2");
+        session.getNode("/2").setProperty("toRemove", true);
+        session.getNode("/2").setProperty("toChange", "foo");
+        session.save();
+        session.removeItem("/1");
+        session.removeItem("/2/toRemove");
+        session.getNode("/2").setProperty("added", true);
+        session.getNode("/2").setProperty("toChange", "bar");
+        session.refresh(false);
+        assertTrue("/1 should still exist", session.itemExists("/1"));
+        assertTrue("/2/toRemove should still exist", session.itemExists("/2/toRemove"));
+        assertEquals("/2/toChange should not be changed", "foo", session.getProperty("/2/toChange").getString());
+        assertFalse("/2/added should not exist", session.itemExists("/2/added"));
     }
 
     @Test
