@@ -21,7 +21,6 @@ package org.apache.sling.testing.mock.jcr;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -54,8 +53,7 @@ class MockSession implements Session {
 
     private final MockRepository repository;
     private final Workspace workspace;
-    private Map<String, ItemData> items;
-    private Map<String, ItemData> lastState;
+    private final Map<String, ItemData> items;
     private final String userId;
     private boolean isLive;
     private boolean hasKnownChanges;
@@ -65,7 +63,6 @@ class MockSession implements Session {
         this.repository = repository;
         this.workspace = new MockWorkspace(repository, this, workspaceName);
         this.items = items;
-        this.lastState = items;
         this.userId = userId;
         isLive = true;
         hasKnownChanges = false;
@@ -291,17 +288,20 @@ class MockSession implements Session {
             itemData.setIsNew(false);
             itemData.setIsChanged(false);
         }
-        this.lastState = new HashMap<>(items);
+
         hasKnownChanges = false;
     }
 
     @Override
     public void refresh(final boolean keepChanges) throws RepositoryException {
-        if (!keepChanges){
-            this.items = new HashMap<>(lastState);
-        }
         // do nothing
         checkLive();
+
+        if (!keepChanges){
+            //if reverting change instruction has been requested,
+            //warn upper user this won't happen
+            throw new UnsupportedOperationException();
+        }
     }
 
     @Override
