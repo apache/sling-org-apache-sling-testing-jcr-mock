@@ -76,6 +76,14 @@
             <scope>compile</scope>
         </dependency>
     
+        <!-- Nullability annotations -->
+        <dependency>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>annotations</artifactId>
+            <version>16.0.2</version>
+            <scope>provided</scope>
+        </dependency>
+
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>

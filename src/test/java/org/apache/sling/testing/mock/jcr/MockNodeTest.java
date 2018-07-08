@@ -45,7 +45,6 @@ public class MockNodeTest {
     private Node rootNode;
     private Node node1;
     private Property prop1;
-    private Property prop2;
     private Node node11;
 
     @Before

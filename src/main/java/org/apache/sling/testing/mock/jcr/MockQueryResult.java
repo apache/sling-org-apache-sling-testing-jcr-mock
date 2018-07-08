@@ -29,6 +29,7 @@ import javax.jcr.query.RowIterator;
 
 import org.apache.jackrabbit.commons.iterator.NodeIteratorAdapter;
 import org.apache.jackrabbit.commons.iterator.RowIteratorAdapter;
+import org.jetbrains.annotations.Nullable;
 import org.osgi.annotation.versioning.ProviderType;
 
 import com.google.common.base.Function;
@@ -64,7 +65,7 @@ public final class MockQueryResult implements QueryResult {
     public RowIterator getRows() throws RepositoryException {
         return new RowIteratorAdapter(Lists.transform(nodes, new Function<Node, Row>() {
             @Override
-            public Row apply(Node node) {
+            public Row apply(@Nullable Node node) {
                 return new MockRow(columnNames, node);
             }
         }));

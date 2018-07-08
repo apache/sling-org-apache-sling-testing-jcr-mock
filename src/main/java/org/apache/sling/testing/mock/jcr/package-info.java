@@ -19,5 +19,5 @@
 /**
  * Mock implementation of selected JCR APIs.
  */
-@org.osgi.annotation.versioning.Version("1.0.1")
+@org.osgi.annotation.versioning.Version("1.0.2")
 package org.apache.sling.testing.mock.jcr;
