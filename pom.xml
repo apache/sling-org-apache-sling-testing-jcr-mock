@@ -78,7 +78,7 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.0.1</version>
+            <version>3.3.2</version>
             <scope>compile</scope>
         </dependency>
     
@@ -97,8 +97,8 @@
         </dependency>  
         <dependency>
             <groupId>org.mockito</groupId>
-            <artifactId>mockito-all</artifactId>
-            <version>1.9.5</version>
+            <artifactId>mockito-core</artifactId>
+            <version>2.21.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>
