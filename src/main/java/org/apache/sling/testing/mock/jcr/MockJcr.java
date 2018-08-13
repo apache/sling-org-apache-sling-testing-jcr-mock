@@ -28,6 +28,8 @@ import javax.jcr.SimpleCredentials;
 import javax.jcr.query.QueryManager;
 
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.osgi.annotation.versioning.ConsumerType;
 
 /**
@@ -55,7 +57,7 @@ public final class MockJcr {
      * its own data store.
      * @return JCR repository
      */
-    public static Repository newRepository() {
+    public static @NotNull Repository newRepository() {
         return new MockRepository();
     }
 
@@ -65,7 +67,7 @@ public final class MockJcr {
      * collected.
      * @return JCR session
      */
-    public static Session newSession() {
+    public static @NotNull Session newSession() {
         return newSession(null, null);
     }
 
@@ -73,11 +75,12 @@ public final class MockJcr {
      * Create a new mocked in-memory JCR session. It contains only the root
      * node. All data of the session is thrown away if it gets garbage
      * collected.
-     * @param userId User id for the mock environment.
-     * @param workspaceName Workspace name for the mock environment.
+     * @param userId User id for the mock environment. If null a dummy value is used.
+     * @param workspaceName Workspace name for the mock environment. If null a dummy value is used.
      * @return JCR session
      */
-    public static Session newSession(String userId, String workspaceName) {
+    @SuppressWarnings("null")
+    public static @NotNull Session newSession(@Nullable String userId, @Nullable String workspaceName) {
         try {
             return newRepository().login(
                     new SimpleCredentials(StringUtils.defaultString(userId, DEFAULT_USER_ID), new char[0]),
@@ -93,7 +96,7 @@ public final class MockJcr {
      * @param session JCR session
      * @param resultList Result list
      */
-    public static void setQueryResult(final Session session, final List<Node> resultList) {
+    public static void setQueryResult(@NotNull final Session session, @NotNull final List<Node> resultList) {
         setQueryResult(getQueryManager(session), resultList);
     }
     
@@ -102,7 +105,7 @@ public final class MockJcr {
      * @param queryManager Mocked query manager
      * @param resultList Result list
      */
-    public static void setQueryResult(final QueryManager queryManager, final List<Node> resultList) {
+    public static void setQueryResult(@NotNull final QueryManager queryManager, @NotNull final List<Node> resultList) {
         addQueryResultHandler(queryManager, new MockQueryResultHandler() {
             @Override
             public MockQueryResult executeQuery(MockQuery query) {
@@ -118,7 +121,8 @@ public final class MockJcr {
      * @param language Query language
      * @param resultList Result list
      */
-    public static void setQueryResult(final Session session, final String statement, final String language, final List<Node> resultList) {
+    public static void setQueryResult(@NotNull final Session session, @NotNull final String statement,
+            @NotNull final String language, @NotNull final List<Node> resultList) {
         setQueryResult(getQueryManager(session), statement, language, resultList);
     }
     
@@ -129,7 +133,8 @@ public final class MockJcr {
      * @param language Query language
      * @param resultList Result list
      */
-    public static void setQueryResult(final QueryManager queryManager, final String statement, final String language, final List<Node> resultList) {
+    public static void setQueryResult(@NotNull final QueryManager queryManager, @NotNull final String statement,
+            @NotNull final String language, @NotNull final List<Node> resultList) {
         addQueryResultHandler(queryManager, new MockQueryResultHandler() {
             @Override
             public MockQueryResult executeQuery(MockQuery query) {
@@ -149,7 +154,7 @@ public final class MockJcr {
      * @param session JCR session
      * @param resultHandler Mock query result handler
      */
-    public static void addQueryResultHandler(final Session session, final MockQueryResultHandler resultHandler) {
+    public static void addQueryResultHandler(@NotNull final Session session, @NotNull final MockQueryResultHandler resultHandler) {
         addQueryResultHandler(getQueryManager(session), resultHandler);
     }
     
@@ -158,11 +163,12 @@ public final class MockJcr {
      * @param queryManager Mocked query manager
      * @param resultHandler Mock query result handler
      */
-    public static void addQueryResultHandler(final QueryManager queryManager, final MockQueryResultHandler resultHandler) {
+    public static void addQueryResultHandler(@NotNull final QueryManager queryManager, @NotNull final MockQueryResultHandler resultHandler) {
         ((MockQueryManager)queryManager).addResultHandler(resultHandler);
     }
     
-    private static QueryManager getQueryManager(Session session) {
+    @SuppressWarnings("null")
+    private static @NotNull QueryManager getQueryManager(@NotNull Session session) {
         try {
             return session.getWorkspace().getQueryManager();
         }
