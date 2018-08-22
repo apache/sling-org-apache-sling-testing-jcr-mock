@@ -470,7 +470,9 @@ class MockNode extends AbstractItem implements Node {
 
     @Override
     public void orderBefore(final String srcChildRelPath, final String destChildRelPath) throws RepositoryException {
-        throw new UnsupportedOperationException();
+        Item srcChild = srcChildRelPath == null ? null : getMockedSession().getItem(getPath() + "/" + srcChildRelPath);
+        Item destChild = destChildRelPath == null ? null : getMockedSession().getItem(getPath() + "/" + destChildRelPath);
+        getMockedSession().orderBefore(srcChild, destChild);
     }
 
     @Override

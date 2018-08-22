@@ -18,6 +18,7 @@
  */
 package org.apache.sling.testing.mock.jcr;
 
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -25,6 +26,8 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import javax.jcr.ItemNotFoundException;
@@ -36,6 +39,7 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
 import org.apache.jackrabbit.JcrConstants;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -191,4 +195,39 @@ public class MockNodeTest {
         assertFalse(foo.isModified());
     }
     
+    @Test
+    public void testOrderBefore() throws RepositoryException {
+        Node foo = this.session.getRootNode().addNode("foo");
+        this.session.save();
+        foo.addNode("one");
+        foo.addNode("two");
+        foo.addNode("three");
+        session.save();
+        assertArrayEquals("Expected nodes order mismatch",
+                new String[] {"one", "two", "three"},
+                getNodeNames(foo.getNodes()));
+        foo.orderBefore("three", "two");
+        session.save();
+        assertArrayEquals("Expected nodes order mismatch",
+                new String[] {"one", "three", "two"},
+                getNodeNames(foo.getNodes()));
+        foo.orderBefore("one", null);
+        session.save();
+        assertArrayEquals("Expected nodes order mismatch",
+                new String[] {"three", "two", "one"},
+                getNodeNames(foo.getNodes()));
+    }
+
+    private String[] getNodeNames(NodeIterator nodeIterator) {
+        List<String> names = new LinkedList<>();
+        nodeIterator.forEachRemaining(node -> {
+            try {
+                names.add(((Node)node).getName());
+            } catch (RepositoryException e) {
+                Assert.fail(e.getMessage());
+            }
+        });
+        return names.toArray(new String[names.size()]);
+    }
+
 }
