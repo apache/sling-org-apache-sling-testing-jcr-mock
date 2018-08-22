@@ -39,7 +39,6 @@ import org.junit.Test;
 
 import com.google.common.collect.ImmutableList;
 
-@SuppressWarnings("null")
 public class MockQueryManagerTest {
 
     private Session session;

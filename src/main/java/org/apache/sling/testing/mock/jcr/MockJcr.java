@@ -79,7 +79,6 @@ public final class MockJcr {
      * @param workspaceName Workspace name for the mock environment. If null a dummy value is used.
      * @return JCR session
      */
-    @SuppressWarnings("null")
     public static @NotNull Session newSession(@Nullable String userId, @Nullable String workspaceName) {
         try {
             return newRepository().login(
@@ -167,7 +166,6 @@ public final class MockJcr {
         ((MockQueryManager)queryManager).addResultHandler(resultHandler);
     }
     
-    @SuppressWarnings("null")
     private static @NotNull QueryManager getQueryManager(@NotNull Session session) {
         try {
             return session.getWorkspace().getQueryManager();
