@@ -356,7 +356,14 @@ class MockNode extends AbstractItem implements Node {
         // we have no real mixin support - just assume no mixin nodetypes are set
         return new NodeType[0];
     }
-        
+
+    @Override
+    public void orderBefore(final String srcChildRelPath, final String destChildRelPath) throws RepositoryException {
+        Item srcChild = srcChildRelPath == null ? null : getMockedSession().getItem(getPath() + "/" + srcChildRelPath);
+        Item destChild = destChildRelPath == null ? null : getMockedSession().getItem(getPath() + "/" + destChildRelPath);
+        getMockedSession().orderBefore(srcChild, destChild);
+    }
+
     // --- unsupported operations ---
     @Override
     public Property setProperty(final String name, final Value value, final int type) throws RepositoryException {
@@ -466,13 +473,6 @@ class MockNode extends AbstractItem implements Node {
     @Override
     public NodeIterator merge(final String srcWorkspace, final boolean bestEffort) throws RepositoryException {
         throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void orderBefore(final String srcChildRelPath, final String destChildRelPath) throws RepositoryException {
-        Item srcChild = srcChildRelPath == null ? null : getMockedSession().getItem(getPath() + "/" + srcChildRelPath);
-        Item destChild = destChildRelPath == null ? null : getMockedSession().getItem(getPath() + "/" + destChildRelPath);
-        getMockedSession().orderBefore(srcChild, destChild);
     }
 
     @Override

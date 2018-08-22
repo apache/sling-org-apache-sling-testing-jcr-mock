@@ -218,6 +218,7 @@ public class MockNodeTest {
                 getNodeNames(foo.getNodes()));
     }
 
+    @SuppressWarnings("unchecked")
     private String[] getNodeNames(NodeIterator nodeIterator) {
         List<String> names = new LinkedList<>();
         nodeIterator.forEachRemaining(node -> {
