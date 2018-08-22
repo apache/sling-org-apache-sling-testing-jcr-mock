@@ -21,6 +21,7 @@ package org.apache.sling.testing.mock.jcr;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -44,6 +45,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.commons.iterator.RangeIteratorAdapter;
 import org.apache.jackrabbit.value.ValueFactoryImpl;
 import org.xml.sax.ContentHandler;
+
+import com.google.common.collect.ImmutableSet;
 
 /**
  * Mock {@link Session} implementation. This instance holds the JCR data in a
@@ -217,6 +220,41 @@ class MockSession implements Session {
 
         return new RangeIteratorAdapter(children.iterator(), children.size());
     }
+
+    void orderBefore(Item source, Item destination) throws RepositoryException {
+        if (source == null) {
+            // Nothing to do
+            return;
+        }
+
+        // Find all items matching the source
+        List<ItemData> itemsToMove = new LinkedList<>();
+        for (String key : ImmutableSet.copyOf(items.keySet())) {
+            if (key.startsWith(source.getPath())) {
+                itemsToMove.add(items.remove(key));
+            }
+        }
+
+        if (destination == null) {
+            // Move items to end
+            for (ItemData item : itemsToMove) {
+                items.put(item.getPath(), item);
+            }
+            return;
+        }
+
+        // Cycle items and add them back at the end
+        for (String key : ImmutableSet.copyOf(items.keySet())) {
+            if (key.equals(destination.getPath())) {
+                // Move items before destination
+                for (ItemData item : itemsToMove) {
+                    items.put(item.getPath(), item);
+                }
+            }
+            items.put(key, items.remove(key));
+        }
+    }
+
 
     @Override
     public boolean hasPendingChanges() throws RepositoryException {
