@@ -86,9 +86,12 @@ class MockProperty extends AbstractItem implements Property {
 
     @Override
     public void setValue(final Value[] newValues) throws RepositoryException {
-        Value[] values = new Value[newValues.length];
-        for (int i = 0; i < newValues.length; i++) {
-            values[i] = newValues[i];
+        Value[] values = null;
+        if(newValues!=null){
+            values = new Value[newValues.length];
+            for (int i = 0; i < newValues.length; i++) {
+                values[i] = newValues[i];
+            }
         }
         this.itemData.setValues(values);
         this.itemData.setMultiple(true);
@@ -102,9 +105,12 @@ class MockProperty extends AbstractItem implements Property {
 
     @Override
     public void setValue(final String[] newValues) throws RepositoryException {
-        Value[] values = new Value[newValues.length];
-        for (int i = 0; i < newValues.length; i++) {
-            values[i] = getSession().getValueFactory().createValue(newValues[i]);
+        Value[] values = null;
+        if(newValues!=null){
+            values = new Value[newValues.length];
+            for (int i = 0; i < newValues.length; i++) {
+                values[i] = getSession().getValueFactory().createValue(newValues[i]);
+            }
         }
         this.itemData.setValues(values);
         this.itemData.setMultiple(true);
@@ -206,7 +212,7 @@ class MockProperty extends AbstractItem implements Property {
         }
         else {
             return PropertyType.UNDEFINED;
-        }    
+        }
     }
 
     @Override
@@ -253,7 +259,7 @@ class MockProperty extends AbstractItem implements Property {
         }
         return false;
     }
-    
+
     // --- unsupported operations ---
     @Override
     public Node getNode() throws RepositoryException {
@@ -286,7 +292,7 @@ class MockProperty extends AbstractItem implements Property {
         public boolean isProtected() {
             return false;
         }
-        
+
         @Override
         public boolean isFullTextSearchable() {
             return false;
@@ -296,7 +302,7 @@ class MockProperty extends AbstractItem implements Property {
         public boolean isQueryOrderable() {
             return false;
         }
-        
+
         // --- unsupported operations ---
         @Override
         public Value[] getDefaultValues() {
