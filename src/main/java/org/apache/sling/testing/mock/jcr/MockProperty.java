@@ -80,18 +80,23 @@ class MockProperty extends AbstractItem implements Property {
 
     @Override
     public void setValue(final Value newValue) throws RepositoryException {
+        if (newValue == null) {
+            remove();
+            return;
+        }
         this.itemData.setValues(new Value[] { newValue });
         this.itemData.setMultiple(false);
     }
 
     @Override
     public void setValue(final Value[] newValues) throws RepositoryException {
-        Value[] values = null;
-        if(newValues!=null){
-            values = new Value[newValues.length];
-            for (int i = 0; i < newValues.length; i++) {
-                values[i] = newValues[i];
-            }
+        if (newValues == null) {
+            remove();
+            return;
+        }
+        Value[] values = new Value[newValues.length];
+        for (int i = 0; i < newValues.length; i++) {
+            values[i] = newValues[i];
         }
         this.itemData.setValues(values);
         this.itemData.setMultiple(true);
@@ -99,18 +104,23 @@ class MockProperty extends AbstractItem implements Property {
 
     @Override
     public void setValue(final String newValue) throws RepositoryException {
+        if (newValue == null) {
+            remove();
+            return;
+        }
         this.itemData.setValues(new Value[] { getSession().getValueFactory().createValue(newValue) });
         this.itemData.setMultiple(false);
     }
 
     @Override
     public void setValue(final String[] newValues) throws RepositoryException {
-        Value[] values = null;
-        if(newValues!=null){
-            values = new Value[newValues.length];
-            for (int i = 0; i < newValues.length; i++) {
-                values[i] = getSession().getValueFactory().createValue(newValues[i]);
-            }
+        if (newValues == null) {
+            remove();
+            return;
+        }
+        Value[] values = new Value[newValues.length];
+        for (int i = 0; i < newValues.length; i++) {
+            values[i] = getSession().getValueFactory().createValue(newValues[i]);
         }
         this.itemData.setValues(values);
         this.itemData.setMultiple(true);
@@ -118,6 +128,10 @@ class MockProperty extends AbstractItem implements Property {
 
     @Override
     public void setValue(final InputStream newValue) throws RepositoryException {
+        if (newValue == null) {
+            remove();
+            return;
+        }
         this.itemData.setValues(new Value[] { new BinaryValue(newValue) });
         this.itemData.setMultiple(false);
     }
@@ -136,6 +150,10 @@ class MockProperty extends AbstractItem implements Property {
 
     @Override
     public void setValue(final Calendar newValue) throws RepositoryException {
+        if (newValue == null) {
+            remove();
+            return;
+        }
         this.itemData.setValues(new Value[] { getSession().getValueFactory().createValue(newValue) });
         this.itemData.setMultiple(false);
     }
@@ -148,18 +166,30 @@ class MockProperty extends AbstractItem implements Property {
 
     @Override
     public void setValue(final Node newValue) throws RepositoryException {
+        if (newValue == null) {
+            remove();
+            return;
+        }
         this.itemData.setValues(new Value[] { getSession().getValueFactory().createValue(newValue) });
         this.itemData.setMultiple(false);
     }
 
     @Override
     public void setValue(final Binary newValue) throws RepositoryException {
+        if (newValue == null) {
+            remove();
+            return;
+        }
         this.itemData.setValues(new Value[] { new BinaryValue(newValue) });
         this.itemData.setMultiple(false);
     }
 
     @Override
     public void setValue(final BigDecimal newValue) throws RepositoryException {
+        if (newValue == null) {
+            remove();
+            return;
+        }
         this.itemData.setValues(new Value[] { getSession().getValueFactory().createValue(newValue) });
         this.itemData.setMultiple(false);
     }
