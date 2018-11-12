@@ -195,8 +195,7 @@ class MockNode extends AbstractItem implements Node {
         ItemData itemData = ItemData.newProperty(getPath() + "/" + name);
         Property property = new MockProperty(itemData, getSession());
         property.setValue(value);
-        getMockedSession().addItem(itemData);
-        this.itemData.setIsChanged(true);
+        addItemOrRemoveIfValueNull(itemData, value);
         return property;
     }
 
@@ -205,8 +204,7 @@ class MockNode extends AbstractItem implements Node {
         ItemData itemData = ItemData.newProperty(getPath() + "/" + name);
         Property property = new MockProperty(itemData, getSession());
         property.setValue(values);
-        getMockedSession().addItem(itemData);
-        this.itemData.setIsChanged(true);
+        addItemOrRemoveIfValueNull(itemData, values);
         return property;
     }
 
@@ -215,8 +213,7 @@ class MockNode extends AbstractItem implements Node {
         ItemData itemData = ItemData.newProperty(getPath() + "/" + name);
         Property property = new MockProperty(itemData, getSession());
         property.setValue(values);
-        getMockedSession().addItem(itemData);
-        this.itemData.setIsChanged(true);
+        addItemOrRemoveIfValueNull(itemData, values);
         return property;
     }
 
@@ -225,8 +222,7 @@ class MockNode extends AbstractItem implements Node {
         ItemData itemData = ItemData.newProperty(getPath() + "/" + name);
         Property property = new MockProperty(itemData, getSession());
         property.setValue(value);
-        getMockedSession().addItem(itemData);
-        this.itemData.setIsChanged(true);
+        addItemOrRemoveIfValueNull(itemData, value);
         return property;
     }
 
@@ -236,8 +232,7 @@ class MockNode extends AbstractItem implements Node {
         ItemData itemData = ItemData.newProperty(getPath() + "/" + name);
         Property property = new MockProperty(itemData, getSession());
         property.setValue(value);
-        getMockedSession().addItem(itemData);
-        this.itemData.setIsChanged(true);
+        addItemOrRemoveIfValueNull(itemData, value);
         return property;
     }
 
@@ -246,8 +241,7 @@ class MockNode extends AbstractItem implements Node {
         ItemData itemData = ItemData.newProperty(getPath() + "/" + name);
         Property property = new MockProperty(itemData, getSession());
         property.setValue(value);
-        getMockedSession().addItem(itemData);
-        this.itemData.setIsChanged(true);
+        addItem(itemData);
         return property;
     }
 
@@ -256,8 +250,7 @@ class MockNode extends AbstractItem implements Node {
         ItemData itemData = ItemData.newProperty(getPath() + "/" + name);
         Property property = new MockProperty(itemData, getSession());
         property.setValue(value);
-        getMockedSession().addItem(itemData);
-        this.itemData.setIsChanged(true);
+        addItem(itemData);
         return property;
     }
 
@@ -266,8 +259,7 @@ class MockNode extends AbstractItem implements Node {
         ItemData itemData = ItemData.newProperty(getPath() + "/" + name);
         Property property = new MockProperty(itemData, getSession());
         property.setValue(value);
-        getMockedSession().addItem(itemData);
-        this.itemData.setIsChanged(true);
+        addItem(itemData);
         return property;
     }
 
@@ -276,8 +268,7 @@ class MockNode extends AbstractItem implements Node {
         ItemData itemData = ItemData.newProperty(getPath() + "/" + name);
         Property property = new MockProperty(itemData, getSession());
         property.setValue(value);
-        getMockedSession().addItem(itemData);
-        this.itemData.setIsChanged(true);
+        addItemOrRemoveIfValueNull(itemData, value);
         return property;
     }
 
@@ -286,8 +277,7 @@ class MockNode extends AbstractItem implements Node {
         ItemData itemData = ItemData.newProperty(getPath() + "/" + name);
         Property property = new MockProperty(itemData, getSession());
         property.setValue(value);
-        getMockedSession().addItem(itemData);
-        this.itemData.setIsChanged(true);
+        addItemOrRemoveIfValueNull(itemData, value);
         return property;
     }
 
@@ -296,8 +286,7 @@ class MockNode extends AbstractItem implements Node {
         ItemData itemData = ItemData.newProperty(getPath() + "/" + name);
         Property property = new MockProperty(itemData, getSession());
         property.setValue(value);
-        getMockedSession().addItem(itemData);
-        this.itemData.setIsChanged(true);
+        addItemOrRemoveIfValueNull(itemData, value);
         return property;
     }
 
@@ -306,9 +295,34 @@ class MockNode extends AbstractItem implements Node {
         ItemData itemData = ItemData.newProperty(getPath() + "/" + name);
         Property property = new MockProperty(itemData, getSession());
         property.setValue(value);
+        addItemOrRemoveIfValueNull(itemData, value);
+        return property;
+    }
+    
+    /**
+     * Adds or overwrites an item and marks the item value as changed.
+     * @param itemData Item data
+     * @throws RepositoryException
+     */
+    private void addItem(ItemData itemData) throws RepositoryException {
         getMockedSession().addItem(itemData);
         this.itemData.setIsChanged(true);
-        return property;
+    }
+
+    /**
+     * Adds or overwrites an item and marks the item value as changed.
+     * If the given value is null, the item is removed instead.
+     * @param itemData Item data
+     * @throws RepositoryException
+     */
+    private void addItemOrRemoveIfValueNull(ItemData itemData, Object value) throws RepositoryException {
+        if (value == null) {
+            getMockedSession().removeItem(itemData.getPath());
+        }
+        else {
+            getMockedSession().addItem(itemData);
+        }
+        this.itemData.setIsChanged(true);
     }
 
     @Override
