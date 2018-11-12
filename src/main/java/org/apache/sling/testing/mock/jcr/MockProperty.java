@@ -80,8 +80,7 @@ class MockProperty extends AbstractItem implements Property {
 
     @Override
     public void setValue(final Value newValue) throws RepositoryException {
-        if (newValue == null) {
-            remove();
+        if (removePropertyIfValueNull(newValue)) {
             return;
         }
         this.itemData.setValues(new Value[] { newValue });
@@ -90,8 +89,7 @@ class MockProperty extends AbstractItem implements Property {
 
     @Override
     public void setValue(final Value[] newValues) throws RepositoryException {
-        if (newValues == null) {
-            remove();
+        if (removePropertyIfValueNull(newValues)) {
             return;
         }
         Value[] values = new Value[newValues.length];
@@ -104,8 +102,7 @@ class MockProperty extends AbstractItem implements Property {
 
     @Override
     public void setValue(final String newValue) throws RepositoryException {
-        if (newValue == null) {
-            remove();
+        if (removePropertyIfValueNull(newValue)) {
             return;
         }
         this.itemData.setValues(new Value[] { getSession().getValueFactory().createValue(newValue) });
@@ -114,8 +111,7 @@ class MockProperty extends AbstractItem implements Property {
 
     @Override
     public void setValue(final String[] newValues) throws RepositoryException {
-        if (newValues == null) {
-            remove();
+        if (removePropertyIfValueNull(newValues)) {
             return;
         }
         Value[] values = new Value[newValues.length];
@@ -128,8 +124,7 @@ class MockProperty extends AbstractItem implements Property {
 
     @Override
     public void setValue(final InputStream newValue) throws RepositoryException {
-        if (newValue == null) {
-            remove();
+        if (removePropertyIfValueNull(newValue)) {
             return;
         }
         this.itemData.setValues(new Value[] { new BinaryValue(newValue) });
@@ -150,8 +145,7 @@ class MockProperty extends AbstractItem implements Property {
 
     @Override
     public void setValue(final Calendar newValue) throws RepositoryException {
-        if (newValue == null) {
-            remove();
+        if (removePropertyIfValueNull(newValue)) {
             return;
         }
         this.itemData.setValues(new Value[] { getSession().getValueFactory().createValue(newValue) });
@@ -166,8 +160,7 @@ class MockProperty extends AbstractItem implements Property {
 
     @Override
     public void setValue(final Node newValue) throws RepositoryException {
-        if (newValue == null) {
-            remove();
+        if (removePropertyIfValueNull(newValue)) {
             return;
         }
         this.itemData.setValues(new Value[] { getSession().getValueFactory().createValue(newValue) });
@@ -176,8 +169,7 @@ class MockProperty extends AbstractItem implements Property {
 
     @Override
     public void setValue(final Binary newValue) throws RepositoryException {
-        if (newValue == null) {
-            remove();
+        if (removePropertyIfValueNull(newValue)) {
             return;
         }
         this.itemData.setValues(new Value[] { new BinaryValue(newValue) });
@@ -186,12 +178,25 @@ class MockProperty extends AbstractItem implements Property {
 
     @Override
     public void setValue(final BigDecimal newValue) throws RepositoryException {
-        if (newValue == null) {
-            remove();
+        if (removePropertyIfValueNull(newValue)) {
             return;
         }
         this.itemData.setValues(new Value[] { getSession().getValueFactory().createValue(newValue) });
         this.itemData.setMultiple(false);
+    }
+    
+    /**
+     * Removes the current property (itself) if the given value is null.
+     * @param value Value to check
+     * @return true if property was removed
+     * @throws RepositoryException
+     */
+    private boolean removePropertyIfValueNull(Object value) throws RepositoryException {
+        if (value == null) {
+            remove();
+            return true;
+        }
+        return false;
     }
 
     @Override
