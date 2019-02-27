@@ -24,13 +24,16 @@ import javax.jcr.nodetype.NodeType;
 import javax.jcr.nodetype.NodeTypeIterator;
 import javax.jcr.nodetype.PropertyDefinition;
 
+import org.apache.commons.lang3.StringUtils;
+import org.apache.jackrabbit.JcrConstants;
+
 /**
  * Mock {@link NodeType} implementation.
  */
 class MockNodeType implements NodeType {
 
     private final String name;
-
+    
     public MockNodeType(final String name) {
         this.name = name;
     }
@@ -46,6 +49,13 @@ class MockNodeType implements NodeType {
         return this.name.equals(nodeTypeName);
     }
 
+    @Override
+    public boolean hasOrderableChildNodes() {
+        // support only well-known built-in node type
+        return StringUtils.equals(getName(), JcrConstants.NT_UNSTRUCTURED);
+    }
+
+    
     // --- unsupported operations ---
     @Override
     public boolean canAddChildNode(final String childNodeName) {
@@ -104,11 +114,6 @@ class MockNodeType implements NodeType {
 
     @Override
     public NodeType[] getSupertypes() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean hasOrderableChildNodes() {
         throw new UnsupportedOperationException();
     }
 
