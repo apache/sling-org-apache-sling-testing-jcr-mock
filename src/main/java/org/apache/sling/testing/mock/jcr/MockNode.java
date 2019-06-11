@@ -400,17 +400,17 @@ class MockNode extends AbstractItem implements Node {
     }
 
     @Override
-    public void addMixin(final String pMixinName) throws RepositoryException {
+    public void addMixin(final String mixinName) throws RepositoryException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean canAddMixin(final String pMixinName) throws RepositoryException {
+    public boolean canAddMixin(final String mixinName) throws RepositoryException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void cancelMerge(final Version pVersion) throws RepositoryException {
+    public void cancelMerge(final Version version) throws RepositoryException {
         throw new UnsupportedOperationException();
     }
 
@@ -425,7 +425,7 @@ class MockNode extends AbstractItem implements Node {
     }
 
     @Override
-    public void doneMerge(final Version pVersion) throws RepositoryException {
+    public void doneMerge(final Version version) throws RepositoryException {
         throw new UnsupportedOperationException();
     }
 
@@ -565,7 +565,7 @@ class MockNode extends AbstractItem implements Node {
     }
 
     @Override
-    public void setPrimaryType(final String pNodeTypeName) throws RepositoryException {
+    public void setPrimaryType(final String nodeTypeName) throws RepositoryException {
         throw new UnsupportedOperationException();
     }
 
