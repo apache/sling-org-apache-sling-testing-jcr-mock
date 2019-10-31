@@ -22,14 +22,14 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>org.apache.sling</groupId>
-        <artifactId>sling</artifactId>
-        <version>34</version>
+        <artifactId>sling-bundle-parent</artifactId>
+        <version>35</version>
         <relativePath />
     </parent>
 
     <artifactId>org.apache.sling.testing.jcr-mock</artifactId>
     <version>1.4.5-SNAPSHOT</version>
-    <packaging>bundle</packaging>
+    <packaging>jar</packaging>
 
     <name>Apache Sling Testing JCR Mock</name>
     <description>Mock implementation of selected JCR APIs.</description>
@@ -113,9 +113,12 @@
         <plugins>
     
             <plugin>
-                <groupId>org.apache.felix</groupId>
-                <artifactId>maven-bundle-plugin</artifactId>
-                <extensions>true</extensions>
+                <groupId>biz.aQute.bnd</groupId>
+                <artifactId>bnd-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>biz.aQute.bnd</groupId>
+                <artifactId>bnd-baseline-maven-plugin</artifactId>
             </plugin>
       
         </plugins>
