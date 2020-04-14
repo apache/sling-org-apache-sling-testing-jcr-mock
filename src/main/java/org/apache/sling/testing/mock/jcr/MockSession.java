@@ -46,8 +46,6 @@ import org.apache.jackrabbit.commons.iterator.RangeIteratorAdapter;
 import org.apache.jackrabbit.value.ValueFactoryImpl;
 import org.xml.sax.ContentHandler;
 
-import com.google.common.collect.ImmutableSet;
-
 /**
  * Mock {@link Session} implementation. This instance holds the JCR data in a
  * simple ordered map.
@@ -228,8 +226,8 @@ class MockSession implements Session {
         }
 
         // Find all items matching the source
-        List<ItemData> itemsToMove = new LinkedList<>();
-        for (String key : ImmutableSet.copyOf(items.keySet())) {
+        List<ItemData> itemsToMove = new LinkedList<>();        
+        for (String key : new ArrayList<>(items.keySet())) {
             if (key.startsWith(source.getPath())) {
                 itemsToMove.add(items.remove(key));
             }
@@ -244,7 +242,7 @@ class MockSession implements Session {
         }
 
         // Cycle items and add them back at the end
-        for (String key : ImmutableSet.copyOf(items.keySet())) {
+        for (String key : new ArrayList<>(items.keySet())) {
             if (key.equals(destination.getPath())) {
                 // Move items before destination
                 for (ItemData item : itemsToMove) {

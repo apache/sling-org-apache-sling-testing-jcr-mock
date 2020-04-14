@@ -18,6 +18,7 @@
  */
 package org.apache.sling.testing.mock.jcr;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -29,8 +30,6 @@ import javax.jcr.query.Query;
 import javax.jcr.query.QueryResult;
 
 import org.osgi.annotation.versioning.ConsumerType;
-
-import com.google.common.collect.ImmutableMap;
 
 /**
  * Mock implementation of {@link Query}.
@@ -97,7 +96,7 @@ public final class MockQuery implements Query {
     }
     
     public Map<String, Value> getBindVariables() throws RepositoryException {
-        return ImmutableMap.copyOf(variables);
+        return Collections.unmodifiableMap(variables);
     }
     
 

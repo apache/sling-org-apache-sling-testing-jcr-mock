@@ -18,23 +18,18 @@
  */
 package org.apache.sling.testing.mock.jcr;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.query.QueryResult;
-import javax.jcr.query.Row;
 import javax.jcr.query.RowIterator;
 
 import org.apache.jackrabbit.commons.iterator.NodeIteratorAdapter;
 import org.apache.jackrabbit.commons.iterator.RowIteratorAdapter;
-import org.jetbrains.annotations.Nullable;
 import org.osgi.annotation.versioning.ProviderType;
-
-import com.google.common.base.Function;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
 
 /**
  * Mock implementation of {@link QueryResult}.
@@ -48,7 +43,7 @@ public final class MockQueryResult implements QueryResult {
     private final List<String> columnNames;
     
     public MockQueryResult(List<Node> nodes) {
-        this(nodes, ImmutableList.<String>of());
+        this(nodes, Collections.emptyList());
     }
 
     public MockQueryResult(List<Node> nodes, List<String> columnNames) {
@@ -63,12 +58,9 @@ public final class MockQueryResult implements QueryResult {
 
     @Override
     public RowIterator getRows() throws RepositoryException {
-        return new RowIteratorAdapter(Lists.transform(nodes, new Function<Node, Row>() {
-            @Override
-            public Row apply(@Nullable Node node) {
-                return new MockRow(columnNames, node);
-            }
-        }));
+        return new RowIteratorAdapter(nodes.stream()
+                .map(node -> new MockRow(columnNames, node))
+                .iterator());
     }
 
     @Override

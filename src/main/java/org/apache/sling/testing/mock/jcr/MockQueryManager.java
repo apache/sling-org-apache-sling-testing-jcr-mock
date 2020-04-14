@@ -19,7 +19,10 @@
 package org.apache.sling.testing.mock.jcr;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
@@ -31,8 +34,6 @@ import javax.jcr.query.qom.QueryObjectModelFactory;
 
 import org.apache.commons.lang3.StringUtils;
 
-import com.google.common.collect.ImmutableList;
-
 /**
  * Mock implementation of {@link QueryManager}.
  */
@@ -41,12 +42,12 @@ class MockQueryManager implements QueryManager {
     private List<MockQueryResultHandler> resultHandlers = new ArrayList<MockQueryResultHandler>();
     
     @SuppressWarnings("deprecation")
-    private static final List<String> SUPPORTED_QUERY_LANGUAGES = ImmutableList.of(
+    private static final List<String> SUPPORTED_QUERY_LANGUAGES = Stream.of(
       Query.JCR_SQL2,
       Query.JCR_JQOM,
       Query.XPATH,
       Query.SQL
-    );
+    ).collect(Collectors.toList());
     
     @Override
     public Query createQuery(String statement, String language) throws RepositoryException {
@@ -73,7 +74,7 @@ class MockQueryManager implements QueryManager {
             }
         }
         // fallback to empty result
-        return new MockQueryResult(ImmutableList.<Node>of());
+        return new MockQueryResult(Collections.emptyList());
     }
 
     // --- unsupported operations ---
