@@ -378,6 +378,11 @@ class MockNode extends AbstractItem implements Node {
         getMockedSession().orderBefore(srcChild, destChild);
     }
 
+    @Override
+    public NodeDefinition getDefinition() throws RepositoryException {
+        return new MockNodeDefinition();
+    }
+
     // --- unsupported operations ---
     @Override
     public Property setProperty(final String name, final Value value, final int type) throws RepositoryException {
@@ -436,11 +441,6 @@ class MockNode extends AbstractItem implements Node {
 
     @Override
     public String getCorrespondingNodePath(final String workspaceName) throws RepositoryException {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public NodeDefinition getDefinition() throws RepositoryException {
         throw new UnsupportedOperationException();
     }
 
@@ -569,4 +569,63 @@ class MockNode extends AbstractItem implements Node {
         throw new UnsupportedOperationException();
     }
 
+    private class MockNodeDefinition implements NodeDefinition {
+
+        @Override
+        public boolean isAutoCreated() {
+            return false;
+        }
+
+        @Override
+        public boolean isMandatory() {
+            return false;
+        }
+
+        @Override
+        public boolean isProtected() {
+            return false;
+        }
+
+        @Override
+        public boolean allowsSameNameSiblings() {
+            return false;
+        }
+
+        // --- unsupported operations ---
+        @Override
+        public NodeType getDeclaringNodeType() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public String getName() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public int getOnParentVersion() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public NodeType[] getRequiredPrimaryTypes() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public String[] getRequiredPrimaryTypeNames() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public NodeType getDefaultPrimaryType() {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public String getDefaultPrimaryTypeName() {
+            throw new UnsupportedOperationException();
+        }
+
+    }
 }
