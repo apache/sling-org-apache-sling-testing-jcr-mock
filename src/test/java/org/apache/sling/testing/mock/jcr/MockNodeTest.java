@@ -218,6 +218,25 @@ public class MockNodeTest {
                 getNodeNames(foo.getNodes()));
     }
 
+    @Test
+    public void testNodeDefinition() throws RepositoryException {
+        Node node1 = this.session.getRootNode().getNode("node1");
+        List<Node> unprotectedNodes = getUnprotectedChildNodes(node1);
+        assertEquals("Should have one unprotected child node", 1, unprotectedNodes.size());
+    }
+
+    public static List<Node> getUnprotectedChildNodes(Node src) throws RepositoryException {
+        List<Node> result = new LinkedList<>();
+        NodeIterator iterator = src.getNodes();
+        while(iterator.hasNext()) {
+            Node node = iterator.nextNode();
+            if(!node.getDefinition().isProtected()) {
+                result.add(node);
+            }
+        }
+        return result;
+    }
+
     @SuppressWarnings("unchecked")
     private String[] getNodeNames(NodeIterator nodeIterator) {
         List<String> names = new LinkedList<>();

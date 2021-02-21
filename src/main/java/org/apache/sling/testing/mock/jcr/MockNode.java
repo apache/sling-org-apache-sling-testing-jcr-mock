@@ -378,6 +378,11 @@ class MockNode extends AbstractItem implements Node {
         getMockedSession().orderBefore(srcChild, destChild);
     }
 
+    @Override
+    public NodeDefinition getDefinition() throws RepositoryException {
+        return new MockNodeDefinition();
+    }
+
     // --- unsupported operations ---
     @Override
     public Property setProperty(final String name, final Value value, final int type) throws RepositoryException {
@@ -436,11 +441,6 @@ class MockNode extends AbstractItem implements Node {
 
     @Override
     public String getCorrespondingNodePath(final String workspaceName) throws RepositoryException {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public NodeDefinition getDefinition() throws RepositoryException {
         throw new UnsupportedOperationException();
     }
 
