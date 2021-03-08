@@ -226,7 +226,7 @@ class MockSession implements Session {
         }
 
         // Find all items matching the source
-        List<ItemData> itemsToMove = new LinkedList<>();        
+        List<ItemData> itemsToMove = new LinkedList<>();
         for (String key : new ArrayList<>(items.keySet())) {
             if (key.startsWith(source.getPath())) {
                 itemsToMove.add(items.remove(key));
@@ -366,7 +366,7 @@ class MockSession implements Session {
         return new String[0];
     }
 
-    
+
     // --- unsupported operations ---
     @Override
     public void addLockToken(final String lt) {

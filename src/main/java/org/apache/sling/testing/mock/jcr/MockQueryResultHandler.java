@@ -33,5 +33,5 @@ public interface MockQueryResultHandler {
      *   If not, null is returned and other handlers are asked to provide a result.
      */
     MockQueryResult executeQuery(MockQuery query);
-    
+
 }

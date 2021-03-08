@@ -92,17 +92,17 @@ public class MockPropertyTest {
         this.node1.setProperty("prop1", "value1");
 
         this.node1.setProperty("prop1", (String)null);
-        assertFalse(this.node1.hasProperty("prop1"));        
+        assertFalse(this.node1.hasProperty("prop1"));
     }
-    
+
     @Test
     public void testStringSetNullViaProp() throws RepositoryException {
         this.node1.setProperty("prop1", "value1");
 
         this.node1.getProperty("prop1").setValue((String)null);
-        assertFalse(this.node1.hasProperty("prop1"));        
+        assertFalse(this.node1.hasProperty("prop1"));
     }
-    
+
     @Test
     public void testStringArray() throws RepositoryException {
         String[] value1 = new String[] { "aaa", "bbb" };
@@ -132,7 +132,7 @@ public class MockPropertyTest {
         this.node1.setProperty("prop1", value1);
 
         this.node1.setProperty("prop1", (String[])null);
-        assertFalse(this.node1.hasProperty("prop1"));        
+        assertFalse(this.node1.hasProperty("prop1"));
     }
 
     @Test
@@ -141,7 +141,7 @@ public class MockPropertyTest {
         this.node1.setProperty("prop1", value1);
 
         this.node1.getProperty("prop1").setValue((String[])null);
-        assertFalse(this.node1.hasProperty("prop1"));        
+        assertFalse(this.node1.hasProperty("prop1"));
     }
 
     @Test
@@ -197,7 +197,7 @@ public class MockPropertyTest {
         this.node1.setProperty("prop1", new BigDecimal("1.5"));
 
         this.node1.setProperty("prop1", (BigDecimal)null);
-        assertFalse(this.node1.hasProperty("prop1"));        
+        assertFalse(this.node1.hasProperty("prop1"));
     }
 
     @Test
@@ -205,7 +205,7 @@ public class MockPropertyTest {
         this.node1.setProperty("prop1", new BigDecimal("1.5"));
 
         this.node1.getProperty("prop1").setValue((BigDecimal)null);
-        assertFalse(this.node1.hasProperty("prop1"));        
+        assertFalse(this.node1.hasProperty("prop1"));
     }
 
     @Test
@@ -231,7 +231,7 @@ public class MockPropertyTest {
         this.node1.setProperty("prop1", value1);
 
         this.node1.setProperty("prop1", (Calendar)null);
-        assertFalse(this.node1.hasProperty("prop1"));        
+        assertFalse(this.node1.hasProperty("prop1"));
     }
 
     @Test
@@ -240,7 +240,7 @@ public class MockPropertyTest {
         this.node1.setProperty("prop1", value1);
 
         this.node1.getProperty("prop1").setValue((Calendar)null);
-        assertFalse(this.node1.hasProperty("prop1"));        
+        assertFalse(this.node1.hasProperty("prop1"));
     }
 
     @Test
@@ -265,7 +265,7 @@ public class MockPropertyTest {
         this.node1.setProperty("prop1", new BinaryValue(value1).getBinary());
 
         this.node1.setProperty("prop1", (BinaryValue)null);
-        assertFalse(this.node1.hasProperty("prop1"));        
+        assertFalse(this.node1.hasProperty("prop1"));
     }
 
     @Test
@@ -274,7 +274,7 @@ public class MockPropertyTest {
         this.node1.setProperty("prop1", new BinaryValue(value1).getBinary());
 
         this.node1.getProperty("prop1").setValue((BinaryValue)null);
-        assertFalse(this.node1.hasProperty("prop1"));        
+        assertFalse(this.node1.hasProperty("prop1"));
     }
 
     @SuppressWarnings("deprecation")
@@ -299,7 +299,7 @@ public class MockPropertyTest {
         this.node1.setProperty("prop1", new ByteArrayInputStream(value1));
 
         this.node1.setProperty("prop1", (InputStream)null);
-        assertFalse(this.node1.hasProperty("prop1"));        
+        assertFalse(this.node1.hasProperty("prop1"));
     }
 
     @SuppressWarnings("deprecation")
@@ -309,7 +309,7 @@ public class MockPropertyTest {
         this.node1.setProperty("prop1", new ByteArrayInputStream(value1));
 
         this.node1.getProperty("prop1").setValue((InputStream)null);
-        assertFalse(this.node1.hasProperty("prop1"));        
+        assertFalse(this.node1.hasProperty("prop1"));
     }
 
     @Test
@@ -333,7 +333,7 @@ public class MockPropertyTest {
         this.node1.setProperty("prop1", this.session.getValueFactory().createValue("value1"));
 
         this.node1.setProperty("prop1", (Value)null);
-        assertFalse(this.node1.hasProperty("prop1"));        
+        assertFalse(this.node1.hasProperty("prop1"));
     }
 
     @Test
@@ -341,7 +341,7 @@ public class MockPropertyTest {
         this.node1.setProperty("prop1", this.session.getValueFactory().createValue("value1"));
 
         this.node1.getProperty("prop1").setValue((Value)null);
-        assertFalse(this.node1.hasProperty("prop1"));        
+        assertFalse(this.node1.hasProperty("prop1"));
     }
 
     @Test
@@ -375,7 +375,7 @@ public class MockPropertyTest {
         this.node1.setProperty("prop1", value1);
 
         this.node1.setProperty("prop1", (Value[])null);
-        assertFalse(this.node1.hasProperty("prop1"));        
+        assertFalse(this.node1.hasProperty("prop1"));
     }
 
     @Test
@@ -385,7 +385,7 @@ public class MockPropertyTest {
         this.node1.setProperty("prop1", value1);
 
         this.node1.getProperty("prop1").setValue((Value[])null);
-        assertFalse(this.node1.hasProperty("prop1"));        
+        assertFalse(this.node1.hasProperty("prop1"));
     }
 
     @Test
@@ -395,7 +395,7 @@ public class MockPropertyTest {
         assertTrue(prop1.isMultiple());
         assertEquals(PropertyType.UNDEFINED, prop1.getType());
     }
-    
+
     @Test(expected=ValueFormatException.class)
     public void testSingleValueAsValueArray() throws RepositoryException {
         this.node1.setProperty("prop1", this.session.getValueFactory().createValue("value1"));
@@ -403,5 +403,5 @@ public class MockPropertyTest {
         assertFalse(prop1.isMultiple());
         assertEquals("value1", prop1.getValues()[0].getString());
     }
-    
+
 }

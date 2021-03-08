@@ -33,15 +33,15 @@ import org.osgi.annotation.versioning.ProviderType;
 
 /**
  * Mock implementation of {@link QueryResult}.
- * Allows to manually set the expected result, optional with column names 
+ * Allows to manually set the expected result, optional with column names
  * (which are interpreted as property names of the nodes of the result list).
  */
 @ProviderType
 public final class MockQueryResult implements QueryResult {
-    
+
     private final List<Node> nodes;
     private final List<String> columnNames;
-    
+
     public MockQueryResult(List<Node> nodes) {
         this(nodes, Collections.emptyList());
     }

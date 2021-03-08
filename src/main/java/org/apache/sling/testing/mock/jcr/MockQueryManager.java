@@ -38,9 +38,9 @@ import org.apache.commons.lang3.StringUtils;
  * Mock implementation of {@link QueryManager}.
  */
 class MockQueryManager implements QueryManager {
-    
+
     private List<MockQueryResultHandler> resultHandlers = new ArrayList<MockQueryResultHandler>();
-    
+
     @SuppressWarnings("deprecation")
     private static final List<String> SUPPORTED_QUERY_LANGUAGES = Stream.of(
       Query.JCR_SQL2,
@@ -48,7 +48,7 @@ class MockQueryManager implements QueryManager {
       Query.XPATH,
       Query.SQL
     ).collect(Collectors.toList());
-    
+
     @Override
     public Query createQuery(String statement, String language) throws RepositoryException {
         if (!SUPPORTED_QUERY_LANGUAGES.contains(StringUtils.defaultString(language))) {
@@ -61,11 +61,11 @@ class MockQueryManager implements QueryManager {
     public String[] getSupportedQueryLanguages() throws RepositoryException {
         return SUPPORTED_QUERY_LANGUAGES.toArray(new String[SUPPORTED_QUERY_LANGUAGES.size()]);
     }
-    
+
     void addResultHandler(MockQueryResultHandler resultHandler) {
         this.resultHandlers.add(resultHandler);
     }
-    
+
     QueryResult executeQuery(MockQuery query) {
         for (MockQueryResultHandler resultHandler : resultHandlers) {
             MockQueryResult result = resultHandler.executeQuery(query);
@@ -78,7 +78,7 @@ class MockQueryManager implements QueryManager {
     }
 
     // --- unsupported operations ---
-    
+
     @Override
     public QueryObjectModelFactory getQOMFactory() {
         throw new UnsupportedOperationException();

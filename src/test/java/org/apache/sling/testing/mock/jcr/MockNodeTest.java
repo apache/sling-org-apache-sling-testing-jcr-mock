@@ -194,7 +194,7 @@ public class MockNodeTest {
         this.session.save();
         assertFalse(foo.isModified());
     }
-    
+
     @Test
     public void testOrderBefore() throws RepositoryException {
         Node foo = this.session.getRootNode().addNode("foo");

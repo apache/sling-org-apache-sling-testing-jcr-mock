@@ -26,7 +26,7 @@ import javax.jcr.observation.EventListenerIterator;
 import org.apache.jackrabbit.commons.iterator.RangeIteratorAdapter;
 
 class MockEventListenerIterator extends RangeIteratorAdapter implements EventListenerIterator {
-    
+
     public MockEventListenerIterator(Collection collection) {
         super(collection);
     }

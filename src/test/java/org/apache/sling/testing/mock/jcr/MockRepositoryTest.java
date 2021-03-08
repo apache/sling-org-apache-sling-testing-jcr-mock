@@ -63,7 +63,7 @@ public class MockRepositoryTest {
         assertFalse(repository.isStandardDescriptor("test"));
         assertFalse(repository.isSingleValueDescriptor("test"));
     }
-    
+
     @Test
     public void testMultipleSessions() throws RepositoryException {
         Session session1 = repository.login();
@@ -73,15 +73,15 @@ public class MockRepositoryTest {
         Node root = session1.getRootNode();
         root.addNode("test");
         session1.save();
-        
+
         // try to get node in session 2
         Node testNode2 = session2.getNode("/test");
         assertNotNull(testNode2);
-        
+
         // delete node and make sure it is removed in session 1 as well
         testNode2.remove();
         session2.save();
-        
+
         try {
             session1.getNode("/test");
             fail("Node was not removed");

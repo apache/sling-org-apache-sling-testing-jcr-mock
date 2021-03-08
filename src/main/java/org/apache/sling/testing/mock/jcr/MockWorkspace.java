@@ -81,7 +81,7 @@ class MockWorkspace implements Workspace {
     public QueryManager getQueryManager() throws RepositoryException {
         return this.queryManager;
     }
-    
+
     // --- unsupported operations ---
     @Override
     public void copy(final String srcAbsPath, final String destAbsPath) throws RepositoryException {

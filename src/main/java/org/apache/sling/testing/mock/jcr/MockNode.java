@@ -67,13 +67,13 @@ class MockNode extends AbstractItem implements Node {
         Node node = new MockNode(itemData, getSession());
         getMockedSession().addItem(itemData);
         node.setProperty(JcrConstants.JCR_PRIMARYTYPE, primaryNodeTypeName);
-        
+
         // special handling for some node types
         if (StringUtils.equals(primaryNodeTypeName, JcrConstants.NT_FILE)) {
             node.setProperty(JcrConstants.JCR_CREATED, Calendar.getInstance());
             node.setProperty("jcr:createdBy", getMockedSession().getUserID());
         }
-        
+
         return node;
     }
 
@@ -298,7 +298,7 @@ class MockNode extends AbstractItem implements Node {
         addItemOrRemoveIfValueNull(itemData, value);
         return property;
     }
-    
+
     /**
      * Adds or overwrites an item and marks the item value as changed.
      * @param itemData Item data
@@ -351,7 +351,7 @@ class MockNode extends AbstractItem implements Node {
             throw new ItemNotFoundException();
         }
     }
-    
+
     @Override
     public int hashCode() {
         return itemData.hashCode();

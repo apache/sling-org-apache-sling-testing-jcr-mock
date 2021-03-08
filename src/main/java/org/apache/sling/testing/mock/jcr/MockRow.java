@@ -31,10 +31,10 @@ import javax.jcr.query.Row;
  * Mock implementation of {@link Row}.
  */
 class MockRow implements Row {
-    
+
     private final List<String> columnNames;
     private final Node node;
-    
+
     public MockRow(List<String> columnNames, Node node) {
         this.columnNames = columnNames;
         this.node = node;

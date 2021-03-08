@@ -36,15 +36,15 @@ import org.osgi.annotation.versioning.ConsumerType;
  */
 @ConsumerType
 public final class MockQuery implements Query {
-    
+
     private final MockQueryManager queryManager;
     private final String statement;
     private final String language;
-    
+
     private long limit;
     private long offset;
     private Map<String,Value> variables = new HashMap<String, Value>();
-    
+
     MockQuery(MockQueryManager queryManager, String statement, String language) {
         this.queryManager = queryManager;
         this.statement = statement;
@@ -94,11 +94,11 @@ public final class MockQuery implements Query {
         Set<String> variableNames = variables.keySet();
         return variableNames.toArray(new String[variableNames.size()]);
     }
-    
+
     public Map<String, Value> getBindVariables() throws RepositoryException {
         return Collections.unmodifiableMap(variables);
     }
-    
+
 
     // --- unsupported operations ---
 

@@ -29,7 +29,7 @@ import javax.jcr.nodetype.NodeType;
  * Holds node and property item data independently from session.
  */
 class ItemData {
-    
+
     private final String path;
     private final String name;
     private final boolean isNode;
@@ -39,7 +39,7 @@ class ItemData {
     private boolean isMultiple;
     private boolean isNew;
     private boolean isChanged;
-    
+
     private ItemData(String path, boolean isNode, String uuid, NodeType nodeType) {
         this.path = path;
         this.name = ResourceUtil.getName(path);
@@ -49,11 +49,11 @@ class ItemData {
         this.isNew = true;
         this.isChanged = false;
     }
-    
+
     public String getPath() {
         return path;
     }
-    
+
     public String getName() {
         return name;
     }
@@ -61,11 +61,11 @@ class ItemData {
     public boolean isNode() {
         return isNode;
     }
-    
+
     public boolean isProperty() {
         return !isNode;
     }
-    
+
     public String getUuid() {
         if (!isNode()) {
             throw new UnsupportedOperationException();
@@ -109,7 +109,7 @@ class ItemData {
         this.isMultiple = isMultiple;
         this.isChanged = true;
     }
-    
+
     public Item getItem(Session session) {
         if (isNode) {
             return new MockNode(this, session);
@@ -118,7 +118,7 @@ class ItemData {
             return new MockProperty(this, session);
         }
     }
-    
+
     public boolean isNew() {
         return isNew;
     }
@@ -152,9 +152,9 @@ class ItemData {
     public static ItemData newNode(String path, NodeType nodeType) {
         return new ItemData(path, true, UUID.randomUUID().toString(), nodeType);
     }
-    
+
     public static ItemData newProperty(String path) {
         return new ItemData(path, false, null, null);
     }
-    
+
 }

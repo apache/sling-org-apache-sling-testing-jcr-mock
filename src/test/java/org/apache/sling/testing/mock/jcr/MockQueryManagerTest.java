@@ -44,45 +44,45 @@ public class MockQueryManagerTest {
     private Session session;
     private QueryManager queryManager;
     private List<Node> sampleNodes;
-    
+
     @Before
     public void setUp() throws RepositoryException {
         session = MockJcr.newSession();
         queryManager = session.getWorkspace().getQueryManager();
-        
+
         Node rootNode = session.getRootNode();
-        
+
         sampleNodes = ImmutableList.of(
             rootNode.addNode("node1"),
             rootNode.addNode("node2"),
             rootNode.addNode("node3")
         );
-        
-        for (int i=0; i<sampleNodes.size(); i++) { 
+
+        for (int i=0; i<sampleNodes.size(); i++) {
             Node node = sampleNodes.get(i);
             node.setProperty("stringProp", "value" + (i + 1));
             node.setProperty("intProp", i + 1);
         }
         sampleNodes.get(0).setProperty("optionalStringProp", "optValue1");
     }
-    
+
     @Test
     public void testNoQueryResults() throws RepositoryException {
         Query query = queryManager.createQuery("dummy", Query.JCR_SQL2);
         QueryResult result = query.execute();
         assertFalse(result.getNodes().hasNext());
     }
-    
+
     @Test(expected=InvalidQueryException.class)
     public void testInvalidQueryLanguage() throws RepositoryException {
         queryManager.createQuery("dummy", "wurst");
     }
-    
+
     @SuppressWarnings("unchecked")
     @Test
     public void testQueryResults_AllQuerys() throws RepositoryException {
         MockJcr.setQueryResult(queryManager, sampleNodes);
-        
+
         Query query = queryManager.createQuery("query1", Query.JCR_SQL2);
         QueryResult result = query.execute();
         assertEquals(sampleNodes, ImmutableList.copyOf(result.getNodes()));
@@ -91,12 +91,12 @@ public class MockQueryManagerTest {
         result = query.execute();
         assertEquals(sampleNodes, ImmutableList.copyOf(result.getNodes()));
     }
-    
+
     @SuppressWarnings("unchecked")
     @Test
     public void testQueryResults_SpecificQuery() throws RepositoryException {
         MockJcr.setQueryResult(queryManager, "query1", Query.JCR_SQL2, sampleNodes);
-        
+
         Query query = queryManager.createQuery("query1", Query.JCR_SQL2);
         QueryResult result = query.execute();
         assertEquals(sampleNodes, ImmutableList.copyOf(result.getNodes()));
@@ -105,7 +105,7 @@ public class MockQueryManagerTest {
         result = query.execute();
         assertFalse(result.getNodes().hasNext());
     }
-    
+
     @SuppressWarnings("unchecked")
     @Test
     public void testQueryResults_ResultHandler() throws RepositoryException {
@@ -118,7 +118,7 @@ public class MockQueryManagerTest {
                 return null;
             }
         });
-        
+
         Query query = queryManager.createQuery("query1", Query.JCR_SQL2);
         QueryResult result = query.execute();
         assertEquals(sampleNodes, ImmutableList.copyOf(result.getNodes()));
@@ -127,7 +127,7 @@ public class MockQueryManagerTest {
         result = query.execute();
         assertFalse(result.getNodes().hasNext());
     }
-    
+
     @SuppressWarnings("unchecked")
     @Test
     public void testQueryResults_MultipleResultHandlers() throws RepositoryException {
@@ -141,7 +141,7 @@ public class MockQueryManagerTest {
                 return null;
             }
         });
-        
+
         MockJcr.addQueryResultHandler(session, new MockQueryResultHandler() {
             @Override
             public MockQueryResult executeQuery(MockQuery query) {
@@ -151,7 +151,7 @@ public class MockQueryManagerTest {
                 return null;
             }
         });
-        
+
         Query query = queryManager.createQuery("query1", Query.JCR_SQL2);
         QueryResult result = query.execute();
         assertEquals(sampleNodes, ImmutableList.copyOf(result.getNodes()));
@@ -164,7 +164,7 @@ public class MockQueryManagerTest {
         result = query.execute();
         assertFalse(result.getNodes().hasNext());
     }
-    
+
     @SuppressWarnings("unchecked")
     @Test
     public void testQueryResults_ResultHandler_Rows() throws RepositoryException {
@@ -173,20 +173,20 @@ public class MockQueryManagerTest {
             "intProp",
             "optionalStringProp"
         );
-         
+
         MockJcr.addQueryResultHandler(queryManager, new MockQueryResultHandler() {
             @Override
             public MockQueryResult executeQuery(MockQuery query) {
                 return new MockQueryResult(sampleNodes, columnNames);
             }
         });
-        
+
         Query query = queryManager.createQuery("query1", Query.JCR_SQL2);
         QueryResult result = query.execute();
         assertEquals(sampleNodes, ImmutableList.copyOf(result.getNodes()));
-        
+
         assertEquals(columnNames, ImmutableList.copyOf(result.getColumnNames()));
-        
+
         List<Row> rows = ImmutableList.copyOf(result.getRows());
         assertEquals("value1", rows.get(0).getValue("stringProp").getString());
         assertEquals(1L, rows.get(0).getValue("intProp").getLong());
@@ -200,5 +200,5 @@ public class MockQueryManagerTest {
         assertEquals(3L, rows.get(2).getValues()[1].getLong());
         assertNull(rows.get(2).getValues()[2]);
     }
-    
+
 }

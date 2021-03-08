@@ -89,7 +89,7 @@ public final class MockJcr {
             throw new RuntimeException("Creating mocked JCR session failed.", ex);
         }
     }
-    
+
     /**
      * Sets the expected result list for all queries executed with the given query manager.
      * @param session JCR session
@@ -98,7 +98,7 @@ public final class MockJcr {
     public static void setQueryResult(@NotNull final Session session, @NotNull final List<Node> resultList) {
         setQueryResult(getQueryManager(session), resultList);
     }
-    
+
     /**
      * Sets the expected result list for all queries executed with the given query manager.
      * @param queryManager Mocked query manager
@@ -124,7 +124,7 @@ public final class MockJcr {
             @NotNull final String language, @NotNull final List<Node> resultList) {
         setQueryResult(getQueryManager(session), statement, language, resultList);
     }
-    
+
     /**
      * Sets the expected result list for all queries with the given statement executed with the given query manager.
      * @param queryManager Mocked query manager
@@ -156,7 +156,7 @@ public final class MockJcr {
     public static void addQueryResultHandler(@NotNull final Session session, @NotNull final MockQueryResultHandler resultHandler) {
         addQueryResultHandler(getQueryManager(session), resultHandler);
     }
-    
+
     /**
      * Adds a query result handler for the given query manager which may return query results for certain queries that are executed.
      * @param queryManager Mocked query manager
@@ -165,7 +165,7 @@ public final class MockJcr {
     public static void addQueryResultHandler(@NotNull final QueryManager queryManager, @NotNull final MockQueryResultHandler resultHandler) {
         ((MockQueryManager)queryManager).addResultHandler(resultHandler);
     }
-    
+
     private static @NotNull QueryManager getQueryManager(@NotNull Session session) {
         try {
             return session.getWorkspace().getQueryManager();

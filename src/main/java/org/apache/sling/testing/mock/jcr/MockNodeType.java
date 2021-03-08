@@ -33,7 +33,7 @@ import org.apache.jackrabbit.JcrConstants;
 class MockNodeType implements NodeType {
 
     private final String name;
-    
+
     public MockNodeType(final String name) {
         this.name = name;
     }
@@ -55,7 +55,7 @@ class MockNodeType implements NodeType {
         return StringUtils.equals(getName(), JcrConstants.NT_UNSTRUCTURED);
     }
 
-    
+
     // --- unsupported operations ---
     @Override
     public boolean canAddChildNode(final String childNodeName) {

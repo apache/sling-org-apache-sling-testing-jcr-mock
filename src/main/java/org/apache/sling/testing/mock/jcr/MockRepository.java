@@ -47,11 +47,11 @@ class MockRepository implements Repository {
     private final NamespaceRegistry namespaceRegistry = new MockNamespaceRegistry();
     private final ObservationManager observationManager = new MockObservationManager();
     private final NodeTypeManager nodeTypeManager = new MockNodeTypeManager();
-    
+
     public MockRepository() {
         this.items.put("/", ItemData.newNode("/", MockNodeTypes.NT_UNSTRUCTURED));
     }
-    
+
     @Override
     public Session login() throws RepositoryException {
         return login(null, null);

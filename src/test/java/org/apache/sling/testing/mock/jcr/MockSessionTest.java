@@ -39,11 +39,11 @@ import org.junit.Test;
 import com.google.common.collect.ImmutableSet;
 
 public class MockSessionTest {
-    
+
     @Test
     public void testEmptySession() throws RepositoryException {
         Session session = MockJcr.newSession();
-        
+
         Node rootNode = session.getRootNode();
         assertNotNull(rootNode);
         assertFalse(rootNode.getProperties().hasNext());
@@ -65,11 +65,11 @@ public class MockSessionTest {
         }
         assertEquals(2, countChildren);
     }
-	
+
     @Test
     public void testNodePropertyCreateRead() throws RepositoryException {
         Session session = MockJcr.newSession();
-        
+
         Node rootNode = session.getNode("/");
         assertEquals(rootNode, session.getRootNode());
 
@@ -305,7 +305,7 @@ public class MockSessionTest {
         session.removeItem("/foo/");
         assertFalse("Removing /foo/ should succeed", session.nodeExists("/foo"));
     }
-    
+
     @Test
     public void testNewState() throws RepositoryException {
         Session session = MockJcr.newSession();
@@ -314,7 +314,7 @@ public class MockSessionTest {
         Property property = node.setProperty("testProp", "value123");
         assertTrue(node.isNew());
         assertTrue(property.isNew());
-        
+
         session.save();
         assertFalse(node.isNew());
         assertFalse(property.isNew());
@@ -328,5 +328,5 @@ public class MockSessionTest {
         session.logout();
         assertFalse(session.isLive());
     }
-    
+
 }

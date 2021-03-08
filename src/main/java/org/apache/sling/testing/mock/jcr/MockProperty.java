@@ -184,7 +184,7 @@ class MockProperty extends AbstractItem implements Property {
         this.itemData.setValues(new Value[] { getSession().getValueFactory().createValue(newValue) });
         this.itemData.setMultiple(false);
     }
-    
+
     /**
      * Removes the current property (itself) if the given value is null.
      * @param value Value to check
