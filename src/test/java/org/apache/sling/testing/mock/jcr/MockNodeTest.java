@@ -37,6 +37,7 @@ import javax.jcr.Property;
 import javax.jcr.PropertyIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.nodetype.NoSuchNodeTypeException;
 
 import org.apache.jackrabbit.JcrConstants;
 import org.junit.Assert;
@@ -127,6 +128,17 @@ public class MockNodeTest {
             }
         }
         fail("Properties did not include jcr:primaryType");
+    }
+
+    @Test
+    public void testSetPrimaryType() throws RepositoryException {
+        this.node1.setPrimaryType("nt:folder");
+        assertEquals("nt:folder", this.node1.getPrimaryNodeType().getName());
+    }
+
+    @Test(expected = NoSuchNodeTypeException.class)
+    public void testSetBlankPrimaryType() throws RepositoryException {
+        this.node1.setPrimaryType(" ");
     }
 
     @Test

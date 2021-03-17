@@ -35,6 +35,7 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.Value;
 import javax.jcr.lock.Lock;
+import javax.jcr.nodetype.NoSuchNodeTypeException;
 import javax.jcr.nodetype.NodeDefinition;
 import javax.jcr.nodetype.NodeType;
 import javax.jcr.version.Version;
@@ -383,6 +384,17 @@ class MockNode extends AbstractItem implements Node {
         return new MockNodeDefinition();
     }
 
+    @Override
+    public void setPrimaryType(final String primaryNodeTypeName) throws RepositoryException {
+        if (StringUtils.isNotBlank(primaryNodeTypeName)) {
+            // accept all node types like stated in the MockNodeTypeManager
+            this.itemData.setNodeType(new MockNodeType(primaryNodeTypeName));
+            setProperty(JcrConstants.JCR_PRIMARYTYPE, primaryNodeTypeName);
+        } else {
+            throw new NoSuchNodeTypeException("Not accepting blank node types");
+        }
+    }
+
     // --- unsupported operations ---
     @Override
     public Property setProperty(final String name, final Value value, final int type) throws RepositoryException {
@@ -564,9 +576,5 @@ class MockNode extends AbstractItem implements Node {
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public void setPrimaryType(final String nodeTypeName) throws RepositoryException {
-        throw new UnsupportedOperationException();
-    }
 
 }
