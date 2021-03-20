@@ -34,7 +34,7 @@ class ItemData {
     private final String name;
     private final boolean isNode;
     private final String uuid;
-    private final NodeType nodeType;
+    private NodeType nodeType;
     private Value[] values;
     private boolean isMultiple;
     private boolean isNew;
@@ -78,6 +78,10 @@ class ItemData {
             throw new UnsupportedOperationException();
         }
         return nodeType;
+    }
+
+    public void setNodeType(NodeType nodeType) {
+        this.nodeType = nodeType;
     }
 
     public Value[] getValues() {
