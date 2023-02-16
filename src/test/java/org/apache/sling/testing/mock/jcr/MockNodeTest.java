@@ -266,7 +266,7 @@ public class MockNodeTest {
     @Test
     public void addMixinTest() throws RepositoryException {
         node1.addMixin("mix:referenceable");
-        assertEquals("mix:referenceable", node1.getProperty(JcrConstants.JCR_MIXINTYPES).getValue().getString());
+        assertEquals("mix:referenceable", node1.getProperty(JcrConstants.JCR_MIXINTYPES).getValues()[0].getString());
     }
 
     @Test
