@@ -420,7 +420,7 @@ class MockNode extends AbstractItem implements Node {
             Value valueToBeRemoved = this.getSession().getValueFactory().createValue(mixinName);
             Value[] newValues = new Value[currentValues.length - 1];
             for (int i = 0, j = 0; i < currentValues.length; i++) {
-                if (currentValues[i].equals(valueToBeRemoved)) {
+                if (!currentValues[i].equals(valueToBeRemoved)) {
                     newValues[j] = currentValues[i];
                     j++;
                 }
