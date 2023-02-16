@@ -284,12 +284,4 @@ public class MockNodeTest {
         node1.removeMixin("mix:taggable");
         assertEquals(1 , node1.getProperty(JcrConstants.JCR_MIXINTYPES).getValues().length);
     }
-
-    @Test
-    public void getMixinNodeTypesTest() throws RepositoryException {
-        node1.addMixin("mix:taggable");
-        node1.addMixin("mix:mixin");
-        NodeType[] nodeTypes = node1.getMixinNodeTypes();
-        //assertEquals(, nodeTypes);
-    }
 }
