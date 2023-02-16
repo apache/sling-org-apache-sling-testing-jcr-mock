@@ -283,5 +283,6 @@ public class MockNodeTest {
         node1.addMixin("mix:mixin");
         node1.removeMixin("mix:taggable");
         assertEquals(1 , node1.getProperty(JcrConstants.JCR_MIXINTYPES).getValues().length);
+        assertEquals("mix:mixin" , node1.getProperty(JcrConstants.JCR_MIXINTYPES).getValues()[0].getString());
     }
 }
