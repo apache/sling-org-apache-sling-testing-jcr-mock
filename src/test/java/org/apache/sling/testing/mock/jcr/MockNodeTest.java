@@ -261,5 +261,12 @@ public class MockNodeTest {
         });
         return names.toArray(new String[names.size()]);
     }
+    
+    @Test
+    public void addMixinTest() throws RepositoryException {
+        Node node = this.rootNode.addNode("node");
+        node.addMixin("mix:referenceable");
+        assertEquals("mix:referenceable", node.getProperty(JcrConstants.JCR_MIXINTYPES).getValue().getString());
+    }
 
 }
