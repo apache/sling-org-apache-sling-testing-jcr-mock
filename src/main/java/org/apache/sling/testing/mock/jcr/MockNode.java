@@ -20,7 +20,10 @@ package org.apache.sling.testing.mock.jcr;
 
 import java.io.InputStream;
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Iterator;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import javax.jcr.Binary;
@@ -35,9 +38,7 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.Value;
 import javax.jcr.lock.Lock;
-import javax.jcr.nodetype.NoSuchNodeTypeException;
-import javax.jcr.nodetype.NodeDefinition;
-import javax.jcr.nodetype.NodeType;
+import javax.jcr.nodetype.*;
 import javax.jcr.version.Version;
 import javax.jcr.version.VersionHistory;
 
@@ -46,6 +47,8 @@ import org.apache.jackrabbit.JcrConstants;
 import org.apache.jackrabbit.commons.ItemNameMatcher;
 import org.apache.jackrabbit.commons.iterator.NodeIteratorAdapter;
 import org.apache.jackrabbit.commons.iterator.PropertyIteratorAdapter;
+
+import static javax.swing.text.html.parser.DTDConstants.NAMES;
 
 /**
  * Mock {@link Node} implementation
@@ -399,10 +402,33 @@ class MockNode extends AbstractItem implements Node {
     public void addMixin(final String mixinName) throws RepositoryException {
         if (StringUtils.isNotBlank(mixinName)) {
             if(!this.hasProperty(JcrConstants.JCR_MIXINTYPES)) {
-                setProperty(JcrConstants.JCR_MIXINTYPES, mixinName);
+                String[] mixinNames = new String[]{mixinName};
+                setProperty(JcrConstants.JCR_MIXINTYPES, mixinNames);
+            } else {
+                Value[] currentValues = getProperty(JcrConstants.JCR_MIXINTYPES).getValues();
+                Value value = this.getSession().getValueFactory().createValue(mixinName);
+                Value[] newValues = Arrays.copyOf(currentValues, currentValues.length + 1);
+                newValues[newValues.length - 1] = value;
+                this.setProperty(JcrConstants.JCR_MIXINTYPES, newValues);
             }
         } else {
             throw new NoSuchNodeTypeException("Not accepting blank mixin name");
+        }
+    }
+
+    @Override
+    public void removeMixin(final String mixinName) throws RepositoryException {
+        if (this.hasProperty(JcrConstants.JCR_MIXINTYPES)) {
+            Value[] currentValues = getProperty(JcrConstants.JCR_MIXINTYPES).getValues();
+            Value valueToBeRemoved = this.getSession().getValueFactory().createValue(mixinName);
+            Value[] newValues = new Value[currentValues.length - 1];
+            for (int i = 0, j = 0; i < currentValues.length; i++) {
+                if (currentValues[i].equals(valueToBeRemoved)) {
+                    newValues[j] = currentValues[i];
+                    j++;
+                }
+                this.setProperty(JcrConstants.JCR_MIXINTYPES, newValues);
+            }
         }
     }
 
@@ -504,11 +530,6 @@ class MockNode extends AbstractItem implements Node {
 
     @Override
     public NodeIterator merge(final String srcWorkspace, final boolean bestEffort) throws RepositoryException {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void removeMixin(final String mixinName) throws RepositoryException {
         throw new UnsupportedOperationException();
     }
 
