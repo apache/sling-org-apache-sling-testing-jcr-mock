@@ -22,8 +22,6 @@ import java.io.InputStream;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.Iterator;
-import java.util.List;
 import java.util.regex.Pattern;
 
 import javax.jcr.Binary;
@@ -48,7 +46,6 @@ import org.apache.jackrabbit.commons.ItemNameMatcher;
 import org.apache.jackrabbit.commons.iterator.NodeIteratorAdapter;
 import org.apache.jackrabbit.commons.iterator.PropertyIteratorAdapter;
 
-import static javax.swing.text.html.parser.DTDConstants.NAMES;
 
 /**
  * Mock {@link Node} implementation
