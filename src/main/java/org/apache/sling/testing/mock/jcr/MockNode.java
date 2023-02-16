@@ -394,6 +394,17 @@ class MockNode extends AbstractItem implements Node {
             throw new NoSuchNodeTypeException("Not accepting blank node types");
         }
     }
+    
+    @Override
+    public void addMixin(final String mixinName) throws RepositoryException {
+        if (StringUtils.isNotBlank(mixinName)) {
+            if(!this.hasProperty(JcrConstants.JCR_MIXINTYPES)) {
+                setProperty(JcrConstants.JCR_MIXINTYPES, mixinName);
+            }
+        } else {
+            throw new NoSuchNodeTypeException("Not accepting blank mixin name");
+        }
+    }
 
     // --- unsupported operations ---
     @Override
@@ -413,11 +424,6 @@ class MockNode extends AbstractItem implements Node {
 
     @Override
     public Property setProperty(final String name, final String value, final int type) throws RepositoryException {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public void addMixin(final String mixinName) throws RepositoryException {
         throw new UnsupportedOperationException();
     }
 
