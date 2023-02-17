@@ -436,6 +436,11 @@ class MockNode extends AbstractItem implements Node {
             }
         }
     }
+    
+        @Override
+    public boolean canAddMixin(final String mixinName) throws RepositoryException {
+       return true;
+    }
 
     // --- unsupported operations ---
     @Override
@@ -455,11 +460,6 @@ class MockNode extends AbstractItem implements Node {
 
     @Override
     public Property setProperty(final String name, final String value, final int type) throws RepositoryException {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean canAddMixin(final String mixinName) throws RepositoryException {
         throw new UnsupportedOperationException();
     }
 
