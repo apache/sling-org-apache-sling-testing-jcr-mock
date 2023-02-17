@@ -54,6 +54,12 @@ class MockNodeType implements NodeType {
         // support only well-known built-in node type
         return StringUtils.equals(getName(), JcrConstants.NT_UNSTRUCTURED);
     }
+    
+        @Override
+    public boolean isMixin() {
+        // if it has at least 1 supertype -> isMixin
+       return (getDeclaredSupertypes().length > 0);
+    }
 
 
     // --- unsupported operations ---
@@ -114,11 +120,6 @@ class MockNodeType implements NodeType {
 
     @Override
     public NodeType[] getSupertypes() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public boolean isMixin() {
         throw new UnsupportedOperationException();
     }
 
