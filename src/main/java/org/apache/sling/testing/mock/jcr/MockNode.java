@@ -368,8 +368,16 @@ class MockNode extends AbstractItem implements Node {
 
     @Override
     public NodeType[] getMixinNodeTypes() throws RepositoryException {
-        // we have no real mixin support - just assume no mixin nodetypes are set
-        return new NodeType[0];
+       Value[] mixinNames = getProperty(JcrConstants.JCR_MIXINTYPES).getValues();
+        if (mixinNames == null) {
+            return new NodeType[0];
+        }
+
+        NodeType[] nodeTypes = new NodeType[mixinNames.length];
+        for(int i = 0; i < mixinNames.length; i++) {
+            nodeTypes[i] = getSession().getWorkspace().getNodeTypeManager().getNodeType(mixinNames[i].getString());
+        }
+        return nodeTypes;
     }
 
     @Override
