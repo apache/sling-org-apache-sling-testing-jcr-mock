@@ -191,7 +191,10 @@ public class MockNodeTest {
 
     @Test
     public void testGetMixinNodeTypes() throws Exception {
-        assertEquals(0, this.node1.getMixinNodeTypes().length);
+        node1.addMixin("mix:referenceable");
+        node1.addMixin("mix:taggable");
+        assertEquals(2, node1.getMixinNodeTypes().length);
+        assertEquals("mix:taggable" ,node1.getMixinNodeTypes()[1].getName());
     }
 
     @Test
