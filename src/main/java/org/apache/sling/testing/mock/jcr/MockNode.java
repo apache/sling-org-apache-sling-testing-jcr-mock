@@ -22,7 +22,9 @@ import java.io.InputStream;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Objects;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 import javax.jcr.Binary;
 import javax.jcr.Item;
@@ -36,7 +38,9 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.Value;
 import javax.jcr.lock.Lock;
-import javax.jcr.nodetype.*;
+import javax.jcr.nodetype.NoSuchNodeTypeException;
+import javax.jcr.nodetype.NodeDefinition;
+import javax.jcr.nodetype.NodeType;
 import javax.jcr.version.Version;
 import javax.jcr.version.VersionHistory;
 
@@ -368,16 +372,29 @@ class MockNode extends AbstractItem implements Node {
 
     @Override
     public NodeType[] getMixinNodeTypes() throws RepositoryException {
-       Value[] mixinNames = getProperty(JcrConstants.JCR_MIXINTYPES).getValues();
+        Value[] mixinNames = getProperty(JcrConstants.JCR_MIXINTYPES).getValues();
         if (mixinNames == null) {
             return new NodeType[0];
         }
 
-        NodeType[] nodeTypes = new NodeType[mixinNames.length];
-        for(int i = 0; i < mixinNames.length; i++) {
-            nodeTypes[i] = getSession().getWorkspace().getNodeTypeManager().getNodeType(mixinNames[i].getString());
-        }
-        return nodeTypes;
+        return Arrays.stream(mixinNames)
+                .map(value -> {
+                    try {
+                        return value.getString();
+                    } catch (RepositoryException e) {
+                        return new NodeType[0];
+                    }
+                })
+                .filter(Objects::nonNull)
+                .map(name -> {
+                    try {
+                        return getSession().getWorkspace().getNodeTypeManager().getNodeType(name.toString());
+                    } catch (RepositoryException e) {
+                        return new NodeType[0];
+                    }
+                })
+                .filter(Objects::nonNull)
+                .toArray(NodeType[]::new);
     }
 
     @Override
