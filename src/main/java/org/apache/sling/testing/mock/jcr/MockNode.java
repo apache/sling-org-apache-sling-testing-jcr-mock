@@ -410,10 +410,11 @@ class MockNode extends AbstractItem implements Node {
                 String[] mixinNames = new String[]{mixinName};
                 setProperty(JcrConstants.JCR_MIXINTYPES, mixinNames);
             } else {
-                Value[] currentValues = getProperty(JcrConstants.JCR_MIXINTYPES).getValues();
                 Value value = this.getSession().getValueFactory().createValue(mixinName);
-                Value[] newValues = Arrays.copyOf(currentValues, currentValues.length + 1);
-                newValues[newValues.length - 1] = value;
+                Value[] newValues = Stream.concat(
+                        Arrays.stream(getProperty(JcrConstants.JCR_MIXINTYPES).getValues()),
+                        Stream.of(value)
+                ).toArray(Value[]::new);
                 this.setProperty(JcrConstants.JCR_MIXINTYPES, newValues);
             }
         } else {
@@ -426,14 +427,10 @@ class MockNode extends AbstractItem implements Node {
         if (this.hasProperty(JcrConstants.JCR_MIXINTYPES)) {
             Value[] currentValues = getProperty(JcrConstants.JCR_MIXINTYPES).getValues();
             Value valueToBeRemoved = this.getSession().getValueFactory().createValue(mixinName);
-            Value[] newValues = new Value[currentValues.length - 1];
-            for (int i = 0, j = 0; i < currentValues.length; i++) {
-                if (!currentValues[i].equals(valueToBeRemoved)) {
-                    newValues[j] = currentValues[i];
-                    j++;
-                }
-                this.setProperty(JcrConstants.JCR_MIXINTYPES, newValues);
-            }
+            Value[] newValues = Arrays.stream(currentValues)
+                    .filter(value -> !value.equals(valueToBeRemoved))
+                    .toArray(Value[]::new);
+            this.setProperty(JcrConstants.JCR_MIXINTYPES, newValues);
         }
     }
     
