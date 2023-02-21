@@ -372,26 +372,30 @@ class MockNode extends AbstractItem implements Node {
 
     @Override
     public NodeType[] getMixinNodeTypes() throws RepositoryException {
-        Value[] mixinNames = getProperty(JcrConstants.JCR_MIXINTYPES).getValues();
-
-        return Arrays.stream(mixinNames)
-                .map(value -> {
-                    try {
-                        return value.getString();
-                    } catch (RepositoryException e) {
-                        return new NodeType[0];
-                    }
-                })
-                .filter(Objects::nonNull)
-                .map(name -> {
-                    try {
-                        return getSession().getWorkspace().getNodeTypeManager().getNodeType(name.toString());
-                    } catch (RepositoryException e) {
-                        return new NodeType[0];
-                    }
-                })
-                .filter(Objects::nonNull)
-                .toArray(NodeType[]::new);
+        try{
+            Value[] mixinNames = getProperty(JcrConstants.JCR_MIXINTYPES).getValues();
+            return Arrays.stream(mixinNames)
+                    .map(value -> {
+                        try {
+                            return value.getString();
+                        } catch (RepositoryException e) {
+                            return new NodeType[0];
+                        }
+                    })
+                    .filter(Objects::nonNull)
+                    .map(name -> {
+                        try {
+                            return getSession().getWorkspace().getNodeTypeManager().getNodeType(name.toString());
+                        } catch (RepositoryException e) {
+                            return new NodeType[0];
+                        }
+                    })
+                    .filter(Objects::nonNull)
+                    .toArray(NodeType[]::new);
+        } catch(PathNotFoundException e) {
+            // if there are not already mixin types added, return new array
+            return new NodeType[0];
+        }
     }
 
     @Override
