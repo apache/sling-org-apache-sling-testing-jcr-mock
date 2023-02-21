@@ -25,7 +25,6 @@ import java.util.Map;
 
 import javax.jcr.*;
 import javax.jcr.nodetype.NoSuchNodeTypeException;
-import javax.jcr.nodetype.NodeType;
 
 import org.apache.jackrabbit.JcrConstants;
 import org.junit.Assert;
