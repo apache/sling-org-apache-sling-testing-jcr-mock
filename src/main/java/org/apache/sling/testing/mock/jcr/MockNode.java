@@ -379,7 +379,7 @@ class MockNode extends AbstractItem implements Node {
                         try {
                             return value.getString();
                         } catch (RepositoryException e) {
-                            return new NodeType[0];
+                            return null;
                         }
                     })
                     .filter(Objects::nonNull)
@@ -387,13 +387,13 @@ class MockNode extends AbstractItem implements Node {
                         try {
                             return getSession().getWorkspace().getNodeTypeManager().getNodeType(name.toString());
                         } catch (RepositoryException e) {
-                            return new NodeType[0];
+                            return null;
                         }
                     })
                     .filter(Objects::nonNull)
                     .toArray(NodeType[]::new);
         } catch(PathNotFoundException e) {
-            // if there are not already mixin types added, return new array
+            // if there are not already mixin types added, return empty array
             return new NodeType[0];
         }
     }
