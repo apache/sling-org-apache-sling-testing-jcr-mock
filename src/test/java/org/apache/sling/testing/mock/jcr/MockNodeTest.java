@@ -186,8 +186,8 @@ public class MockNodeTest {
         assertEquals("mix:taggable" ,node1.getMixinNodeTypes()[1].getName());
     }
     @Test
-    public void testGetMixinNodeNoMixinTypes() throws Exception {
-        assertThrows(PathNotFoundException.class, () -> node1.getMixinNodeTypes());
+    public void testGetMixinNodeNoMixinTypes() throws RepositoryException {
+        assertEquals(0, node1.getMixinNodeTypes().length);
     }
 
     @Test
