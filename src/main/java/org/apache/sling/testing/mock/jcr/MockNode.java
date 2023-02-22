@@ -386,7 +386,7 @@ class MockNode extends AbstractItem implements Node {
                     .filter(Objects::nonNull)
                     .map(name -> {
                         try {
-                            return getSession().getWorkspace().getNodeTypeManager().getNodeType(name.toString());
+                            return getSession().getWorkspace().getNodeTypeManager().getNodeType(name);
                         } catch (RepositoryException e) {
                             return null;
                         }
@@ -421,7 +421,7 @@ class MockNode extends AbstractItem implements Node {
             throw new NoSuchNodeTypeException("Not accepting blank node types");
         }
     }
-    
+
     @Override
     public void addMixin(final String mixinName) throws RepositoryException {
         if (StringUtils.isNotBlank(mixinName)) {
