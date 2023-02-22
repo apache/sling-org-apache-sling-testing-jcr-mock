@@ -18,31 +18,20 @@
  */
 package org.apache.sling.testing.mock.jcr;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import javax.jcr.ItemNotFoundException;
-import javax.jcr.Node;
-import javax.jcr.NodeIterator;
-import javax.jcr.Property;
-import javax.jcr.PropertyIterator;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
+import javax.jcr.*;
 import javax.jcr.nodetype.NoSuchNodeTypeException;
 
 import org.apache.jackrabbit.JcrConstants;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+
+import static org.junit.Assert.*;
 
 public class MockNodeTest {
 
@@ -190,7 +179,14 @@ public class MockNodeTest {
 
     @Test
     public void testGetMixinNodeTypes() throws Exception {
-        assertEquals(0, this.node1.getMixinNodeTypes().length);
+        node1.addMixin("mix:referenceable");
+        node1.addMixin("mix:taggable");
+        assertEquals(2, node1.getMixinNodeTypes().length);
+        assertEquals("mix:taggable" ,node1.getMixinNodeTypes()[1].getName());
+    }
+    @Test
+    public void testGetMixinNodeNoMixinTypes() throws RepositoryException {
+        assertEquals(0, node1.getMixinNodeTypes().length);
     }
 
     @Test
@@ -261,5 +257,37 @@ public class MockNodeTest {
         });
         return names.toArray(new String[names.size()]);
     }
+    
+    @Test
+    public void addMixinTest() throws RepositoryException {
+        node1.addMixin("mix:referenceable");
+        assertEquals("mix:referenceable", node1.getProperty(JcrConstants.JCR_MIXINTYPES).getValues()[0].getString());
+    }
 
+    @Test
+    public void addBlankMixinTest() throws RepositoryException {
+        assertThrows(NoSuchNodeTypeException.class, () -> node1.addMixin(""));
+    }
+
+    @Test
+    public void addMixinsTest() throws RepositoryException {
+        node1.addMixin("mix:referenceable");
+        node1.addMixin("mix:taggable");
+        node1.addMixin("mix:mixin");
+        assertEquals(3, node1.getProperty(JcrConstants.JCR_MIXINTYPES).getValues().length);
+    }
+
+    @Test
+    public void removeMixinTest() throws RepositoryException {
+        node1.addMixin("mix:taggable");
+        node1.addMixin("mix:mixin");
+        node1.removeMixin("mix:taggable");
+        assertEquals(1 , node1.getProperty(JcrConstants.JCR_MIXINTYPES).getValues().length);
+        assertEquals("mix:mixin" , node1.getProperty(JcrConstants.JCR_MIXINTYPES).getValues()[0].getString());
+    }
+
+    @Test
+    public void removeBlankMixin() {
+        assertThrows(NoSuchNodeTypeException.class, () -> node1.removeMixin(""));
+    }
 }
