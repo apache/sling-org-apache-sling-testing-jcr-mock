@@ -226,6 +226,33 @@ public class MockNodeTest {
                 getNodeNames(foo.getNodes()));
     }
 
+    /**
+     * SLING-11789 Verify that orderBefore works when the names of the child nodes
+     * have a common prefix.
+     */
+    @Test
+    public void testOrderBeforeWithCommonPrefix() throws RepositoryException {
+        Node foo = this.session.getRootNode().addNode("foo");
+        this.session.save();
+        foo.addNode("child100");
+        foo.addNode("child10");
+        foo.addNode("child1");
+        session.save();
+        assertArrayEquals("Expected nodes order mismatch",
+                new String[] {"child100", "child10", "child1"},
+                getNodeNames(foo.getNodes()));
+        foo.orderBefore("child10", "child100");
+        session.save();
+        assertArrayEquals("Expected nodes order mismatch",
+                new String[] {"child10", "child100", "child1"},
+                getNodeNames(foo.getNodes()));
+        foo.orderBefore("child10", null);
+        session.save();
+        assertArrayEquals("Expected nodes order mismatch",
+                new String[] {"child100", "child1", "child10"},
+                getNodeNames(foo.getNodes()));
+    }
+
     @Test
     public void testNodeDefinition() throws RepositoryException {
         Node node1 = this.session.getRootNode().getNode("node1");

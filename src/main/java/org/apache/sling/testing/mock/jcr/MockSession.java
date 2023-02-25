@@ -226,9 +226,11 @@ class MockSession implements Session {
         }
 
         // Find all items matching the source
+        final String sourcePath = source.getPath();
+        final String sourcePathPrefix = String.format("%s/", sourcePath);
         List<ItemData> itemsToMove = new LinkedList<>();
         for (String key : new ArrayList<>(items.keySet())) {
-            if (key.startsWith(source.getPath())) {
+            if (key.equals(sourcePath) || key.startsWith(sourcePathPrefix)) {
                 itemsToMove.add(items.remove(key));
             }
         }
