@@ -338,7 +338,12 @@ class MockNode extends AbstractItem implements Node {
 
     @Override
     public boolean isNodeType(final String nodeTypeName) throws RepositoryException {
-        return this.itemData.getNodeType().isNodeType(nodeTypeName);
+        boolean istype = this.itemData.getNodeType().isNodeType(nodeTypeName);
+        if (!istype) {
+            // SLING-11786 also check the mixin types
+            istype = Arrays.stream(getMixinNodeTypes()).anyMatch(nt -> nt.getName().equals(nodeTypeName));
+        }
+        return istype;
     }
 
     @Override
