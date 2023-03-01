@@ -290,4 +290,20 @@ public class MockNodeTest {
     public void removeBlankMixin() {
         assertThrows(NoSuchNodeTypeException.class, () -> node1.removeMixin(""));
     }
+
+    /**
+     * Test SLING-11786
+     */
+    @Test
+    public void isNodeTypeTest() throws RepositoryException {
+        // check primary type
+        assertTrue(node1.isNodeType(node1.getPrimaryNodeType().getName()));
+
+        // check mixin type that is not set
+        assertFalse(node1.isNodeType("mix:referenceable"));
+
+        // check setting mixin type and check again
+        node1.addMixin("mix:referenceable");
+        assertTrue(node1.isNodeType("mix:referenceable"));
+    }
 }
