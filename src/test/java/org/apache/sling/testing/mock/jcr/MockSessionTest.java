@@ -348,6 +348,7 @@ public class MockSessionTest {
     @Test
     public void testMoveWhenSrcAbsPathDoesNotExist() throws Exception {
         Session session = MockJcr.newSession();
+        session.getRootNode().addNode("node1");
 
         assertThrows(PathNotFoundException.class, () -> session.move("/node1/child1", "/node1/child2"));
     }
@@ -360,6 +361,15 @@ public class MockSessionTest {
         node1.addNode("child2");
 
         assertThrows(ItemExistsException.class, () -> session.move("/node1/child1", "/node1/child2"));
+    }
+
+    @Test
+    public void testMoveWhenDestAbsPathHasIndexInName() throws Exception {
+        Session session = MockJcr.newSession();
+        Node node1 = session.getRootNode().addNode("node1");
+        node1.addNode("child1");
+
+        assertThrows(RepositoryException.class, () -> session.move("/node1/child1", "/node1/child2[1]"));
     }
 
     @Test
