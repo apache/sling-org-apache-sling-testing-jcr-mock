@@ -22,8 +22,10 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
+import javax.jcr.ItemExistsException;
 import javax.jcr.ItemNotFoundException;
 import javax.jcr.NamespaceRegistry;
 import javax.jcr.Node;
@@ -327,6 +329,74 @@ public class MockSessionTest {
         assertTrue(session.isLive());
         session.logout();
         assertFalse(session.isLive());
+    }
+
+    @Test
+    public void testMoveWhenSrcAbsPathIsNull() throws Exception {
+        Session session = MockJcr.newSession();
+
+        assertThrows(NullPointerException.class, () -> session.move(null, "/node1/child2"));
+    }
+
+    @Test
+    public void testMoveWhenDestAbsPathIsNull() throws Exception {
+        Session session = MockJcr.newSession();
+
+        assertThrows(NullPointerException.class, () -> session.move("/node1/child1", null));
+    }
+
+    @Test
+    public void testMoveWhenSrcAbsPathDoesNotExist() throws Exception {
+        Session session = MockJcr.newSession();
+
+        assertThrows(PathNotFoundException.class, () -> session.move("/node1/child1", "/node1/child2"));
+    }
+
+    @Test
+    public void testMoveWhenDestAbsPathAlreadyExists() throws Exception {
+        Session session = MockJcr.newSession();
+        Node node1 = session.getRootNode().addNode("node1");
+        node1.addNode("child1");
+        node1.addNode("child2");
+
+        assertThrows(ItemExistsException.class, () -> session.move("/node1/child1", "/node1/child2"));
+    }
+
+    @Test
+    public void testMoveWhenDestParentDoesNotExist() throws Exception {
+        Session session = MockJcr.newSession();
+        Node node1 = session.getRootNode().addNode("node1");
+        node1.addNode("child1");
+
+        assertThrows(PathNotFoundException.class, () -> session.move("/node1/child1", "/node2/child2"));
+    }
+
+    @Test
+    public void testMoveWhenSrcAbsPathIsNotNode() throws Exception {
+        Session session = MockJcr.newSession();
+        Node node1 = session.getRootNode().addNode("node1");
+        node1.setProperty("child1", "value1");
+
+        assertThrows(RepositoryException.class, () -> session.move("/node1/child1", "/node1/child2"));
+    }
+
+    @Test
+    public void testMove() throws Exception {
+        Session session = MockJcr.newSession();
+        Node node1 = session.getRootNode().addNode("node1");
+        Node child1 = node1.addNode("child1");
+        child1.setProperty("prop1", "value1");
+        Node grandchild1 = child1.addNode("grandchild1");
+        grandchild1.setProperty("prop1", "value1");
+
+        session.move("/node1/child1", "/node1/child2");
+
+        // verify the data was moved
+        assertFalse(session.nodeExists("/node1/child1"));
+        assertTrue(session.nodeExists("/node1/child2"));
+        assertTrue(session.propertyExists("/node1/child2/prop1"));
+        assertTrue(session.nodeExists("/node1/child2/grandchild1"));
+        assertTrue(session.propertyExists("/node1/child2/grandchild1/prop1"));
     }
 
 }
