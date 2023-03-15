@@ -50,6 +50,24 @@ class ItemData {
         this.isChanged = false;
     }
 
+    /**
+     * Copy constructor
+     *
+     * @param destPath the destination path of the copied item data
+     * @param itemData the source item data to copy
+     */
+    private ItemData(String destPath, ItemData itemData) {
+        this.path = destPath;
+        this.name = ResourceUtil.getName(path);
+        this.isNode = itemData.isNode;
+        this.uuid = itemData.uuid;
+        this.nodeType = itemData.nodeType;
+        this.values = itemData.values;
+        this.isMultiple = itemData.isMultiple;
+        this.isNew = itemData.isNew;
+        this.isChanged = itemData.isChanged;
+    }
+
     public String getPath() {
         return path;
     }
@@ -151,6 +169,10 @@ class ItemData {
             return path.equals(((ItemData)obj).path);
         }
         return false;
+    }
+
+    public static ItemData cloneItemAtNewPath(String destPath, ItemData itemData) {
+        return new ItemData(destPath, itemData);
     }
 
     public static ItemData newNode(String path, NodeType nodeType) {

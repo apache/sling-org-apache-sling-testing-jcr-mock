@@ -18,16 +18,21 @@
  */
 package org.apache.sling.testing.mock.jcr;
 
+import static java.util.Objects.requireNonNull;
+
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.regex.Pattern;
 
 import javax.jcr.Credentials;
 import javax.jcr.Item;
+import javax.jcr.ItemExistsException;
 import javax.jcr.ItemNotFoundException;
 import javax.jcr.Node;
 import javax.jcr.PathNotFoundException;
@@ -421,7 +426,50 @@ class MockSession implements Session {
 
     @Override
     public void move(final String srcAbsPath, final String destAbsPath) throws RepositoryException {
-        throw new UnsupportedOperationException();
+        checkLive();
+
+        requireNonNull(srcAbsPath, "parameter 'srcAbsPath' must not be null");
+        requireNonNull(destAbsPath, "parameter 'destAbsPath' must not be null");
+
+        if (ResourceUtil.getName(destAbsPath).matches(".*\\[\\d+\\]")) {
+            throw new RepositoryException("The destination path must not have an index on its final element");
+        }
+
+        if (nodeExists(destAbsPath) &&
+                !"true".equals(getRepository().getDescriptor(Repository.NODE_TYPE_MANAGEMENT_SAME_NAME_SIBLINGS_SUPPORTED))) {
+            throw new ItemExistsException("The destination path already exists");
+        }
+        String destParentPath = ResourceUtil.getParent(destAbsPath);
+        if (!nodeExists(destParentPath)) {
+            throw new PathNotFoundException("The destination parent path does not exist");
+        }
+        if (!itemExists(srcAbsPath)) {
+            throw new PathNotFoundException("The source path does not exist");
+        }
+
+        // move node and any descendants
+        final ItemData parent = getItemData(srcAbsPath);
+        if (!parent.isNode()) {
+            throw new RepositoryException("The source path must be a node");
+        }
+        final String descendantPrefix = parent.getPath() + "/";
+
+        final Map<String, String> pathsToMove = new LinkedHashMap<>();
+        pathsToMove.put(parent.getPath(), destAbsPath);
+        for (String itemPath : this.items.keySet()) {
+            if (itemPath.startsWith(descendantPrefix)) {
+                String newPath = String.format("%s/%s", destAbsPath, itemPath.substring(descendantPrefix.length()));
+                pathsToMove.put(itemPath, newPath);
+            }
+        }
+        for (Entry<String, String> pathToMove : pathsToMove.entrySet()) {
+            // remove the data from the old path
+            ItemData itemData = this.items.remove(pathToMove.getKey());
+            // add the data back at the new path
+            addItem(ItemData.cloneItemAtNewPath(pathToMove.getValue(), itemData));
+        }
+
+        hasKnownChanges = true;
     }
 
     @Override
