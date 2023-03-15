@@ -29,9 +29,12 @@ import java.io.InputStream;
 import java.math.BigDecimal;
 import java.util.Calendar;
 
+import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.PropertyType;
+import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
+import javax.jcr.Session;
 import javax.jcr.Value;
 import javax.jcr.ValueFormatException;
 
@@ -403,9 +406,35 @@ public class MockPropertyTest extends AbstractItemTest {
     }
 
     @Test
-    public void testIsSameForPropComparedToDifferentProp() throws RepositoryException {
+    public void testIsSameForPropComparedToDifferentPropFromSameParent() throws RepositoryException {
+        Property prop2 = this.node1.setProperty("prop2", "value2");
+        assertFalse(this.prop1.isSame(prop2));
+    }
+
+    @Test
+    public void testIsSameForPropComparedToPropFromDifferentParent() throws RepositoryException {
         Property prop11 = this.node11.setProperty("prop1", "value1");
         assertFalse(this.prop1.isSame(prop11));
+    }
+
+    @Test
+    public void testIsSameForPropFromDifferentRepository() throws RepositoryException {
+        Repository otherRepository = MockJcr.newRepository();
+        Session otherSession = otherRepository.login();
+        Node otherNode1 = otherSession.getRootNode().addNode("node1");
+        Property otherProp1 = otherNode1.setProperty("prop1", "value1");
+
+        assertFalse(this.prop1.isSame(otherProp1));
+    }
+
+    @Test
+    public void testIsSameForPropFromDifferentWorkspace() throws RepositoryException {
+        Session otherSession = session.getRepository().login("otherWorkspace");
+        Node otherRootNode = otherSession.getRootNode();
+        Node otherNode1 = otherRootNode.addNode("node1");
+        Property otherProp1 = otherNode1.setProperty("prop1", "value1");
+
+        assertFalse(this.prop1.isSame(otherProp1));
     }
 
 }

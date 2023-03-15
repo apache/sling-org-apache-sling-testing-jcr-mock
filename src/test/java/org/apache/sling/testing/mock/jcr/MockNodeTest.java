@@ -36,7 +36,9 @@ import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.Property;
 import javax.jcr.PropertyIterator;
+import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
+import javax.jcr.Session;
 import javax.jcr.nodetype.NoSuchNodeTypeException;
 
 import org.apache.jackrabbit.JcrConstants;
@@ -344,6 +346,23 @@ public class MockNodeTest extends AbstractItemTest {
     @Test
     public void testIsSameForNodeComparedToDifferentNode() throws RepositoryException {
         assertFalse(this.node1.isSame(this.node11));
+    }
+
+    @Test
+    public void testIsSameForNodeFromDifferentRepository() throws RepositoryException {
+        Repository otherRepository = MockJcr.newRepository();
+        Session otherSession = otherRepository.login();
+        Node otherNode1 = otherSession.getRootNode().addNode("node1");
+        assertFalse(this.node1.isSame(otherNode1));
+    }
+
+    @Test
+    public void testIsSameForNodeFromDifferentWorkspace() throws RepositoryException {
+        Session otherSession = session.getRepository().login("otherWorkspace");
+        Node otherRootNode = otherSession.getRootNode();
+        Node otherNode1 = otherRootNode.addNode("node1");
+
+        assertFalse(this.node1.isSame(otherNode1));
     }
 
 }

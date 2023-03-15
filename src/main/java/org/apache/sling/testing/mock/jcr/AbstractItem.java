@@ -119,7 +119,7 @@ abstract class AbstractItem implements Item {
         // Both objects were acquired through Session objects that were created by the same Repository object.
         // Both objects were acquired through Session objects bound to the same repository workspace.
         if (Objects.equals(getSession().getRepository(), otherItem.getSession().getRepository()) &&
-                Objects.equals(getSession().getWorkspace(), otherItem.getSession().getWorkspace())) {
+                Objects.equals(getSession().getWorkspace().getName(), otherItem.getSession().getWorkspace().getName())) {
             // The objects are either both Node objects or both Property objects.
             if (isNode() && otherItem.isNode()) {
                 // they are Node objects, they must have the same identifier.
