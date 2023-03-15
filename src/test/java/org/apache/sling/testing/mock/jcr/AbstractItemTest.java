@@ -21,6 +21,7 @@ package org.apache.sling.testing.mock.jcr;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 import javax.jcr.ItemNotFoundException;
 import javax.jcr.Node;
@@ -33,11 +34,11 @@ import org.junit.Test;
 
 public abstract class AbstractItemTest {
 
-    private Session session;
-    private Node rootNode;
-    private Node node1;
-    private Property prop1;
-    private Node node11;
+    protected Session session;
+    protected Node rootNode;
+    protected Node node1;
+    protected Property prop1;
+    protected Node node11;
 
     @Before
     public void setUp() throws RepositoryException {
@@ -56,16 +57,16 @@ public abstract class AbstractItemTest {
 
     @Test
     public void testGetParent() throws RepositoryException {
-        assertSame(this.rootNode, this.node1.getParent());
-        assertSame(this.node1, this.prop1.getParent());
-        assertSame(this.node1, this.node11.getParent());
+        assertTrue(this.rootNode.isSame(this.node1.getParent()));
+        assertTrue(this.node1.isSame(this.prop1.getParent()));
+        assertTrue(this.node1.isSame(this.node11.getParent()));
     }
 
     @Test
     public void testGetAncestor() throws RepositoryException {
-        assertSame(this.node11, this.node11.getAncestor(0));
-        assertSame(this.node1, this.node11.getAncestor(1));
-        assertSame(this.rootNode, this.node11.getAncestor(2));
+        assertTrue(this.node11.isSame(this.node11.getAncestor(0)));
+        assertTrue(this.node1.isSame(this.node11.getAncestor(1)));
+        assertTrue(this.rootNode.isSame(this.node11.getAncestor(2)));
     }
 
     @Test(expected = ItemNotFoundException.class)
@@ -86,10 +87,29 @@ public abstract class AbstractItemTest {
     }
 
     @Test
-    public void testModifiedNew() {
-        // methods return always false
+    public void testModifiedNew() throws RepositoryException {
+        // new item is not 'modified' when 'new'
+        assertFalse(this.node1.isModified());
+        assertTrue(this.node1.isNew());
+
+        // save the pending changes
+        this.session.save();
         assertFalse(this.node1.isModified());
         assertFalse(this.node1.isNew());
+
+        // not-new node can now be 'modified' after changes
+        ((MockNode)this.node1).itemData.setIsChanged(true);
+        assertTrue(this.node1.isModified());
+        assertFalse(this.node1.isNew());
+    }
+
+    @Test
+    public void testIsSameForNodeComparedToProp() throws RepositoryException {
+        assertFalse(this.node1.isSame(this.prop1));
+    }
+    @Test
+    public void testIsSameForPropComparedToNode() throws RepositoryException {
+        assertFalse(this.prop1.isSame(this.node1));
     }
 
 }

@@ -18,37 +18,32 @@
  */
 package org.apache.sling.testing.mock.jcr;
 
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import javax.jcr.*;
+import javax.jcr.ItemNotFoundException;
+import javax.jcr.Node;
+import javax.jcr.NodeIterator;
+import javax.jcr.Property;
+import javax.jcr.PropertyIterator;
+import javax.jcr.RepositoryException;
 import javax.jcr.nodetype.NoSuchNodeTypeException;
 
 import org.apache.jackrabbit.JcrConstants;
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
-
-public class MockNodeTest {
-
-    private Session session;
-    private Node rootNode;
-    private Node node1;
-    private Property prop1;
-    private Node node11;
-
-    @Before
-    public void setUp() throws RepositoryException {
-        this.session = MockJcr.newSession();
-        this.rootNode = this.session.getRootNode();
-        this.node1 = this.rootNode.addNode("node1");
-        this.prop1 = this.node1.setProperty("prop1", "value1");
-        this.node11 = this.node1.addNode("node11");
-    }
+public class MockNodeTest extends AbstractItemTest {
 
     @Test
     public void testGetNodes() throws RepositoryException {
@@ -333,4 +328,22 @@ public class MockNodeTest {
         node1.addMixin("mix:referenceable");
         assertTrue(node1.isNodeType("mix:referenceable"));
     }
+
+    @Test
+    public void testIsSameForNodeComparedToItself() throws RepositoryException {
+        assertTrue(this.node1.isSame(this.node1));
+    }
+
+    @Test
+    public void testIsSameForNodeComparedToSameNode() throws RepositoryException {
+        // a different object referencing the same node
+        Node node1ref = this.rootNode.getNode("node1");
+        assertTrue(this.node1.isSame(node1ref));
+    }
+
+    @Test
+    public void testIsSameForNodeComparedToDifferentNode() throws RepositoryException {
+        assertFalse(this.node1.isSame(this.node11));
+    }
+
 }
