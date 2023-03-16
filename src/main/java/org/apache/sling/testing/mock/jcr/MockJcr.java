@@ -101,15 +101,37 @@ public final class MockJcr {
 
     /**
      * Sets the expected result list for all queries executed with the given query manager.
+     * @param session JCR session
+     * @param resultList Result list
+     * @param simulateUnknownSize true to simulate the result iterator having an unknown size
+     */
+    public static void setQueryResult(@NotNull final Session session, @NotNull final List<Node> resultList,
+            boolean simulateUnknownSize) {
+        setQueryResult(getQueryManager(session), resultList, simulateUnknownSize);
+    }
+
+
+    /**
+     * Sets the expected result list for all queries executed with the given query manager.
      * @param queryManager Mocked query manager
      * @param resultList Result list
      */
     public static void setQueryResult(@NotNull final QueryManager queryManager, @NotNull final List<Node> resultList) {
-        addQueryResultHandler(queryManager, new MockQueryResultHandler() {
-            @Override
-            public MockQueryResult executeQuery(MockQuery query) {
-                return new MockQueryResult(resultList);
-            }
+        setQueryResult(queryManager, resultList, false);
+    }
+
+    /**
+     * Sets the expected result list for all queries executed with the given query manager.
+     * @param queryManager Mocked query manager
+     * @param resultList Result list
+     * @param simulateUnknownSize true to simulate the result iterator having an unknown size
+     */
+    public static void setQueryResult(@NotNull final QueryManager queryManager, @NotNull final List<Node> resultList,
+            boolean simulateUnknownSize) {
+        addQueryResultHandler(queryManager, query -> {
+            MockQueryResult result = new MockQueryResult(resultList);
+            result.setSimulateUnknownSize(simulateUnknownSize);
+            return result;
         });
     }
 
@@ -122,7 +144,21 @@ public final class MockJcr {
      */
     public static void setQueryResult(@NotNull final Session session, @NotNull final String statement,
             @NotNull final String language, @NotNull final List<Node> resultList) {
-        setQueryResult(getQueryManager(session), statement, language, resultList);
+        setQueryResult(session, statement, language, resultList, false);
+    }
+
+    /**
+     * Sets the expected result list for all queries with the given statement executed with the given query manager.
+     * @param session JCR session
+     * @param statement Query statement
+     * @param language Query language
+     * @param resultList Result list
+     * @param simulateUnknownSize true to simulate the result iterator having an unknown size
+     */
+    public static void setQueryResult(@NotNull final Session session, @NotNull final String statement,
+            @NotNull final String language, @NotNull final List<Node> resultList,
+            boolean simulateUnknownSize) {
+        setQueryResult(getQueryManager(session), statement, language, resultList, simulateUnknownSize);
     }
 
     /**
@@ -134,16 +170,28 @@ public final class MockJcr {
      */
     public static void setQueryResult(@NotNull final QueryManager queryManager, @NotNull final String statement,
             @NotNull final String language, @NotNull final List<Node> resultList) {
-        addQueryResultHandler(queryManager, new MockQueryResultHandler() {
-            @Override
-            public MockQueryResult executeQuery(MockQuery query) {
-                if (StringUtils.equals(query.getStatement(), statement)
-                        && StringUtils.equals(query.getLanguage(), language)) {
-                    return new MockQueryResult(resultList);
-                }
-                else {
-                    return null;
-                }
+        setQueryResult(queryManager, statement, language, resultList, false);
+    }
+    /**
+     * Sets the expected result list for all queries with the given statement executed with the given query manager.
+     * @param queryManager Mocked query manager
+     * @param statement Query statement
+     * @param language Query language
+     * @param resultList Result list
+     * @param simulateUnknownSize true to simulate the result iterator having an unknown size
+     */
+    public static void setQueryResult(@NotNull final QueryManager queryManager, @NotNull final String statement,
+            @NotNull final String language, @NotNull final List<Node> resultList,
+            boolean simulateUnknownSize) {
+        addQueryResultHandler(queryManager, query -> {
+            if (StringUtils.equals(query.getStatement(), statement)
+                    && StringUtils.equals(query.getLanguage(), language)) {
+                MockQueryResult mockQueryResult = new MockQueryResult(resultList);
+                mockQueryResult.setSimulateUnknownSize(simulateUnknownSize);
+                return mockQueryResult;
+            }
+            else {
+                return null;
             }
         });
     }
