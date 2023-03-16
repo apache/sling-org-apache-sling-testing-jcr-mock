@@ -32,6 +32,7 @@ import java.util.Calendar;
 import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.PropertyType;
+import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.Value;
@@ -39,21 +40,9 @@ import javax.jcr.ValueFormatException;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.jackrabbit.value.BinaryValue;
-import org.junit.Before;
 import org.junit.Test;
 
-public class MockPropertyTest {
-
-    private Session session;
-    private Node rootNode;
-    private Node node1;
-
-    @Before
-    public void setUp() throws RepositoryException {
-        this.session = MockJcr.newSession();
-        this.rootNode = this.session.getRootNode();
-        this.node1 = this.rootNode.addNode("node1");
-    }
+public class MockPropertyTest extends AbstractItemTest {
 
     @Test
     public void testRemove() throws RepositoryException {
@@ -402,6 +391,50 @@ public class MockPropertyTest {
         Property prop1 = this.node1.getProperty("prop1");
         assertFalse(prop1.isMultiple());
         assertEquals("value1", prop1.getValues()[0].getString());
+    }
+
+    @Test
+    public void testIsSameForPropComparedToItself() throws RepositoryException {
+        assertTrue(this.prop1.isSame(this.prop1));
+    }
+
+    @Test
+    public void testIsSameForPropComparedToSameProp() throws RepositoryException {
+        // a different object referencing the same property
+        Property prop1Ref = this.node1.getProperty("prop1");
+        assertTrue(this.prop1.isSame(prop1Ref));
+    }
+
+    @Test
+    public void testIsSameForPropComparedToDifferentPropFromSameParent() throws RepositoryException {
+        Property prop2 = this.node1.setProperty("prop2", "value2");
+        assertFalse(this.prop1.isSame(prop2));
+    }
+
+    @Test
+    public void testIsSameForPropComparedToPropFromDifferentParent() throws RepositoryException {
+        Property prop11 = this.node11.setProperty("prop1", "value1");
+        assertFalse(this.prop1.isSame(prop11));
+    }
+
+    @Test
+    public void testIsSameForPropFromDifferentRepository() throws RepositoryException {
+        Repository otherRepository = MockJcr.newRepository();
+        Session otherSession = otherRepository.login();
+        Node otherNode1 = otherSession.getRootNode().addNode("node1");
+        Property otherProp1 = otherNode1.setProperty("prop1", "value1");
+
+        assertFalse(this.prop1.isSame(otherProp1));
+    }
+
+    @Test
+    public void testIsSameForPropFromDifferentWorkspace() throws RepositoryException {
+        Session otherSession = session.getRepository().login("otherWorkspace");
+        Node otherRootNode = otherSession.getRootNode();
+        Node otherNode1 = otherRootNode.addNode("node1");
+        Property otherProp1 = otherNode1.setProperty("prop1", "value1");
+
+        assertFalse(this.prop1.isSame(otherProp1));
     }
 
 }
