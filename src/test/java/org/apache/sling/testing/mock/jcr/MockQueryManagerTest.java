@@ -85,11 +85,25 @@ public class MockQueryManagerTest {
         QueryResult result = assertQueryResults_AllQuerys();
         assertEquals(sampleNodes.size(), result.getNodes().getSize());
     }
+    @Test
+    public void testQueryResultsForSession_AllQuerys() throws RepositoryException {
+        MockJcr.setQueryResult(session, sampleNodes);
+
+        QueryResult result = assertQueryResults_AllQuerys();
+        assertEquals(sampleNodes.size(), result.getNodes().getSize());
+    }
 
     // SLING-11807
     @Test
     public void testQueryResults_AllQuerys_WithUnknownSize() throws RepositoryException {
         MockJcr.setQueryResult(queryManager, sampleNodes, true);
+
+        QueryResult result = assertQueryResults_AllQuerys();
+        assertEquals(-1, result.getNodes().getSize());
+    }
+    @Test
+    public void testQueryResultsForSession_AllQuerys_WithUnknownSize() throws RepositoryException {
+        MockJcr.setQueryResult(session, sampleNodes, true);
 
         QueryResult result = assertQueryResults_AllQuerys();
         assertEquals(-1, result.getNodes().getSize());
@@ -107,10 +121,16 @@ public class MockQueryManagerTest {
         return result;
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void testQueryResults_SpecificQuery() throws RepositoryException {
         MockJcr.setQueryResult(queryManager, "query1", Query.JCR_SQL2, sampleNodes);
+
+        QueryResult result = assertQueryResults_SpecificQuery();
+        assertEquals(sampleNodes.size(), result.getNodes().getSize());
+    }
+    @Test
+    public void testQueryResultsForSession_SpecificQuery() throws RepositoryException {
+        MockJcr.setQueryResult(session, "query1", Query.JCR_SQL2, sampleNodes);
 
         QueryResult result = assertQueryResults_SpecificQuery();
         assertEquals(sampleNodes.size(), result.getNodes().getSize());
@@ -120,6 +140,13 @@ public class MockQueryManagerTest {
     @Test
     public void testQueryResults_SpecificQuery_WithUnknownSize() throws RepositoryException {
         MockJcr.setQueryResult(queryManager, "query1", Query.JCR_SQL2, sampleNodes, true);
+
+        QueryResult result = assertQueryResults_SpecificQuery();
+        assertEquals(-1, result.getNodes().getSize());
+    }
+    @Test
+    public void testQueryResultsForSession_SpecificQuery_WithUnknownSize() throws RepositoryException {
+        MockJcr.setQueryResult(session, "query1", Query.JCR_SQL2, sampleNodes, true);
 
         QueryResult result = assertQueryResults_SpecificQuery();
         assertEquals(-1, result.getNodes().getSize());
