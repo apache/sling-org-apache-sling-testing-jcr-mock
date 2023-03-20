@@ -41,6 +41,7 @@ public final class MockQueryResult implements QueryResult {
 
     private final List<Node> nodes;
     private final List<String> columnNames;
+    private boolean simulateUnknownSize;
 
     public MockQueryResult(List<Node> nodes) {
         this(nodes, Collections.emptyList());
@@ -49,6 +50,10 @@ public final class MockQueryResult implements QueryResult {
     public MockQueryResult(List<Node> nodes, List<String> columnNames) {
         this.columnNames = columnNames;
         this.nodes = nodes;
+    }
+
+    public void setSimulateUnknownSize(boolean simulateUnknownSize) {
+        this.simulateUnknownSize = simulateUnknownSize;
     }
 
     @Override
@@ -65,7 +70,11 @@ public final class MockQueryResult implements QueryResult {
 
     @Override
     public NodeIterator getNodes() throws RepositoryException {
-        return new NodeIteratorAdapter(nodes);
+        if (simulateUnknownSize) {
+            return new NodeIteratorAdapter(nodes.iterator(), -1);
+        } else {
+            return new NodeIteratorAdapter(nodes);
+        }
     }
 
     @Override

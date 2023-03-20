@@ -78,11 +78,39 @@ public class MockQueryManagerTest {
         queryManager.createQuery("dummy", "wurst");
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void testQueryResults_AllQuerys() throws RepositoryException {
         MockJcr.setQueryResult(queryManager, sampleNodes);
 
+        QueryResult result = assertQueryResults_AllQuerys();
+        assertEquals(sampleNodes.size(), result.getNodes().getSize());
+    }
+    @Test
+    public void testQueryResultsForSession_AllQuerys() throws RepositoryException {
+        MockJcr.setQueryResult(session, sampleNodes);
+
+        QueryResult result = assertQueryResults_AllQuerys();
+        assertEquals(sampleNodes.size(), result.getNodes().getSize());
+    }
+
+    // SLING-11807
+    @Test
+    public void testQueryResults_AllQuerys_WithUnknownSize() throws RepositoryException {
+        MockJcr.setQueryResult(queryManager, sampleNodes, true);
+
+        QueryResult result = assertQueryResults_AllQuerys();
+        assertEquals(-1, result.getNodes().getSize());
+    }
+    @Test
+    public void testQueryResultsForSession_AllQuerys_WithUnknownSize() throws RepositoryException {
+        MockJcr.setQueryResult(session, sampleNodes, true);
+
+        QueryResult result = assertQueryResults_AllQuerys();
+        assertEquals(-1, result.getNodes().getSize());
+    }
+
+    @SuppressWarnings("unchecked")
+    protected QueryResult assertQueryResults_AllQuerys() throws InvalidQueryException, RepositoryException {
         Query query = queryManager.createQuery("query1", Query.JCR_SQL2);
         QueryResult result = query.execute();
         assertEquals(sampleNodes, ImmutableList.copyOf(result.getNodes()));
@@ -90,20 +118,51 @@ public class MockQueryManagerTest {
         query = queryManager.createQuery("query2", Query.JCR_SQL2);
         result = query.execute();
         assertEquals(sampleNodes, ImmutableList.copyOf(result.getNodes()));
+        return result;
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void testQueryResults_SpecificQuery() throws RepositoryException {
         MockJcr.setQueryResult(queryManager, "query1", Query.JCR_SQL2, sampleNodes);
 
+        QueryResult result = assertQueryResults_SpecificQuery();
+        assertEquals(sampleNodes.size(), result.getNodes().getSize());
+    }
+    @Test
+    public void testQueryResultsForSession_SpecificQuery() throws RepositoryException {
+        MockJcr.setQueryResult(session, "query1", Query.JCR_SQL2, sampleNodes);
+
+        QueryResult result = assertQueryResults_SpecificQuery();
+        assertEquals(sampleNodes.size(), result.getNodes().getSize());
+    }
+
+    // SLING-11807
+    @Test
+    public void testQueryResults_SpecificQuery_WithUnknownSize() throws RepositoryException {
+        MockJcr.setQueryResult(queryManager, "query1", Query.JCR_SQL2, sampleNodes, true);
+
+        QueryResult result = assertQueryResults_SpecificQuery();
+        assertEquals(-1, result.getNodes().getSize());
+    }
+    @Test
+    public void testQueryResultsForSession_SpecificQuery_WithUnknownSize() throws RepositoryException {
+        MockJcr.setQueryResult(session, "query1", Query.JCR_SQL2, sampleNodes, true);
+
+        QueryResult result = assertQueryResults_SpecificQuery();
+        assertEquals(-1, result.getNodes().getSize());
+    }
+
+    @SuppressWarnings("unchecked")
+    protected QueryResult assertQueryResults_SpecificQuery() throws InvalidQueryException, RepositoryException {
         Query query = queryManager.createQuery("query1", Query.JCR_SQL2);
-        QueryResult result = query.execute();
-        assertEquals(sampleNodes, ImmutableList.copyOf(result.getNodes()));
+        QueryResult result1 = query.execute();
+        assertEquals(sampleNodes, ImmutableList.copyOf(result1.getNodes()));
 
         query = queryManager.createQuery("query2", Query.JCR_SQL2);
-        result = query.execute();
-        assertFalse(result.getNodes().hasNext());
+        QueryResult result2 = query.execute();
+        assertFalse(result2.getNodes().hasNext());
+
+        return result1;
     }
 
     @SuppressWarnings("unchecked")
@@ -119,13 +178,27 @@ public class MockQueryManagerTest {
             }
         });
 
-        Query query = queryManager.createQuery("query1", Query.JCR_SQL2);
-        QueryResult result = query.execute();
-        assertEquals(sampleNodes, ImmutableList.copyOf(result.getNodes()));
+        QueryResult result = assertQueryResults_SpecificQuery();
+        assertEquals(sampleNodes.size(), result.getNodes().getSize());
+    }
 
-        query = queryManager.createQuery("query2", Query.JCR_SQL2);
-        result = query.execute();
-        assertFalse(result.getNodes().hasNext());
+    @SuppressWarnings("unchecked")
+    @Test
+    public void testQueryResults_ResultHandler_WithUnknownSize() throws RepositoryException {
+        MockJcr.addQueryResultHandler(queryManager, new MockQueryResultHandler() {
+            @Override
+            public MockQueryResult executeQuery(MockQuery query) {
+                if (StringUtils.equals(query.getStatement(), "query1")) {
+                    MockQueryResult mockQueryResult = new MockQueryResult(sampleNodes);
+                    mockQueryResult.setSimulateUnknownSize(true);
+                    return mockQueryResult;
+                }
+                return null;
+            }
+        });
+
+        QueryResult result = assertQueryResults_SpecificQuery();
+        assertEquals(-1, result.getNodes().getSize());
     }
 
     @SuppressWarnings("unchecked")
