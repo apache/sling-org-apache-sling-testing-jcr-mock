@@ -1,0 +1,174 @@
+/*
+ * Licensed to the Apache Software Foundation (ASF) under one or more
+ * contributor license agreements.  See the NOTICE file distributed with
+ * this work for additional information regarding copyright ownership.
+ * The ASF licenses this file to You under the Apache License, Version 2.0
+ * (the "License"); you may not use this file except in compliance with
+ * the License.  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+<jcr='http://www.jcp.org/jcr/1.0'>
+<nt='http://www.jcp.org/jcr/nt/1.0'>
+<mix='http://www.jcp.org/jcr/mix/1.0'>
+
+//------------------------------------------------------------------------------
+// B A S E  T Y P E
+//------------------------------------------------------------------------------
+
+/**
+ * nt:base is an abstract primary node type that is the base type for all other
+ * primary node types. It is the only primary node type without supertypes.
+ *
+ * @since 1.0
+ */
+[nt:base]
+  abstract
+  - jcr:primaryType (NAME) mandatory autocreated protected COMPUTE
+  - jcr:mixinTypes (NAME) protected multiple COMPUTE
+
+//------------------------------------------------------------------------------
+// S T A N D A R D   A P P L I C A T I O N   N O D E   T Y P E S
+//------------------------------------------------------------------------------
+
+/**
+ * This abstract node type serves as the supertype of nt:file and nt:folder.
+ * @since 1.0
+ */
+[nt:hierarchyNode] > mix:created
+  abstract
+
+/**
+ * Nodes of this type may be used to represent folders or directories. This node
+ * type inherits the item definitions of nt:hierarchyNode and adds the ability
+ * to have any number of other nt:hierarchyNode child nodes with any names.
+ * This means, in particular, that it can have child nodes of types nt:folder,
+ * nt:file or nt:linkedFile.
+ *
+ * @since 1.0
+ */
+[nt:folder] > nt:hierarchyNode
+  + * (nt:hierarchyNode) VERSION
+
+/**
+ * Nodes of this node type may be used to represent files. This node type inherits
+ * the item definitions of nt:hierarchyNode and requires a single child node called
+ * jcr:content. The jcr:content node is used to hold the actual content of the
+ * file. This child node is mandatory, but not auto-created. Its node type will be
+ * application-dependent and therefore it must be added by the user. A common
+ * approach is to make the jcr:content a node of type nt:resource or oak:Resource. The
+ * jcr:content child node is also designated as the primary child item of its parent.
+ *
+ * @since 1.0
+ */
+[nt:file] > nt:hierarchyNode
+  primaryitem jcr:content
+  + jcr:content (nt:base) mandatory
+
+/**
+ * This mixin node type can be used to add standardized creation information
+ * properties to a node. Since the properties are protected, their values are
+ * controlled by the repository, which should set them appropriately upon the
+ * initial persist of a node with this mixin type. In cases where this mixin is
+ * added to an already existing node the semantics of these properties are
+ * implementation specific. Note that jackrabbit initializes the properties to
+ * the current date and user in this case.
+ *
+ *
+ * @since 2.0
+ */
+[mix:created]
+  mixin
+  - jcr:created (DATE) autocreated protected
+  - jcr:createdBy (STRING) autocreated protected
+
+/**
+ * This mixin node type can be used to provide standardized modification
+ * information properties to a node.
+ *
+ * The following is not yet implemented in Jackrabbit:
+ * "Since the properties are protected, their values
+ *  are controlled by the repository, which should set them appropriately upon a
+ *  significant modification of the subgraph of a node with this mixin. What
+ *  constitutes a significant modification will depend on the semantics of the various
+ *  parts of a node's subgraph and is implementation-dependent"
+ *
+ * Jackrabbit initializes the properties to the current date and user in the
+ * case they are newly created.
+ *
+ * Note that the protected attributes suggested by JSR283 are omitted in this variant.
+ * @since 2.0
+ */
+[mix:lastModified]
+  mixin
+  - jcr:lastModified (DATE) autocreated
+  - jcr:lastModifiedBy (STRING) autocreated
+
+//------------------------------------------------------------------------------
+// U N S T R U C T U R E D   C O N T E N T
+//------------------------------------------------------------------------------
+
+/**
+ * This node type is used to store unstructured content. It allows any number of
+ * child nodes or properties with any names. It also allows multiple nodes having
+ * the same name as well as both multi-value and single-value properties with any
+ * names. This node type also supports client-orderable child nodes.
+ *
+ * @since 1.0
+ */
+[nt:unstructured]
+  orderable
+  - * (UNDEFINED) multiple
+  - * (UNDEFINED)
+  + * (nt:base) = nt:unstructured sns VERSION
+
+//------------------------------------------------------------------------------
+// R E F E R E N C E A B L E
+//------------------------------------------------------------------------------
+
+/**
+ * This node type adds an auto-created, mandatory, protected STRING property to
+ * the node, called jcr:uuid, which exposes the identifier of the node.
+ * Note that the term "UUID" is used for backward compatibility with JCR 1.0
+ * and does not necessarily imply the use of the UUID syntax, or global uniqueness.
+ * The identifier of a referenceable node must be a referenceable identifier.
+ * Referenceable identifiers must fulfill a number of constraints beyond the
+ * minimum required of standard identifiers (see 3.8.3 Referenceable Identifiers).
+ * A reference property is a property that holds the referenceable identifier of a
+ * referenceable node and therefore serves as a pointer to that node. The two types
+ * of reference properties, REFERENCE and WEAKREFERENCE differ in that the former
+ * enforces referential integrity while the latter does not.
+ *
+ * @since 1.0
+ */
+[mix:referenceable]
+  mixin
+  - jcr:uuid (STRING) mandatory autocreated protected INITIALIZE 
+
+
+/**
+ * For code coverage of the cnd loading
+ */
+[nt:toParsePropDefaultValuesndValueConstraint]
+    - prop1 (STRING) = 'value1' autocreated < '^.{1,2000}$'
+
+/**
+ * To test auto-created child and prop when a node of this type is added
+ */
+[nt:autocreatedChildAndProp]
+  + child1 (nt:base) = nt:folder autocreated
+  - prop1 (STRING) = 'value1' autocreated
+  - prop2 (STRING) = 'value1', 'value2' multiple autocreated
+[mix:autocreatedChildAndProp]
+  mixin
+  + child1 (nt:base) = nt:folder autocreated
+  - prop1 (STRING) = 'value1' autocreated
+  - prop2 (STRING) = 'value1', 'value2' multiple autocreated
+

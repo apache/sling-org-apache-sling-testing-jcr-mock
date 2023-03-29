@@ -29,6 +29,7 @@ import java.util.stream.Stream;
 import javax.jcr.Binary;
 import javax.jcr.Item;
 import javax.jcr.ItemNotFoundException;
+import javax.jcr.ItemVisitor;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.PathNotFoundException;
@@ -42,6 +43,7 @@ import javax.jcr.lock.Lock;
 import javax.jcr.nodetype.NoSuchNodeTypeException;
 import javax.jcr.nodetype.NodeDefinition;
 import javax.jcr.nodetype.NodeType;
+import javax.jcr.nodetype.PropertyDefinition;
 import javax.jcr.version.Version;
 import javax.jcr.version.VersionHistory;
 
@@ -50,6 +52,7 @@ import org.apache.jackrabbit.JcrConstants;
 import org.apache.jackrabbit.commons.ItemNameMatcher;
 import org.apache.jackrabbit.commons.iterator.NodeIteratorAdapter;
 import org.apache.jackrabbit.commons.iterator.PropertyIteratorAdapter;
+import org.apache.sling.testing.mock.jcr.MockNodeTypeManager.ResolveMode;
 
 
 /**
@@ -69,10 +72,39 @@ class MockNode extends AbstractItem implements Node {
     @Override
     public Node addNode(final String relPath, final String primaryNodeTypeName) throws RepositoryException {
         String path = makeAbsolutePath(relPath);
-        ItemData itemData = ItemData.newNode(path, new MockNodeType(primaryNodeTypeName));
+        NodeType nodeType = getSession().getWorkspace().getNodeTypeManager().getNodeType(primaryNodeTypeName);
+        ItemData itemData = ItemData.newNode(path, nodeType);
         Node node = new MockNode(itemData, getSession());
         getMockedSession().addItem(itemData);
         node.setProperty(JcrConstants.JCR_PRIMARYTYPE, primaryNodeTypeName);
+
+        if (((MockNodeTypeManager)getSession().getWorkspace().getNodeTypeManager()).isMode(ResolveMode.ONLY_REGISTERED)) {
+            // auto-add any autocreated children
+            NodeDefinition[] childNodeDefinitions = nodeType.getChildNodeDefinitions();
+            if (childNodeDefinitions != null) {
+                for (NodeDefinition nodeDefinition : childNodeDefinitions) {
+                    if (nodeDefinition.isAutoCreated()) {
+                        String defaultPrimaryTypeName = nodeDefinition.getDefaultPrimaryTypeName();
+                        node.addNode(nodeDefinition.getName(), defaultPrimaryTypeName);
+                    }
+                }
+            }
+
+            // auto-add any autocreated properties
+            PropertyDefinition[] propDefinitions = nodeType.getPropertyDefinitions();
+            if (propDefinitions != null) {
+                for (PropertyDefinition propDefinition : propDefinitions) {
+                    if (propDefinition.isAutoCreated()) {
+                        Value[] defaultValues = propDefinition.getDefaultValues();
+                        if (propDefinition.isMultiple()) {
+                            node.setProperty(propDefinition.getName(), defaultValues);
+                        } else if (defaultValues.length > 0) {
+                            node.setProperty(propDefinition.getName(), defaultValues[0]);
+                        }
+                    }
+                }
+            }
+        }
 
         // special handling for some node types
         if (StringUtils.equals(primaryNodeTypeName, JcrConstants.NT_FILE)) {
@@ -310,7 +342,7 @@ class MockNode extends AbstractItem implements Node {
      * @param itemData Item data
      * @throws RepositoryException
      */
-    private void addItem(ItemData itemData) throws RepositoryException {
+    private void addItem(ItemData itemData) {
         getMockedSession().addItem(itemData);
         this.itemData.setIsChanged(true);
     }
@@ -413,14 +445,52 @@ class MockNode extends AbstractItem implements Node {
 
     @Override
     public NodeDefinition getDefinition() throws RepositoryException {
-        return new MockNodeDefinition();
+        if (((MockNodeTypeManager)getSession().getWorkspace().getNodeTypeManager()).isMode(ResolveMode.MOCK_ALL)) {
+            // for backward compatibility
+            return new MockNodeDefinition();
+        } else {
+            String nodeName = getName();
+            NodeDefinition nodeDef = findChildNodeDef(nodeName);
+            if (nodeDef == null) {
+                // try the wildcard def
+                nodeDef = findChildNodeDef("*");
+            }
+            return nodeDef;
+        }
+    }
+
+    protected NodeDefinition findChildNodeDef(String name) throws RepositoryException {
+        NodeDefinition nodeDef = null;
+        Node parent = getParent();
+        if (parent != null) {
+            // try the primary type
+            NodeType nt = parent.getPrimaryNodeType();
+            NodeDefinition[] childNodeDefinitions = nt.getChildNodeDefinitions();
+            nodeDef = Stream.of(childNodeDefinitions)
+                .filter(def -> name.equals(def.getName()))
+                .findFirst().orElse(null);
+            if (nodeDef == null) {
+                // try the mixins
+                NodeType[] mixinNodeTypes = parent.getMixinNodeTypes();
+                for (NodeType nodeType : mixinNodeTypes) {
+                    childNodeDefinitions = nodeType.getChildNodeDefinitions();
+                    nodeDef = Stream.of(childNodeDefinitions)
+                        .filter(def -> name.equals(def.getName()))
+                        .findFirst().orElse(null);
+                    if (nodeDef != null) {
+                        break;
+                    }
+                }
+            }
+        }
+        return nodeDef;
     }
 
     @Override
     public void setPrimaryType(final String primaryNodeTypeName) throws RepositoryException {
         if (StringUtils.isNotBlank(primaryNodeTypeName)) {
-            // accept all node types like stated in the MockNodeTypeManager
-            this.itemData.setNodeType(new MockNodeType(primaryNodeTypeName));
+            NodeType nodeType = getSession().getWorkspace().getNodeTypeManager().getNodeType(primaryNodeTypeName);
+            this.itemData.setNodeType(nodeType);
             setProperty(JcrConstants.JCR_PRIMARYTYPE, primaryNodeTypeName);
         } else {
             throw new NoSuchNodeTypeException("Not accepting blank node types");
@@ -440,6 +510,35 @@ class MockNode extends AbstractItem implements Node {
                         Stream.of(value)
                 ).toArray(Value[]::new);
                 this.setProperty(JcrConstants.JCR_MIXINTYPES, newValues);
+            }
+            
+            if (((MockNodeTypeManager)getSession().getWorkspace().getNodeTypeManager()).isMode(ResolveMode.ONLY_REGISTERED)) {
+                NodeType mixinNodeType = getSession().getWorkspace().getNodeTypeManager().getNodeType(mixinName);
+                // auto-add any autocreated children
+                NodeDefinition[] childNodeDefinitions = mixinNodeType.getChildNodeDefinitions();
+                if (childNodeDefinitions != null) {
+                    for (NodeDefinition nodeDefinition : childNodeDefinitions) {
+                        if (nodeDefinition.isAutoCreated()) {
+                            String defaultPrimaryTypeName = nodeDefinition.getDefaultPrimaryTypeName();
+                            addNode(nodeDefinition.getName(), defaultPrimaryTypeName);
+                        }
+                    }
+                }
+
+                // auto-add any autocreated properties
+                PropertyDefinition[] propDefinitions = mixinNodeType.getPropertyDefinitions();
+                if (propDefinitions != null) {
+                    for (PropertyDefinition propDefinition : propDefinitions) {
+                        if (propDefinition.isAutoCreated()) {
+                            Value[] defaultValues = propDefinition.getDefaultValues();
+                            if (propDefinition.isMultiple()) {
+                                setProperty(propDefinition.getName(), defaultValues);
+                            } else if (defaultValues.length > 0) {
+                                setProperty(propDefinition.getName(), defaultValues[0]);
+                            }
+                        }
+                    }
+                }
             }
         } else {
             throw new NoSuchNodeTypeException("Not accepting blank mixin name");
@@ -631,5 +730,9 @@ class MockNode extends AbstractItem implements Node {
         throw new UnsupportedOperationException();
     }
 
+    @Override
+    public void accept(ItemVisitor visitor) throws RepositoryException {
+        visitor.visit(this);
+    }
 
 }

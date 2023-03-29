@@ -18,24 +18,52 @@
  */
 package org.apache.sling.testing.mock.jcr;
 
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Stream;
+
+import javax.jcr.RepositoryException;
 import javax.jcr.Value;
 import javax.jcr.nodetype.NodeDefinition;
 import javax.jcr.nodetype.NodeType;
+import javax.jcr.nodetype.NodeTypeDefinition;
 import javax.jcr.nodetype.NodeTypeIterator;
+import javax.jcr.nodetype.NodeTypeManager;
 import javax.jcr.nodetype.PropertyDefinition;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
+import org.apache.jackrabbit.commons.iterator.NodeTypeIteratorAdapter;
+import org.apache.sling.testing.mock.jcr.MockNodeTypeManager.ResolveMode;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Mock {@link NodeType} implementation.
  */
 class MockNodeType implements NodeType {
 
+    private final NodeTypeDefinition ntd;
     private final String name;
+    private final @Nullable NodeTypeManager ntMgr;
 
     public MockNodeType(final String name) {
+        this(name, null);
+    }
+
+    public MockNodeType(final String name, @Nullable NodeTypeManager ntMgr) {
+        this.ntd = null;
         this.name = name;
+        this.ntMgr = ntMgr;
+    }
+
+    public MockNodeType(NodeTypeDefinition ntd, @Nullable NodeTypeManager ntMgr) {
+        this.ntd = ntd;
+        this.name = ntd.getName();
+        this.ntMgr = ntMgr;
     }
 
     @Override
@@ -45,12 +73,20 @@ class MockNodeType implements NodeType {
 
     @Override
     public boolean isNodeType(final String nodeTypeName) {
-        // node type inheritance not supported
-        return this.name.equals(nodeTypeName);
+        boolean isNt = this.name.equals(nodeTypeName);
+        if (ntd != null && !isNt) {
+            // node type inheritance checking
+            NodeType[] supertypes = getSupertypes();
+            isNt = Stream.of(supertypes).anyMatch(nt -> nt.getName().equals(nodeTypeName));
+        }
+        return isNt;
     }
 
     @Override
     public boolean hasOrderableChildNodes() {
+        if (ntd != null) {
+            return ntd.hasOrderableChildNodes();
+        }
         // support only well-known built-in node type
         return StringUtils.equals(getName(), JcrConstants.NT_UNSTRUCTURED);
     }
@@ -84,41 +120,124 @@ class MockNodeType implements NodeType {
 
     @Override
     public NodeDefinition[] getChildNodeDefinitions() {
-        throw new UnsupportedOperationException();
+        Map<String, NodeDefinition> defsMap = new LinkedHashMap<>();
+        NodeType[] supertypes = getSupertypes();
+        for (NodeType nodeType : supertypes) {
+            NodeDefinition[] declaredChildNodeDefinitions = nodeType.getDeclaredChildNodeDefinitions();
+            if (declaredChildNodeDefinitions != null) {
+                for (NodeDefinition declaredChildNodeDefinition : declaredChildNodeDefinitions) {
+                    defsMap.put(declaredChildNodeDefinition.getName(), declaredChildNodeDefinition);
+                }
+            }
+        }
+        NodeDefinition[] declaredChildNodeDefinitions = getDeclaredChildNodeDefinitions();
+        if (declaredChildNodeDefinitions != null) {
+            for (NodeDefinition declaredChildNodeDefinition : declaredChildNodeDefinitions) {
+                defsMap.put(declaredChildNodeDefinition.getName(), declaredChildNodeDefinition);
+            }
+        }
+        return defsMap.values().toArray(new NodeDefinition[defsMap.size()]);
     }
 
     @Override
     public NodeDefinition[] getDeclaredChildNodeDefinitions() {
+        if (ntd != null) {
+            return ntd.getDeclaredChildNodeDefinitions();
+        }
         throw new UnsupportedOperationException();
     }
 
     @Override
     public PropertyDefinition[] getDeclaredPropertyDefinitions() {
+        if (ntd != null) {
+            return ntd.getDeclaredPropertyDefinitions();
+        }
         throw new UnsupportedOperationException();
     }
 
     @Override
     public NodeType[] getDeclaredSupertypes() {
+        if (ntd != null && ntMgr != null) {
+            String[] supertypeNames = ntd.getDeclaredSupertypeNames();
+            // lookup the NodeTypes from the manager
+            return Stream.of(supertypeNames).map(n -> {
+                try {
+                    return ntMgr.getNodeType(n);
+                } catch (RepositoryException e) {
+                    throw new RuntimeException("Getting declared supertype failed.", e);
+                }
+            }).toArray(NodeType[]::new);
+        }
         throw new UnsupportedOperationException();
     }
 
     @Override
     public String getPrimaryItemName() {
+        if (ntd != null) {
+            return ntd.getPrimaryItemName();
+        }
         throw new UnsupportedOperationException();
     }
 
     @Override
     public PropertyDefinition[] getPropertyDefinitions() {
-        throw new UnsupportedOperationException();
+        Map<String, PropertyDefinition> defsMap = new LinkedHashMap<>();
+        NodeType[] supertypes = getSupertypes();
+        for (NodeType nodeType : supertypes) {
+            PropertyDefinition[] declaredPropDefinitions = nodeType.getDeclaredPropertyDefinitions();
+            if (declaredPropDefinitions != null) {
+                for (PropertyDefinition declaredChildNodeDefinition : declaredPropDefinitions) {
+                    defsMap.put(declaredChildNodeDefinition.getName(), declaredChildNodeDefinition);
+                }
+            }
+        }
+        PropertyDefinition[] declaredPropDefinitions = getDeclaredPropertyDefinitions();
+        if (declaredPropDefinitions != null) {
+            for (PropertyDefinition declaredChildNodeDefinition : declaredPropDefinitions) {
+                defsMap.put(declaredChildNodeDefinition.getName(), declaredChildNodeDefinition);
+            }
+        }
+        return defsMap.values().toArray(new PropertyDefinition[defsMap.size()]);
+    }
+
+    /**
+     * Traverse up the supertypes to find all of them
+     * @param ntSet the set of found node types
+     */
+    private void loadSupertypes(NodeType nt, Set<NodeType> ntSet) {
+        if (!ntSet.contains(nt)) {
+            ntSet.add(nt);
+
+            // walk up the ancestors
+            NodeType[] supertypes = nt.getDeclaredSupertypes();
+            for (NodeType nodeType : supertypes) {
+                loadSupertypes(nodeType, ntSet);
+            }
+        }
     }
 
     @Override
     public NodeType[] getSupertypes() {
-        throw new UnsupportedOperationException();
+        Set<NodeType> ntSet = new LinkedHashSet<>();
+        NodeType[] supertypes = getDeclaredSupertypes();
+        for (NodeType nodeType : supertypes) {
+            loadSupertypes(nodeType, ntSet);
+        }
+        if (!isMixin() && ntMgr != null && !JcrConstants.NT_BASE.equals(getName())) {
+            try {
+                ntSet.add(ntMgr.getNodeType(JcrConstants.NT_BASE));
+            } catch (RepositoryException e) {
+                throw new RuntimeException("Getting supertype failed.", e);
+            }
+        }
+        return ntSet.toArray(new NodeType[ntSet.size()]);
     }
 
     @Override
     public boolean isMixin() {
+        if (ntd != null) {
+            return ntd.isMixin();
+        }
         throw new UnsupportedOperationException();
     }
 
@@ -134,27 +253,81 @@ class MockNodeType implements NodeType {
 
     @Override
     public NodeTypeIterator getDeclaredSubtypes() {
-        throw new UnsupportedOperationException();
+        if (ntMgr != null && ((MockNodeTypeManager)ntMgr).isMode(ResolveMode.MOCK_ALL)) {
+            throw new UnsupportedOperationException();
+        }
+        List<NodeType> subtypes = new ArrayList<>();
+        if (ntMgr != null) {
+            try {
+                NodeTypeIterator allNodeTypes = ntMgr.getAllNodeTypes();
+                while (allNodeTypes.hasNext()) {
+                    NodeType nextNodeType = allNodeTypes.nextNodeType();
+                    boolean issubtype = Stream.of(nextNodeType.getDeclaredSupertypes()).anyMatch(nt -> nt.getName().equals(getName()));
+                    if (issubtype) {
+                        subtypes.add(nextNodeType);
+                    }
+                }
+            } catch (RepositoryException e) {
+                throw new RuntimeException("Getting declared subtype failed.", e);
+            }
+        }
+        return new NodeTypeIteratorAdapter(subtypes);
     }
 
     @Override
     public NodeTypeIterator getSubtypes() {
-        throw new UnsupportedOperationException();
+        if (ntMgr != null && ((MockNodeTypeManager)ntMgr).isMode(ResolveMode.MOCK_ALL)) {
+            throw new UnsupportedOperationException();
+        }
+        List<NodeType> subtypes = new ArrayList<>();
+        if (ntMgr != null) {
+            try {
+                NodeTypeIterator allNodeTypes = ntMgr.getAllNodeTypes();
+                while (allNodeTypes.hasNext()) {
+                    NodeType nextNodeType = allNodeTypes.nextNodeType();
+                    boolean issubtype = Stream.of(nextNodeType.getSupertypes()).anyMatch(nt -> nt.getName().equals(getName()));
+                    if (issubtype) {
+                        subtypes.add(nextNodeType);
+                    }
+                }
+            } catch (RepositoryException e) {
+                throw new RuntimeException("Getting declared subtype failed.", e);
+            }
+        }
+        return new NodeTypeIteratorAdapter(subtypes);
     }
 
     @Override
     public String[] getDeclaredSupertypeNames() {
+        if (ntd != null) {
+            return ntd.getDeclaredSupertypeNames();
+        }
         throw new UnsupportedOperationException();
     }
 
     @Override
     public boolean isAbstract() {
+        if (ntd != null) {
+            return ntd.isAbstract();
+        }
         throw new UnsupportedOperationException();
     }
 
     @Override
     public boolean isQueryable() {
+        if (ntd != null) {
+            return ntd.isQueryable();
+        }
         throw new UnsupportedOperationException();
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("MockNodeType [name=");
+        builder.append(name);
+        builder.append("]");
+        return builder.toString();
     }
 
 }

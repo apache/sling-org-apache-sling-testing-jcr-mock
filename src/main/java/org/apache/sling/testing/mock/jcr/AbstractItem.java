@@ -22,7 +22,6 @@ import java.util.Objects;
 
 import javax.jcr.Item;
 import javax.jcr.ItemNotFoundException;
-import javax.jcr.ItemVisitor;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
@@ -37,7 +36,7 @@ abstract class AbstractItem implements Item {
     protected final ItemData itemData;
     private final Session session;
 
-    public AbstractItem(final ItemData itemData, final Session session) {
+    protected AbstractItem(final ItemData itemData, final Session session) {
         this.itemData = itemData;
         this.session = session;
     }
@@ -84,7 +83,7 @@ abstract class AbstractItem implements Item {
         String absolutePath = relativePath;
         // ensure the path is absolute and normalized
         if (!StringUtils.startsWith(absolutePath, "/")) {
-            absolutePath = getPath() + "/" + absolutePath; // NOPMD
+            absolutePath = getPath() + "/" + absolutePath; // NOPMD NOSONAR
         }
         return ResourceUtil.normalize(absolutePath);
     }
@@ -105,12 +104,6 @@ abstract class AbstractItem implements Item {
         } else {
             return StringUtils.countMatches(getPath(), "/");
         }
-    }
-
-    // --- unsupported operations ---
-    @Override
-    public void accept(final ItemVisitor visitor) throws RepositoryException {
-        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -135,6 +128,8 @@ abstract class AbstractItem implements Item {
         }
         return same;
     }
+
+    // --- unsupported operations ---
 
     @Override
     public void refresh(final boolean keepChanges) throws RepositoryException {

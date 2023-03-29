@@ -165,7 +165,6 @@ public class MockQueryManagerTest {
         return result1;
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void testQueryResults_ResultHandler() throws RepositoryException {
         MockJcr.addQueryResultHandler(queryManager, new MockQueryResultHandler() {
@@ -182,7 +181,6 @@ public class MockQueryManagerTest {
         assertEquals(sampleNodes.size(), result.getNodes().getSize());
     }
 
-    @SuppressWarnings("unchecked")
     @Test
     public void testQueryResults_ResultHandler_WithUnknownSize() throws RepositoryException {
         MockJcr.addQueryResultHandler(queryManager, new MockQueryResultHandler() {
