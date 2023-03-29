@@ -24,6 +24,7 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.stream.Stream;
 
 import javax.jcr.RepositoryException;
 import javax.jcr.nodetype.NodeDefinition;
@@ -74,6 +75,13 @@ public class MockNodeTypeTest extends AbstractMockNodeTypeTest {
         childNodeDefinitions = ntFile.getChildNodeDefinitions();
         assertEquals(1, childNodeDefinitions.length);
         assertEquals(JcrConstants.JCR_CONTENT, childNodeDefinitions[0].getName());
+
+        // test inheritence from supertype
+        NodeType autocreatedChildAndPropExt = this.session.getWorkspace().getNodeTypeManager().getNodeType("nt:autocreatedChildAndPropExt");
+        childNodeDefinitions = autocreatedChildAndPropExt.getChildNodeDefinitions();
+        assertEquals(2, childNodeDefinitions.length);
+        assertTrue(Stream.of(childNodeDefinitions).anyMatch(cd -> "child1".equals(cd.getName())));
+        assertTrue(Stream.of(childNodeDefinitions).anyMatch(cd -> "child3".equals(cd.getName())));
     }
 
     /**
@@ -143,6 +151,13 @@ public class MockNodeTypeTest extends AbstractMockNodeTypeTest {
         assertEquals("jcr:createdBy", propertyDefinitions[1].getName());
         assertEquals(JcrConstants.JCR_PRIMARYTYPE, propertyDefinitions[2].getName());
         assertEquals(JcrConstants.JCR_MIXINTYPES, propertyDefinitions[3].getName());
+
+        // test inheritence from supertype
+        NodeType autocreatedChildAndPropExt = this.session.getWorkspace().getNodeTypeManager().getNodeType("nt:autocreatedChildAndPropExt");
+        propertyDefinitions = autocreatedChildAndPropExt.getPropertyDefinitions();
+        assertEquals(5, propertyDefinitions.length);
+        assertTrue(Stream.of(propertyDefinitions).anyMatch(pd -> "prop1".equals(pd.getName())));
+        assertTrue(Stream.of(propertyDefinitions).anyMatch(pd -> "prop3".equals(pd.getName())));
     }
 
     /**

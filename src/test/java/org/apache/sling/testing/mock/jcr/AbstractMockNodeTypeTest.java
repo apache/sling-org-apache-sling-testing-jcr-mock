@@ -187,7 +187,6 @@ public abstract class AbstractMockNodeTypeTest {
     /**
      * Test method for {@link org.apache.sling.testing.mock.jcr.MockNodeType#getPrimaryItemName()}.
      */
-    @Test
     public abstract void testGetPrimaryItemName() throws RepositoryException;
 
     /**

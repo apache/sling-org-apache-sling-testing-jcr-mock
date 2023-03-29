@@ -96,6 +96,10 @@ public class MockNodeOnlyRegisteredTypesTest {
         assertNotNull(def3child1DefaultPrimaryType);
         assertEquals(JcrConstants.NT_FOLDER, def3child1DefaultPrimaryType.getName());
 
+        // verify the child definition was defined in the primary type
+        NodeType mixAutoCreatedChildAndProp = this.session.getWorkspace().getNodeTypeManager().getNodeType("mix:autocreatedChildAndProp");
+        assertEquals(mixAutoCreatedChildAndProp, definition3.getDeclaringNodeType());
+
         NodeType[] def3child1RequiredPrimaryTypes = definition3.getRequiredPrimaryTypes();
         assertNotNull(def3child1RequiredPrimaryTypes);
         assertEquals(1, def3child1RequiredPrimaryTypes.length);

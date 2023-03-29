@@ -166,6 +166,10 @@
   + child1 (nt:base) = nt:folder autocreated
   - prop1 (STRING) = 'value1' autocreated
   - prop2 (STRING) = 'value1', 'value2' multiple autocreated
+// for testing inheritance
+[nt:autocreatedChildAndPropExt] > nt:autocreatedChildAndProp
+  + child3 (nt:base) = nt:folder autocreated
+  - prop3 (STRING) = 'value1' autocreated
 [mix:autocreatedChildAndProp]
   mixin
   + child1 (nt:base) = nt:folder autocreated
