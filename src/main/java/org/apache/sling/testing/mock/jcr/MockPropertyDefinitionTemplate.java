@@ -43,66 +43,105 @@ class MockPropertyDefinitionTemplate extends MockPropertyDefinition implements P
         this.queryOperators = propDef.getAvailableQueryOperators();
     }
 
+    /* (non-Javadoc)
+     * @see javax.jcr.nodetype.PropertyDefinitionTemplate#setName(String)
+     */
     @Override
     public void setName(String name) throws ConstraintViolationException {
         this.name = name;
     }
 
+    /* (non-Javadoc)
+     * @see javax.jcr.nodetype.PropertyDefinitionTemplate#setAutoCreated(boolean)
+     */
     @Override
     public void setAutoCreated(boolean autoCreated) {
         this.autoCreated = autoCreated;
     }
 
+    /* (non-Javadoc)
+     * @see javax.jcr.nodetype.PropertyDefinitionTemplate#setMandatory(boolean)
+     */
     @Override
     public void setMandatory(boolean mandatory) {
         this.mandatory = mandatory;
     }
 
+    /* (non-Javadoc)
+     * @see javax.jcr.nodetype.PropertyDefinitionTemplate#setOnParentVersion(int)
+     */
     @Override
     public void setOnParentVersion(int opv) {
         this.opv = opv;
     }
 
+    /* (non-Javadoc)
+     * @see javax.jcr.nodetype.PropertyDefinitionTemplate#setProtected(boolean)
+     */
     @Override
     public void setProtected(boolean protectedStatus) {
         this.protectedStatus = protectedStatus;
     }
 
+    /* (non-Javadoc)
+     * @see javax.jcr.nodetype.PropertyDefinitionTemplate#setRequiredType(int)
+     */
     @Override
     public void setRequiredType(int type) {
         this.type = type;
     }
 
+    /* (non-Javadoc)
+     * @see javax.jcr.nodetype.PropertyDefinitionTemplate#setValueConstraints(String[])
+     */
     @Override
     public void setValueConstraints(String[] constraints) {
         this.constraints = constraints;
     }
 
+    /* (non-Javadoc)
+     * @see javax.jcr.nodetype.PropertyDefinitionTemplate#setDefaultValues(Value[])
+     */
     @Override
     public void setDefaultValues(Value[] defaultValues) {
         this.defaultValues = defaultValues;
     }
 
+    /* (non-Javadoc)
+     * @see javax.jcr.nodetype.PropertyDefinitionTemplate#setMultiple(boolean)
+     */
     @Override
     public void setMultiple(boolean multiple) {
         this.multiple = multiple;
     }
 
+    /* (non-Javadoc)
+     * @see javax.jcr.nodetype.PropertyDefinitionTemplate#setAvailableQueryOperators(String[])
+     */
     @Override
     public void setAvailableQueryOperators(String[] operators) {
         this.queryOperators = operators;
     }
 
+    /* (non-Javadoc)
+     * @see javax.jcr.nodetype.PropertyDefinitionTemplate#setFullTextSearchable(boolean)
+     */
     @Override
     public void setFullTextSearchable(boolean fullTextSearchable) {
         this.fullTextSearchable = fullTextSearchable;
     }
 
+    /* (non-Javadoc)
+     * @see javax.jcr.nodetype.PropertyDefinitionTemplate#setQueryOrderable(boolean)
+     */
     @Override
     public void setQueryOrderable(boolean queryOrderable) {
         this.queryOrderable = queryOrderable;
     }
 
+    /* (non-Javadoc)
+     * @see javax.jcr.nodetype.PropertyDefinitionTemplate#setDeclaringNodeType(String)
+     */
     public void setDeclaringNodeType(String declaringNodeTypeName) {
         this.declaringNodeTypeName = declaringNodeTypeName;
     }

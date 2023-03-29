@@ -44,46 +44,73 @@ class MockNodeDefinitionTemplate extends MockNodeDefinition implements NodeDefin
         this.allowSameNameSiblings = nodeDef.allowsSameNameSiblings();
     }
 
+    /* (non-Javadoc)
+     * @see javax.jcr.nodetype.NodeDefinitionTemplate#setName(String)
+     */
     @Override
     public void setName(String name) throws ConstraintViolationException {
         this.name = name;
     }
 
+    /* (non-Javadoc)
+     * @see javax.jcr.nodetype.NodeDefinitionTemplate#setAutoCreated(boolean)
+     */
     @Override
     public void setAutoCreated(boolean autoCreated) {
         this.autoCreated = autoCreated;
     }
 
+    /* (non-Javadoc)
+     * @see javax.jcr.nodetype.NodeDefinitionTemplate#setMandatory(boolean)
+     */
     @Override
     public void setMandatory(boolean mandatory) {
         this.mandatory = mandatory;
     }
 
+    /* (non-Javadoc)
+     * @see javax.jcr.nodetype.NodeDefinitionTemplate#setOnParentVersion(int)
+     */
     @Override
     public void setOnParentVersion(int opv) {
         this.opv = opv;
     }
 
+    /* (non-Javadoc)
+     * @see javax.jcr.nodetype.NodeDefinitionTemplate#setProtected(boolean)
+     */
     @Override
     public void setProtected(boolean protectedStatus) {
         this.protectedStatus = protectedStatus;
     }
 
+    /* (non-Javadoc)
+     * @see javax.jcr.nodetype.NodeDefinitionTemplate#setRequiredPrimaryTypeNames(String[])
+     */
     @Override
     public void setRequiredPrimaryTypeNames(String[] names) throws ConstraintViolationException {
         this.requiredPrimaryTypeNames = names;
     }
 
+    /* (non-Javadoc)
+     * @see javax.jcr.nodetype.NodeDefinitionTemplate#setDefaultPrimaryTypeName(String)
+     */
     @Override
     public void setDefaultPrimaryTypeName(String name) throws ConstraintViolationException {
         this.defaultPrimaryTypeName = name;
     }
 
+    /* (non-Javadoc)
+     * @see javax.jcr.nodetype.NodeDefinitionTemplate#setSameNameSiblings(boolean)
+     */
     @Override
     public void setSameNameSiblings(boolean allowSameNameSiblings) {
         this.allowSameNameSiblings = allowSameNameSiblings;
     }
 
+    /* (non-Javadoc)
+     * @see javax.jcr.nodetype.NodeDefinitionTemplate#setDeclaringNodeType(String)
+     */
     public void setDeclaringNodeType(String declaringNodeTypeName) {
         this.declaringNodeTypeName = declaringNodeTypeName;
     }
