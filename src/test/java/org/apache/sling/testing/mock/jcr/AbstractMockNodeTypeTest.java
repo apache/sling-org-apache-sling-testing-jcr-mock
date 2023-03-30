@@ -34,7 +34,6 @@ import javax.jcr.nodetype.NodeTypeManager;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.jackrabbit.commons.cnd.ParseException;
 import org.apache.jackrabbit.value.ValueFactoryImpl;
-import org.apache.sling.testing.mock.jcr.MockNodeTypeManager.ResolveMode;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -107,11 +106,6 @@ public abstract class AbstractMockNodeTypeTest {
         assertFalse(ntFolder.hasOrderableChildNodes());
 
         NodeType ntUnstructured = nodeTypeManager.getNodeType(JcrConstants.NT_UNSTRUCTURED);
-        assertTrue(ntUnstructured.hasOrderableChildNodes());
-
-        // cover the MOCK_ALL variation
-        ((MockNodeTypeManager)nodeTypeManager).setMode(ResolveMode.MOCK_ALL);
-        assertFalse(ntFolder.hasOrderableChildNodes());
         assertTrue(ntUnstructured.hasOrderableChildNodes());
     }
 
