@@ -26,6 +26,7 @@ import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -40,6 +41,7 @@ import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.nodetype.NoSuchNodeTypeException;
+import javax.jcr.util.TraversingItemVisitor;
 
 import org.apache.jackrabbit.JcrConstants;
 import org.junit.Assert;
@@ -363,6 +365,46 @@ public class MockNodeTest extends AbstractItemTest {
         Node otherNode1 = otherRootNode.addNode("node1");
 
         assertFalse(this.node1.isSame(otherNode1));
+    }
+
+    @Test
+    public void testAccept() throws RepositoryException {
+        Node foo = this.session.getRootNode().addNode("foo");
+        foo.addNode("child100");
+        foo.addNode("child10");
+        foo.addNode("child1");
+
+        final List<String> leaveNodes = new ArrayList<>();
+        final List<String> leaveProperties = new ArrayList<>();
+        final List<String> enterNodes = new ArrayList<>();
+        final List<String> enterProperties = new ArrayList<>();
+        foo.accept(new TraversingItemVisitor() {
+            @Override
+            protected void leaving(Node node, int level) throws RepositoryException {
+                leaveNodes.add(node.getPath());
+            }
+
+            @Override
+            protected void leaving(Property property, int level) throws RepositoryException {
+                leaveProperties.add(property.getPath());
+            }
+
+            @Override
+            protected void entering(Node node, int level) throws RepositoryException {
+                enterNodes.add(node.getPath());
+            }
+
+            @Override
+            protected void entering(Property property, int level) throws RepositoryException {
+                enterProperties.add(property.getPath());
+            }
+        });
+
+        assertEquals(4, enterNodes.size());
+        assertEquals(4, leaveNodes.size());
+
+        assertEquals(4, enterProperties.size());
+        assertEquals(4, leaveProperties.size());
     }
 
 }

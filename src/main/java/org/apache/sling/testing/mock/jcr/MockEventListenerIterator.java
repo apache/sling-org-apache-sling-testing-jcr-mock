@@ -27,7 +27,7 @@ import org.apache.jackrabbit.commons.iterator.RangeIteratorAdapter;
 
 class MockEventListenerIterator extends RangeIteratorAdapter implements EventListenerIterator {
 
-    public MockEventListenerIterator(Collection collection) {
+    public MockEventListenerIterator(Collection<EventListener> collection) {
         super(collection);
     }
 

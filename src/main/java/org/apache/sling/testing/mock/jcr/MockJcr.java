@@ -18,16 +18,23 @@
  */
 package org.apache.sling.testing.mock.jcr;
 
+import java.io.Reader;
 import java.util.List;
 
+import javax.jcr.NamespaceRegistry;
 import javax.jcr.Node;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.SimpleCredentials;
+import javax.jcr.nodetype.NodeTypeManager;
+import javax.jcr.nodetype.NodeTypeTemplate;
 import javax.jcr.query.QueryManager;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.jackrabbit.commons.cnd.CompactNodeTypeDefReader;
+import org.apache.jackrabbit.commons.cnd.ParseException;
+import org.apache.sling.testing.mock.jcr.MockNodeTypeManager.ResolveMode;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.osgi.annotation.versioning.ConsumerType;
@@ -220,6 +227,29 @@ public final class MockJcr {
         }
         catch (RepositoryException ex) {
             throw new RuntimeException("Unable to access query manager.", ex);
+        }
+    }
+
+    /**
+     * Reads and registers the node types from the reader that supplies the content
+     * in the compact node type definition format.  This will also change the mode of
+     * the MockNodeTypeManager to consider only the registered node types.
+     * 
+     * @param session session to load the node types into
+     * @param reader reader supplying the compact node type definition data
+     */
+    public static void loadNodeTypeDefs(@NotNull Session session, @NotNull Reader reader) throws ParseException, RepositoryException {
+        // inform the manager to only consider the registered node types
+        NodeTypeManager nodeTypeManager = session.getWorkspace().getNodeTypeManager();
+        ((MockNodeTypeManager)nodeTypeManager).setMode(ResolveMode.ONLY_REGISTERED);
+
+        MockTemplateBuilderFactory factory = new MockTemplateBuilderFactory(session);
+        CompactNodeTypeDefReader<NodeTypeTemplate, NamespaceRegistry> cndReader = 
+                new CompactNodeTypeDefReader<>(reader, "cnd input stream", factory);
+
+        List<NodeTypeTemplate> nodeTypeDefinitions = cndReader.getNodeTypeDefinitions();
+        for (NodeTypeTemplate nodeTypeDefinition : nodeTypeDefinitions) {
+            nodeTypeManager.registerNodeType(nodeTypeDefinition, true);
         }
     }
 

@@ -18,68 +18,69 @@
  */
 package org.apache.sling.testing.mock.jcr;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.jcr.RepositoryException;
 import javax.jcr.nodetype.NodeDefinition;
 import javax.jcr.nodetype.NodeType;
+import javax.jcr.nodetype.NodeTypeManager;
 
 /**
  * Mock {@link NodeDefinition} implementation.
  */
-class MockNodeDefinition implements NodeDefinition {
+class MockNodeDefinition extends MockItemDefinition implements NodeDefinition {
+    protected String[] requiredPrimaryTypeNames;
+    protected String defaultPrimaryTypeName;
+    protected boolean allowSameNameSiblings;
 
-    @Override
-    public boolean isAutoCreated() {
-        return false;
+    public MockNodeDefinition() {
+        // for backward compatibility
+        this(null, null);
     }
-
-    @Override
-    public boolean isMandatory() {
-        return false;
-    }
-
-    @Override
-    public boolean isProtected() {
-        return false;
+    public MockNodeDefinition(String declaringNodeTypeName, NodeTypeManager ntMgr) {
+        super(declaringNodeTypeName, ntMgr);
     }
 
     @Override
     public boolean allowsSameNameSiblings() {
-        return false;
-    }
-
-    // --- unsupported operations ---
-    @Override
-    public NodeType getDeclaringNodeType() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public String getName() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public int getOnParentVersion() {
-        throw new UnsupportedOperationException();
+        return allowSameNameSiblings;
     }
 
     @Override
     public NodeType[] getRequiredPrimaryTypes() {
-        throw new UnsupportedOperationException();
+        List<NodeType> ntList = new ArrayList<>();
+        for (String name : this.requiredPrimaryTypeNames) {
+            try {
+                ntList.add(ntMgr.getNodeType(name));
+            } catch (RepositoryException e) {
+                throw new RuntimeException("Getting required primary types failed.", e);
+            }
+        }
+        return ntList.toArray(new NodeType[ntList.size()]);
     }
 
     @Override
     public String[] getRequiredPrimaryTypeNames() {
-        throw new UnsupportedOperationException();
+        return this.requiredPrimaryTypeNames;
     }
 
     @Override
     public NodeType getDefaultPrimaryType() {
-        throw new UnsupportedOperationException();
+        NodeType nt = null;
+        if (this.defaultPrimaryTypeName != null) {
+            try {
+                nt = ntMgr.getNodeType(this.defaultPrimaryTypeName);
+            } catch (RepositoryException e) {
+                throw new RuntimeException("Getting default primary type failed.", e);
+            }
+        }
+        return nt;
     }
 
     @Override
     public String getDefaultPrimaryTypeName() {
-        throw new UnsupportedOperationException();
+        return this.defaultPrimaryTypeName;
     }
 
 }

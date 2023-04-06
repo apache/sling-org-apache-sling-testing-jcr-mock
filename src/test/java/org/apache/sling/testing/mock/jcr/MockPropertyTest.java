@@ -21,13 +21,16 @@ package org.apache.sling.testing.mock.jcr;
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 import javax.jcr.Node;
 import javax.jcr.Property;
@@ -37,6 +40,7 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.Value;
 import javax.jcr.ValueFormatException;
+import javax.jcr.util.TraversingItemVisitor;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.jackrabbit.value.BinaryValue;
@@ -385,12 +389,12 @@ public class MockPropertyTest extends AbstractItemTest {
         assertEquals(PropertyType.UNDEFINED, prop1.getType());
     }
 
-    @Test(expected=ValueFormatException.class)
+    @Test
     public void testSingleValueAsValueArray() throws RepositoryException {
         this.node1.setProperty("prop1", this.session.getValueFactory().createValue("value1"));
         Property prop1 = this.node1.getProperty("prop1");
         assertFalse(prop1.isMultiple());
-        assertEquals("value1", prop1.getValues()[0].getString());
+        assertThrows(ValueFormatException.class, () -> prop1.getValues());
     }
 
     @Test
@@ -435,6 +439,43 @@ public class MockPropertyTest extends AbstractItemTest {
         Property otherProp1 = otherNode1.setProperty("prop1", "value1");
 
         assertFalse(this.prop1.isSame(otherProp1));
+    }
+
+    @Test
+    public void testAccept() throws RepositoryException {
+        Property prop = this.node1.setProperty("prop1", "value1");
+
+        final List<String> leaveNodes = new ArrayList<>();
+        final List<String> leaveProperties = new ArrayList<>();
+        final List<String> enterNodes = new ArrayList<>();
+        final List<String> enterProperties = new ArrayList<>();
+        prop.accept(new TraversingItemVisitor() {
+            @Override
+            protected void leaving(Node node, int level) throws RepositoryException {
+                leaveNodes.add(node.getPath());
+            }
+
+            @Override
+            protected void leaving(Property property, int level) throws RepositoryException {
+                leaveProperties.add(property.getPath());
+            }
+
+            @Override
+            protected void entering(Node node, int level) throws RepositoryException {
+                enterNodes.add(node.getPath());
+            }
+
+            @Override
+            protected void entering(Property property, int level) throws RepositoryException {
+                enterProperties.add(property.getPath());
+            }
+        });
+
+        assertEquals(0, enterNodes.size());
+        assertEquals(0, leaveNodes.size());
+
+        assertEquals(1, enterProperties.size());
+        assertEquals(1, leaveProperties.size());
     }
 
 }

@@ -20,9 +20,11 @@ package org.apache.sling.testing.mock.jcr;
 
 import java.io.InputStream;
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.Calendar;
 
 import javax.jcr.Binary;
+import javax.jcr.ItemVisitor;
 import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.PropertyType;
@@ -71,11 +73,8 @@ class MockProperty extends AbstractItem implements Property {
         if (!this.itemData.isMultiple()) {
             throw new ValueFormatException("Property is single-valued.");
         }
-        Value[] valuesCopy = new Value[this.itemData.getValues().length];
-        for (int i = 0; i < this.itemData.getValues().length; i++) {
-            valuesCopy[i] = this.itemData.getValues()[i];
-        }
-        return valuesCopy;
+        final Value[] values = this.itemData.getValues();
+        return Arrays.copyOf(values, values.length);
     }
 
     @Override
@@ -92,10 +91,7 @@ class MockProperty extends AbstractItem implements Property {
         if (removePropertyIfValueNull(newValues)) {
             return;
         }
-        Value[] values = new Value[newValues.length];
-        for (int i = 0; i < newValues.length; i++) {
-            values[i] = newValues[i];
-        }
+        Value[] values =  Arrays.copyOf(newValues, newValues.length);
         this.itemData.setValues(values);
         this.itemData.setMultiple(true);
     }
@@ -280,6 +276,11 @@ class MockProperty extends AbstractItem implements Property {
     @Override
     public PropertyDefinition getDefinition() throws RepositoryException {
         return new MockPropertyDefinition();
+    }
+
+    @Override
+    public void accept(ItemVisitor visitor) throws RepositoryException {
+        visitor.visit(this);
     }
 
     @Override
