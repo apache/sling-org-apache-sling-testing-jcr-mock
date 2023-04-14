@@ -63,6 +63,7 @@ class MockSession implements Session {
     private final String userId;
     private boolean isLive;
     private boolean hasKnownChanges;
+    private AccessControlManager accessControlManager = null;
 
     public MockSession(MockRepository repository, Map<String, ItemData> items,
             String userId, String workspaceName) throws RepositoryException {
@@ -479,7 +480,11 @@ class MockSession implements Session {
 
     @Override
     public AccessControlManager getAccessControlManager() throws RepositoryException {
-        throw new UnsupportedOperationException();
+        if (accessControlManager == null) {
+            // not set, so fallback to thrown exception
+            throw new UnsupportedOperationException();
+        }
+        return accessControlManager;
     }
 
     @Override
@@ -497,4 +502,11 @@ class MockSession implements Session {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * To allow a test to provide mock implementation of the AccessControlManager
+     * @param acm the access control manager to use for the session
+     */
+    public void setAccessControlManager(AccessControlManager acm) {
+        this.accessControlManager = acm;
+    }
 }

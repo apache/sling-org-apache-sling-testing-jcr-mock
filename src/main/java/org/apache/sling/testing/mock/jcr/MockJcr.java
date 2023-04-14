@@ -30,6 +30,7 @@ import javax.jcr.SimpleCredentials;
 import javax.jcr.nodetype.NodeTypeManager;
 import javax.jcr.nodetype.NodeTypeTemplate;
 import javax.jcr.query.QueryManager;
+import javax.jcr.security.AccessControlManager;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.commons.cnd.CompactNodeTypeDefReader;
@@ -253,4 +254,13 @@ public final class MockJcr {
         }
     }
 
+    /**
+     * Use the supplied AccessControlManager for the session
+     * 
+     * @param session the session to modify
+     * @param acm the access control manager to use for the session
+     */
+    public static void setAccessControlManager(@NotNull Session session, @Nullable AccessControlManager acm) {
+        ((MockSession)session).setAccessControlManager(acm);
+    }
 }
