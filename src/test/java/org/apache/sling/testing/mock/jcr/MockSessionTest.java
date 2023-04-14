@@ -34,9 +34,11 @@ import javax.jcr.PathNotFoundException;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.security.AccessControlManager;
 
 import org.apache.jackrabbit.JcrConstants;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import com.google.common.collect.ImmutableSet;
 
@@ -407,6 +409,17 @@ public class MockSessionTest {
         assertTrue(session.propertyExists("/node1/child2/prop1"));
         assertTrue(session.nodeExists("/node1/child2/grandchild1"));
         assertTrue(session.propertyExists("/node1/child2/grandchild1/prop1"));
+    }
+
+    @Test
+    public void testSetAccessControlManager() throws RepositoryException {
+        Session s = MockJcr.newSession();
+        assertThrows(UnsupportedOperationException.class, () -> s.getAccessControlManager());
+
+        AccessControlManager mockAccessControlManager = Mockito.mock(AccessControlManager.class);
+        MockJcr.setAccessControlManager(s, mockAccessControlManager);
+
+        assertEquals(mockAccessControlManager, s.getAccessControlManager());
     }
 
 }
