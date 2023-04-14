@@ -22,9 +22,11 @@ import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
+import javax.jcr.AccessDeniedException;
 import javax.jcr.ItemExistsException;
 import javax.jcr.ItemNotFoundException;
 import javax.jcr.NamespaceRegistry;
@@ -34,9 +36,11 @@ import javax.jcr.PathNotFoundException;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.UnsupportedRepositoryOperationException;
 import javax.jcr.security.AccessControlManager;
 
 import org.apache.jackrabbit.JcrConstants;
+import org.apache.jackrabbit.api.JackrabbitSession;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -409,6 +413,69 @@ public class MockSessionTest {
         assertTrue(session.propertyExists("/node1/child2/prop1"));
         assertTrue(session.nodeExists("/node1/child2/grandchild1"));
         assertTrue(session.propertyExists("/node1/child2/grandchild1/prop1"));
+    }
+
+
+    // --- jackrabbit session operations ---
+
+    @Test
+    public void testGetItemOrNull() throws RepositoryException {
+        JackrabbitSession s = (JackrabbitSession)MockJcr.newSession();
+        Node node1 = s.getRootNode().addNode("node1");
+        Node child1 = node1.addNode("child1");
+        String childPath = child1.getPath();
+        Property prop1 = child1.setProperty("prop1", "value1");
+        String propPath = prop1.getPath();
+
+        assertNotNull(s.getItemOrNull(childPath));
+        assertNotNull(s.getItemOrNull(propPath));
+        prop1.remove();
+        assertNull(s.getItemOrNull(propPath));
+        child1.remove();
+        assertNull(s.getItemOrNull(childPath));
+    }
+
+    @Test
+    public void testGetNodeOrNull() throws RepositoryException {
+        JackrabbitSession s = (JackrabbitSession)MockJcr.newSession();
+        Node node1 = s.getRootNode().addNode("node1");
+        Node child1 = node1.addNode("child1");
+        String path = child1.getPath();
+        assertNotNull(s.getNodeOrNull(path));
+        child1.remove();
+        assertNull(s.getNodeOrNull(path));
+    }
+
+    @Test
+    public void testGetPropertyOrNull() throws RepositoryException {
+        JackrabbitSession s = (JackrabbitSession)MockJcr.newSession();
+        Node node1 = s.getRootNode().addNode("node1");
+        Node child1 = node1.addNode("child1");
+        Property prop1 = child1.setProperty("prop1", "value1");
+        String path = prop1.getPath();
+        assertNotNull(s.getPropertyOrNull(path));
+        prop1.remove();
+        assertNull(s.getPropertyOrNull(path));
+    }
+
+    @Test
+    public void testGetPrincipalManager()
+            throws AccessDeniedException, UnsupportedRepositoryOperationException, RepositoryException {
+        JackrabbitSession s = (JackrabbitSession)MockJcr.newSession();
+        assertNotNull(s.getPrincipalManager());
+    }
+
+    @Test
+    public void testGetUserManager()
+            throws AccessDeniedException, UnsupportedRepositoryOperationException, RepositoryException {
+        JackrabbitSession s = (JackrabbitSession)MockJcr.newSession();
+        assertNotNull(s.getUserManager());
+    }
+
+    @Test
+    public void testHasPermission() throws RepositoryException {
+        JackrabbitSession s = (JackrabbitSession)MockJcr.newSession();
+        assertThrows(UnsupportedOperationException.class, () -> s.hasPermission("/path1", JackrabbitSession.ACTION_ADD_PROPERTY, JackrabbitSession.ACTION_MODIFY_PROPERTY));
     }
 
     @Test
