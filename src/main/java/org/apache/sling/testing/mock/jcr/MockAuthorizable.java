@@ -26,7 +26,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.jcr.RepositoryException;
-import javax.jcr.UnsupportedRepositoryOperationException;
 import javax.jcr.Value;
 
 import org.apache.jackrabbit.api.security.user.Authorizable;
@@ -51,7 +50,7 @@ abstract class MockAuthorizable implements Authorizable {
             @Nullable String intermediatePath,
             @NotNull MockUserManager mockUserMgr) {
         this.principal = principal;
-        if (id == null) {
+        if (id == null && principal != null) {
             this.id = principal.getName();
         } else {
             this.id = id;
@@ -172,7 +171,7 @@ abstract class MockAuthorizable implements Authorizable {
     }
 
     @Override
-    public @NotNull String getPath() throws UnsupportedRepositoryOperationException, RepositoryException {
+    public @NotNull String getPath() throws RepositoryException {
         return path;
     }
 

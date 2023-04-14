@@ -25,7 +25,6 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.jcr.RepositoryException;
-import javax.jcr.UnsupportedRepositoryOperationException;
 import javax.jcr.Value;
 
 import org.apache.jackrabbit.api.security.principal.PrincipalManager;
@@ -85,34 +84,34 @@ public class MockUserManager implements UserManager {
     }
 
     @Override
-    public void autoSave(boolean autoSave) throws UnsupportedRepositoryOperationException, RepositoryException {
+    public void autoSave(boolean autoSave) throws RepositoryException {
         this.autoSave = autoSave;
     }
 
     @Override
-    public @NotNull Group createGroup(@NotNull String groupID) throws AuthorizableExistsException, RepositoryException {
+    public @NotNull Group createGroup(@NotNull String groupID) throws RepositoryException {
         return maybeCreateGroup(groupID, null, null);
     }
 
     @Override
-    public @NotNull Group createGroup(@NotNull Principal principal) throws AuthorizableExistsException, RepositoryException {
+    public @NotNull Group createGroup(@NotNull Principal principal) throws RepositoryException {
         return maybeCreateGroup(null, principal, null);
     }
 
     @Override
     public @NotNull Group createGroup(@NotNull Principal principal, @Nullable String intermediatePath)
-            throws AuthorizableExistsException, RepositoryException {
+            throws RepositoryException {
         return maybeCreateGroup(null, principal, intermediatePath);
     }
 
     @Override
     public @NotNull Group createGroup(@NotNull String groupID, @NotNull Principal principal, @Nullable String intermediatePath)
-            throws AuthorizableExistsException, RepositoryException {
+            throws RepositoryException {
         return maybeCreateGroup(groupID, principal, intermediatePath);
     }
 
     private @NotNull Group maybeCreateGroup(@Nullable String groupID, @Nullable Principal principal, @Nullable String intermediatePath)
-            throws AuthorizableExistsException, RepositoryException {
+            throws RepositoryException {
         if (authorizables.containsKey(groupID)) {
             throw new AuthorizableExistsException("Group already exists");
         }
@@ -121,24 +120,24 @@ public class MockUserManager implements UserManager {
 
     @Override
     public @NotNull User createSystemUser(@NotNull String userID, @Nullable String intermediatePath)
-            throws AuthorizableExistsException, RepositoryException {
+            throws RepositoryException {
         throw new UnsupportedOperationException();
     }
 
     @Override
     public @NotNull User createUser(@NotNull String userID, @Nullable String password)
-            throws AuthorizableExistsException, RepositoryException {
+            throws RepositoryException {
         return maybeCreateUser(userID, password, null, null);
     }
 
     @Override
     public @NotNull User createUser(@NotNull String userID, @Nullable String password, @NotNull Principal principal,
-            @Nullable String intermediatePath) throws AuthorizableExistsException, RepositoryException {
+            @Nullable String intermediatePath) throws RepositoryException {
         return maybeCreateUser(userID, password, principal, intermediatePath);
     }
 
     private @NotNull User maybeCreateUser(@Nullable String userID, @Nullable String password, @Nullable Principal principal,
-            @Nullable String intermediatePath) throws AuthorizableExistsException, RepositoryException {
+            @Nullable String intermediatePath) throws RepositoryException {
         if (authorizables.containsKey(userID)) {
             throw new AuthorizableExistsException("User already exists");
         }
@@ -203,7 +202,7 @@ public class MockUserManager implements UserManager {
 
     @Override
     public <T extends Authorizable> @Nullable T getAuthorizable(@NotNull String id, @NotNull Class<T> authorizableClass)
-            throws AuthorizableTypeException, RepositoryException {
+            throws RepositoryException {
         T a = null;
         Authorizable authorizable = authorizables.get(id);
         if (authorizableClass.isInstance(authorizable)) {
@@ -216,7 +215,7 @@ public class MockUserManager implements UserManager {
 
     @Override
     public @Nullable Authorizable getAuthorizableByPath(@NotNull String path)
-            throws UnsupportedRepositoryOperationException, RepositoryException {
+            throws RepositoryException {
         return authorizables.values().stream()
             .filter(a -> {
                 try {

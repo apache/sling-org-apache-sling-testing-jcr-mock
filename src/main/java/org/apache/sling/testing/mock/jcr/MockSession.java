@@ -30,7 +30,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.Pattern;
 
-import javax.jcr.AccessDeniedException;
 import javax.jcr.Credentials;
 import javax.jcr.Item;
 import javax.jcr.ItemExistsException;
@@ -42,7 +41,6 @@ import javax.jcr.RangeIterator;
 import javax.jcr.Repository;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import javax.jcr.UnsupportedRepositoryOperationException;
 import javax.jcr.ValueFactory;
 import javax.jcr.Workspace;
 import javax.jcr.retention.RetentionManager;
@@ -544,13 +542,13 @@ class MockSession implements Session, JackrabbitSession {
 
     @Override
     public PrincipalManager getPrincipalManager()
-            throws AccessDeniedException, UnsupportedRepositoryOperationException, RepositoryException {
+            throws RepositoryException {
         return principalManager;
     }
 
     @Override
     public UserManager getUserManager()
-            throws AccessDeniedException, UnsupportedRepositoryOperationException, RepositoryException {
+            throws RepositoryException {
         return userManager;
     }
 
