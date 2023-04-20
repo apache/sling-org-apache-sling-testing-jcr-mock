@@ -47,15 +47,19 @@ import javax.jcr.retention.RetentionManager;
 import javax.jcr.security.AccessControlManager;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.jackrabbit.api.JackrabbitSession;
+import org.apache.jackrabbit.api.security.principal.PrincipalManager;
+import org.apache.jackrabbit.api.security.user.UserManager;
 import org.apache.jackrabbit.commons.iterator.RangeIteratorAdapter;
 import org.apache.jackrabbit.value.ValueFactoryImpl;
+import org.jetbrains.annotations.NotNull;
 import org.xml.sax.ContentHandler;
 
 /**
  * Mock {@link Session} implementation. This instance holds the JCR data in a
  * simple ordered map.
  */
-class MockSession implements Session {
+class MockSession implements Session, JackrabbitSession {
 
     private final MockRepository repository;
     private final Workspace workspace;
@@ -63,12 +67,16 @@ class MockSession implements Session {
     private final String userId;
     private boolean isLive;
     private boolean hasKnownChanges;
+    private MockPrincipalManager principalManager;
+    private MockUserManager userManager;
     private AccessControlManager accessControlManager = null;
 
     public MockSession(MockRepository repository, Map<String, ItemData> items,
             String userId, String workspaceName) throws RepositoryException {
         this.repository = repository;
         this.workspace = new MockWorkspace(repository, this, workspaceName);
+        this.userManager = new MockUserManager();
+        this.principalManager = new MockPrincipalManager(this.userManager);
         this.items = items;
         this.userId = userId;
         isLive = true;
@@ -499,6 +507,53 @@ class MockSession implements Session {
 
     @Override
     public boolean hasPermission(final String absPath, final String actions) throws RepositoryException {
+        throw new UnsupportedOperationException();
+    }
+
+
+    // --- jackrabbit session operations ---
+
+    @Override
+    public Item getItemOrNull(final String absPath) throws RepositoryException {
+        Item item = null;
+        if (itemExists(absPath)) {
+            item = getItem(absPath);
+        }
+        return item;
+    }
+
+    @Override
+    public Node getNodeOrNull(final String absPath) throws RepositoryException {
+        Node node = null;
+        if (nodeExists(absPath)) {
+            node = getNode(absPath);
+        }
+        return node;
+    }
+
+    @Override
+    public Property getPropertyOrNull(final String absPath) throws RepositoryException {
+        Property prop = null;
+        if (propertyExists(absPath)) {
+            prop = getProperty(absPath);
+        }
+        return prop;
+    }
+
+    @Override
+    public PrincipalManager getPrincipalManager()
+            throws RepositoryException {
+        return principalManager;
+    }
+
+    @Override
+    public UserManager getUserManager()
+            throws RepositoryException {
+        return userManager;
+    }
+
+    @Override
+    public boolean hasPermission(@NotNull String absPath, @NotNull String... actions) throws RepositoryException {
         throw new UnsupportedOperationException();
     }
 
