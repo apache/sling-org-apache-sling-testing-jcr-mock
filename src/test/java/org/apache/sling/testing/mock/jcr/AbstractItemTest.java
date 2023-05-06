@@ -20,7 +20,7 @@ package org.apache.sling.testing.mock.jcr;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import javax.jcr.ItemNotFoundException;
@@ -64,19 +64,21 @@ public abstract class AbstractItemTest {
 
     @Test
     public void testGetAncestor() throws RepositoryException {
-        assertTrue(this.node11.isSame(this.node11.getAncestor(0)));
+        assertTrue(this.rootNode.isSame(this.node11.getAncestor(0)));
         assertTrue(this.node1.isSame(this.node11.getAncestor(1)));
-        assertTrue(this.rootNode.isSame(this.node11.getAncestor(2)));
+        assertTrue(this.node11.isSame(this.node11.getAncestor(2)));
     }
 
-    @Test(expected = ItemNotFoundException.class)
+    @Test
     public void testGetAncestorNegative() throws RepositoryException {
-        assertSame(this.node11, this.node11.getAncestor(-1));
+        assertThrows(ItemNotFoundException.class,
+                () -> this.node11.getAncestor(-1));
     }
 
-    @Test(expected = ItemNotFoundException.class)
+    @Test
     public void testGetAncestorTooDeep() throws RepositoryException {
-        this.node11.getAncestor(3);
+        assertThrows(ItemNotFoundException.class,
+                () -> this.node11.getAncestor(3));
     }
 
     @Test
