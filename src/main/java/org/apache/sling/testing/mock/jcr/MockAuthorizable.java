@@ -16,7 +16,6 @@
  */
 package org.apache.sling.testing.mock.jcr;
 
-import java.nio.file.Paths;
 import java.security.Principal;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -67,7 +66,7 @@ abstract class MockAuthorizable implements Authorizable {
                 intermediatePath = "/home/users"; // NOSONAR
             }
         }
-        this.path = Paths.get(intermediatePath, this.id).toString();
+        this.path = intermediatePath + "/" + this.id;
         this.mockUserMgr = mockUserMgr;
 
         // pre-populate the principalName property that is needed by MockPrincipalManager#findPrincipals
@@ -102,7 +101,7 @@ abstract class MockAuthorizable implements Authorizable {
     }
     /**
      * Drills down into nested groups to find all the members
-     * 
+     *
      * @param members the set to add the found people to
      * @param group the group to process
      * @param processedGroups the set of groups that have already been processed
