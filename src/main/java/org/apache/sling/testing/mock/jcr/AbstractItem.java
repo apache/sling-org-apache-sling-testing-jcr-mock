@@ -76,7 +76,7 @@ abstract class AbstractItem implements Item {
         if (depth < 0 || depth > getDepth()) {
             throw new ItemNotFoundException();
         }
-        return this.session.getItem(ResourceUtil.getParent(getPath(), depth));
+        return this.session.getItem(ResourceUtil.getParent(getPath(), getDepth() - depth));
     }
 
     protected String makeAbsolutePath(final String relativePath) throws RepositoryException {
