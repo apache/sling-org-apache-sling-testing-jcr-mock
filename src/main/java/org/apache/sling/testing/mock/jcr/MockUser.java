@@ -20,6 +20,7 @@ import java.security.Principal;
 import java.util.Arrays;
 
 import javax.jcr.Credentials;
+import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.SimpleCredentials;
 
@@ -40,9 +41,9 @@ class MockUser extends MockAuthorizable implements User {
     private String disabledReason;
 
     public MockUser(@Nullable String id, @Nullable Principal principal,
-            @Nullable String intermediatePath,
+            @NotNull Node homeNode,
             @NotNull MockUserManager mockUserMgr) {
-        super(id, principal, intermediatePath, mockUserMgr);
+        super(id, principal, homeNode, mockUserMgr);
     }
 
     @Override

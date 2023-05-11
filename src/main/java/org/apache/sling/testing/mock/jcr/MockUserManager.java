@@ -24,7 +24,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.jcr.Node;
+import javax.jcr.Property;
 import javax.jcr.RepositoryException;
+import javax.jcr.Session;
 import javax.jcr.Value;
 
 import org.apache.jackrabbit.api.security.principal.PrincipalManager;
@@ -35,6 +38,8 @@ import org.apache.jackrabbit.api.security.user.Group;
 import org.apache.jackrabbit.api.security.user.Query;
 import org.apache.jackrabbit.api.security.user.User;
 import org.apache.jackrabbit.api.security.user.UserManager;
+import org.apache.jackrabbit.commons.visitor.FilteringItemVisitor;
+import org.apache.jackrabbit.oak.spi.security.user.UserConstants;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -45,8 +50,67 @@ import org.slf4j.LoggerFactory;
  */
 public class MockUserManager implements UserManager {
     private Logger logger = LoggerFactory.getLogger(getClass());
+    protected Session session = null;
     protected Map<String, Authorizable> authorizables = new HashMap<>();
     private boolean autoSave;
+
+    /**
+     * @deprecated use {@link #MockUserManager(Session)} instead
+     */
+    @Deprecated
+    public MockUserManager() {
+        throw new UnsupportedOperationException();
+    }
+
+    /**
+     * @param session the jcr session where the people state is stored
+     */
+    public MockUserManager(Session session) {
+        this.session = session;
+    }
+
+    /**
+     * Scans the repository to populate any already existing users/groups
+     */
+    void loadAlreadyExistingAuthorizables() {
+        try {
+            Node rootNode = session.getRootNode();
+            if (rootNode.hasNode("home")) {
+                FilteringItemVisitor visitor = new FilteringItemVisitor() {
+                    @Override
+                    protected void entering(Node node, int level) throws RepositoryException {
+                        if (node.isNodeType(UserConstants.NT_REP_USER)) {
+                            String userID = node.getProperty(UserConstants.REP_AUTHORIZABLE_ID).getString();
+                            authorizables.computeIfAbsent(userID, id -> new MockUser(id, null, node, MockUserManager.this));
+                        } else if (node.isNodeType(UserConstants.NT_REP_GROUP)) {
+                            String userID = node.getProperty(UserConstants.REP_AUTHORIZABLE_ID).getString();
+                            authorizables.computeIfAbsent(userID, id -> new MockGroup(id, null, node, MockUserManager.this));
+                        }
+                    }
+
+                    @Override
+                    protected void entering(Property property, int level) throws RepositoryException {
+                        // no-op
+                    }
+
+                    @Override
+                    protected void leaving(Property property, int level) throws RepositoryException {
+                        // no-op
+                    }
+
+                    @Override
+                    protected void leaving(Node node, int level) throws RepositoryException {
+                        // no-op
+                    }
+                };
+                visitor.setWalkProperties(false);
+
+                rootNode.getNode("home").accept(visitor);
+            }
+        } catch (RepositoryException e) {
+            logger.error("Failed to load already existing authorizables", e);
+        }
+    }
 
     /**
      * Callback function for {@link MockUser#remove()} and {@link MockGroup#remove()} to
@@ -57,7 +121,14 @@ public class MockUserManager implements UserManager {
      * @return true if removed, false otherwise
      */
     boolean removeAuthorizable(Authorizable a) throws RepositoryException {
-        return authorizables.remove(a.getID(), a);
+        boolean removed = authorizables.remove(a.getID(), a);
+        if (removed) {
+            @NotNull String path = a.getPath();
+            if (session.nodeExists(path)) {
+                session.getNode(path).remove();
+            }
+        }
+        return removed;
     }
 
     Set<Authorizable> all(int searchType) throws RepositoryException { // NOSONAR
@@ -115,7 +186,58 @@ public class MockUserManager implements UserManager {
         if (authorizables.containsKey(groupID)) {
             throw new AuthorizableExistsException("Group already exists");
         }
-        return (Group)authorizables.computeIfAbsent(groupID, id -> new MockGroup(id, principal, intermediatePath, this));
+        String principalName = toPrincipalName(groupID, principal);
+        Node node = ensureAuthorizablePathExists(intermediatePath, principalName, true);
+        return (Group)authorizables.computeIfAbsent(groupID, id -> new MockGroup(id, principal, node, this));
+    }
+
+    /**
+     * Calculates the principal name, preferring the supplied id or
+     * fallback to the {@link Principal#getName()} value
+     * 
+     * @param id the user or group id 
+     * @param principal the principal
+     * @return the principal name
+     */
+    protected @Nullable String toPrincipalName(@Nullable String id, @Nullable Principal principal) {
+        String principalName = id;
+        if (principalName == null && principal != null) {
+            principalName = principal.getName();
+        }
+        return principalName;
+    }
+
+    /**
+     * Creates the user/group home folder if they don't exist yet
+     * 
+     * @param intermediatePath the parent path
+     */
+    protected Node ensureAuthorizablePathExists(String intermediatePath, String principalName, boolean isGroup) throws RepositoryException {
+        if (intermediatePath == null) {
+            if (isGroup) {
+                intermediatePath = "/home/groups"; // NOSONAR
+            } else {
+                intermediatePath = "/home/users"; // NOSONAR
+            }
+        }
+        // ensure the resource at the path exists
+        String[] segments = intermediatePath.split("/");
+        Node node = session.getRootNode();
+        for (int i = 0; i < segments.length; i++) {
+            String segment = segments[i];
+            if (node.hasNode(segment)) {
+                node = node.getNode(segment);
+            } else {
+                node = node.addNode(segment, UserConstants.NT_REP_AUTHORIZABLE_FOLDER);
+            }
+        }
+        if (!node.hasNode(principalName)) {
+            node = node.addNode(principalName, isGroup ? UserConstants.NT_REP_GROUP : UserConstants.NT_REP_USER);
+            node.setProperty(UserConstants.REP_PRINCIPAL_NAME, principalName);
+            node.setProperty(UserConstants.REP_AUTHORIZABLE_ID, principalName);
+        }
+
+        return node;
     }
 
     @Override
@@ -141,7 +263,9 @@ public class MockUserManager implements UserManager {
         if (authorizables.containsKey(userID)) {
             throw new AuthorizableExistsException("User already exists");
         }
-        return (User)authorizables.computeIfAbsent(userID, id -> new MockUser(id, principal, intermediatePath, this));
+        String principalName = toPrincipalName(userID, principal);
+        Node node = ensureAuthorizablePathExists(intermediatePath, principalName, false);
+        return (User)authorizables.computeIfAbsent(userID, id -> new MockUser(id, principal, node, this));
     }
 
     @Override

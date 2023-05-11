@@ -16,21 +16,23 @@
  */
 package org.apache.sling.testing.mock.jcr;
 
-import java.nio.file.Paths;
 import java.security.Principal;
-import java.util.HashMap;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collectors;
 
+import javax.jcr.Node;
+import javax.jcr.Property;
+import javax.jcr.PropertyIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.Value;
 
+import org.apache.jackrabbit.JcrConstants;
+import org.apache.jackrabbit.api.security.principal.PrincipalManager;
 import org.apache.jackrabbit.api.security.user.Authorizable;
 import org.apache.jackrabbit.api.security.user.Group;
-import org.apache.jackrabbit.value.ValueFactoryImpl;
+import org.apache.jackrabbit.oak.spi.security.user.UserConstants;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -38,16 +40,19 @@ import org.jetbrains.annotations.Nullable;
  * Mock {@link Authorizable} implementation.
  */
 abstract class MockAuthorizable implements Authorizable {
-    static final String REP_PRINCIPAL_NAME = "rep:principalName";
+    // internal property names to filter out of the authorizable properties
+    protected Set<String> notAuthorizablePropNames = new HashSet<>(Arrays.asList(
+            JcrConstants.JCR_PRIMARYTYPE,
+            UserConstants.REP_AUTHORIZABLE_ID,
+            UserConstants.REP_PRINCIPAL_NAME));
+
     protected String id;
     protected Principal principal;
-    protected String path;
     protected MockUserManager mockUserMgr;
-    protected Map<String, Value[]> propsMap = new HashMap<>();
-    protected Set<Group> declaredMemberOf = new HashSet<>();
+    protected Node homeNode;
 
     MockAuthorizable(@Nullable String id, @Nullable Principal principal,
-            @Nullable String intermediatePath,
+            @NotNull Node homeNode,
             @NotNull MockUserManager mockUserMgr) {
         this.principal = principal;
         if (id == null && principal != null) {
@@ -59,19 +64,8 @@ abstract class MockAuthorizable implements Authorizable {
             this.principal = () -> this.id;
         }
 
-        if (intermediatePath == null) {
-            // use a default intermediate path when none supplied
-            if (isGroup()) {
-                intermediatePath = "/home/groups"; // NOSONAR
-            } else {
-                intermediatePath = "/home/users"; // NOSONAR
-            }
-        }
-        this.path = Paths.get(intermediatePath, this.id).toString();
+        this.homeNode = homeNode;
         this.mockUserMgr = mockUserMgr;
-
-        // pre-populate the principalName property that is needed by MockPrincipalManager#findPrincipals
-        propsMap.put(REP_PRINCIPAL_NAME, new Value[] {ValueFactoryImpl.getInstance().createValue(this.id)});
     }
 
     @Override
@@ -91,6 +85,14 @@ abstract class MockAuthorizable implements Authorizable {
 
     @Override
     public @NotNull Iterator<Group> declaredMemberOf() throws RepositoryException {
+        Set<Group> declaredMemberOf = new HashSet<>();
+        Set<Authorizable> all = mockUserMgr.all(PrincipalManager.SEARCH_TYPE_GROUP);
+        for (Authorizable authorizable : all) {
+            Group group = (Group)authorizable;
+            if (group.isDeclaredMember(this)) {
+                declaredMemberOf.add(group);
+            }
+        }
         return declaredMemberOf.iterator();
     }
 
@@ -131,52 +133,85 @@ abstract class MockAuthorizable implements Authorizable {
 
     @Override
     public @NotNull Iterator<String> getPropertyNames() throws RepositoryException {
-        Set<String> propNames = propsMap.keySet().stream()
-                .filter(key -> key.indexOf('/') == -1)
-                .collect(Collectors.toSet());
-            return propNames.iterator();
+        Set<String> propNames = new HashSet<>();
+        PropertyIterator properties = homeNode.getProperties();
+        while (properties.hasNext()) {
+            Property nextProperty = properties.nextProperty();
+            if (!notAuthorizablePropNames.contains(nextProperty.getName())) {
+                propNames.add(nextProperty.getName());
+            }
+        }
+        return propNames.iterator();
     }
 
     @Override
     public @NotNull Iterator<String> getPropertyNames(@NotNull String relPath) throws RepositoryException {
-        Set<String> propNames = propsMap.keySet().stream()
-            .filter(key -> key.startsWith(relPath))
-            .collect(Collectors.toSet());
+        Set<String> propNames = new HashSet<>();
+        if (homeNode.hasNode(relPath)) {
+            PropertyIterator properties = homeNode.getNode(relPath).getProperties();
+            while (properties.hasNext()) {
+                Property nextProperty = properties.nextProperty();
+                if (!notAuthorizablePropNames.contains(nextProperty.getName())) {
+                    propNames.add(nextProperty.getName());
+                }
+            }
+        }
         return propNames.iterator();
     }
 
     @Override
     public boolean hasProperty(@NotNull String relPath) throws RepositoryException {
-        return propsMap.containsKey(relPath);
+        return homeNode.hasProperty(relPath);
     }
 
     @Override
     public void setProperty(@NotNull String relPath, @Nullable Value value) throws RepositoryException {
-        propsMap.put(relPath, new Value[] {value});
+        String[] segments = relPath.split("/");
+        Node node = homeNode;
+        for (int i = 0; i < segments.length - 1; i++) {
+            String segment = segments[i];
+            if (node.hasNode(segment)) {
+                node = node.getNode(segment);
+            } else {
+                node = node.addNode(segment, UserConstants.NT_REP_AUTHORIZABLE_FOLDER);
+            }
+        }
+        String propName = segments[segments.length - 1];
+        node.setProperty(propName, value);
     }
 
     @Override
     public void setProperty(@NotNull String relPath, @Nullable Value[] value) throws RepositoryException {
-        propsMap.put(relPath, value);
+        homeNode.setProperty(relPath, value);
     }
 
     @Override
     public @Nullable Value[] getProperty(@NotNull String relPath) throws RepositoryException {
-        return propsMap.get(relPath);
+        if (homeNode.hasProperty(relPath)) {
+            Property property = homeNode.getProperty(relPath);
+            if (property.isMultiple()) {
+                return property.getValues();
+            } else {
+                return new Value[] {property.getValue()};
+            }
+        } else {
+            return null;
+        }
     }
 
     @Override
     public boolean removeProperty(@NotNull String relPath) throws RepositoryException {
-        return propsMap.remove(relPath) != null;
+        boolean removed = false;
+        if (homeNode.hasProperty(relPath)) {
+            homeNode.getProperty(relPath).remove();
+            removed = true;
+        }
+        return removed;
     }
 
     @Override
     public @NotNull String getPath() throws RepositoryException {
-        return path;
-    }
-
-    public void addDeclaredMemberOf(Group group) {
-        declaredMemberOf.add(group);
+        return homeNode.getPath();
     }
 
 }

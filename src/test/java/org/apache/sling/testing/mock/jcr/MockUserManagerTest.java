@@ -27,6 +27,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 import javax.jcr.RepositoryException;
+import javax.jcr.Session;
 import javax.jcr.UnsupportedRepositoryOperationException;
 import javax.jcr.ValueFactory;
 
@@ -50,12 +51,14 @@ import ch.qos.logback.classic.Level;
  *
  */
 public class MockUserManagerTest {
+    protected Session session;
     protected MockUserManager userManager;
     protected ValueFactory vf = ValueFactoryImpl.getInstance();
 
     @Before
     public void before() throws RepositoryException {
-        userManager = new MockUserManager();
+        session = MockJcr.newSession();
+        userManager = new MockUserManager(session);
     }
 
     /**

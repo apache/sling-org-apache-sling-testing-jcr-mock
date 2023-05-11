@@ -30,6 +30,7 @@ import org.apache.jackrabbit.api.security.user.Authorizable;
 import org.apache.jackrabbit.api.security.user.Group;
 import org.apache.jackrabbit.api.security.user.UserManager;
 import org.apache.jackrabbit.commons.iterator.RangeIteratorAdapter;
+import org.apache.jackrabbit.oak.spi.security.user.UserConstants;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -57,7 +58,7 @@ public class MockPrincipalManager implements PrincipalManager {
         Set<Principal> principals = new HashSet<>();
         try {
             @NotNull Iterator<Authorizable> authorizables = mockUserManager.findAuthorizables(
-                    MockAuthorizable.REP_PRINCIPAL_NAME, simpleFilter, searchType);
+                    UserConstants.REP_PRINCIPAL_NAME, simpleFilter, searchType);
             while (authorizables.hasNext()) {
                 Authorizable next = authorizables.next();
                 principals.add(next.getPrincipal());

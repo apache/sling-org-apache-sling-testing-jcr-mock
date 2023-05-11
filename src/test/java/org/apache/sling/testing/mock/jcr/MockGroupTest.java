@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.UnsupportedRepositoryOperationException;
 
@@ -31,6 +32,7 @@ import org.apache.jackrabbit.api.security.user.Authorizable;
 import org.apache.jackrabbit.api.security.user.AuthorizableExistsException;
 import org.apache.jackrabbit.api.security.user.Group;
 import org.apache.jackrabbit.api.security.user.User;
+import org.apache.jackrabbit.oak.spi.security.user.UserConstants;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 
@@ -240,6 +242,10 @@ public class MockGroupTest extends MockAuthorizableTest<Group> {
     @Override
     public void testGetPath() throws UnsupportedRepositoryOperationException, RepositoryException {
         assertEquals("/home/groups/group1", authorizable.getPath());
+        assertTrue(session.nodeExists(authorizable.getPath()));
+        Node node = session.getNode(authorizable.getPath());
+        assertEquals(authorizable.getID(), 
+                node.getProperty(UserConstants.REP_PRINCIPAL_NAME).getString());
     }
 
 }
