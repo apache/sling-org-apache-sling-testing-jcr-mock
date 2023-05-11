@@ -68,6 +68,7 @@ public class MockUserManagerTest {
      */
     @SuppressWarnings("deprecation")
     @Deprecated
+    @Test
     public void testDeprecatedConstructor() {
         assertThrows(UnsupportedOperationException.class, () -> new MockUserManager());
     }
