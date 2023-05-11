@@ -26,6 +26,7 @@ import static org.junit.Assert.assertTrue;
 import java.util.Iterator;
 import java.util.Set;
 
+import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.UnsupportedRepositoryOperationException;
@@ -38,6 +39,7 @@ import org.apache.jackrabbit.api.security.user.Group;
 import org.apache.jackrabbit.api.security.user.Query;
 import org.apache.jackrabbit.api.security.user.User;
 import org.apache.jackrabbit.api.security.user.UserManager;
+import org.apache.jackrabbit.oak.spi.security.user.UserConstants;
 import org.apache.jackrabbit.value.ValueFactoryImpl;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -62,6 +64,15 @@ public class MockUserManagerTest {
     }
 
     /**
+     * Verify deprecated constructor now throws exception
+     */
+    @SuppressWarnings("deprecation")
+    @Deprecated
+    public void testDeprecatedConstructor() {
+        assertThrows(UnsupportedOperationException.class, () -> new MockUserManager());
+    }
+
+    /**
      * Test method for {@link org.apache.sling.testing.mock.jcr.MockUserManager#removeAuthorizable(org.apache.jackrabbit.api.security.user.Authorizable)}.
      */
     @Test
@@ -72,6 +83,26 @@ public class MockUserManagerTest {
         assertTrue(userManager.removeAuthorizable(group1));
 
         assertFalse(userManager.removeAuthorizable(user1));
+    }
+
+    @Test
+    public void testLoadAlreadyExistingAuthorizables() throws RepositoryException {
+        Node homeNode = session.getRootNode()
+            .addNode("home", UserConstants.NT_REP_AUTHORIZABLE_FOLDER);
+        Node usersNode = homeNode.addNode("users", UserConstants.NT_REP_AUTHORIZABLE_FOLDER);
+        Node testuser1 = usersNode.addNode("testuser1", UserConstants.NT_REP_USER);
+        testuser1.setProperty(UserConstants.REP_AUTHORIZABLE_ID, "testuser1");
+        testuser1.setProperty(UserConstants.REP_PRINCIPAL_NAME, "testuser1");
+
+        Node groupsNode = homeNode.addNode("groups", UserConstants.NT_REP_AUTHORIZABLE_FOLDER);
+        Node testgroup1 = groupsNode.addNode("testgroup1", UserConstants.NT_REP_GROUP);
+        testgroup1.setProperty(UserConstants.REP_AUTHORIZABLE_ID, "testgroup1");
+        testgroup1.setProperty(UserConstants.REP_PRINCIPAL_NAME, "testgroup1");
+
+        userManager.loadAlreadyExistingAuthorizables();
+
+        assertNotNull(userManager.getAuthorizable("testuser1"));
+        assertNotNull(userManager.getAuthorizable("testgroup1"));
     }
 
     /**
