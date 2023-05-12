@@ -24,6 +24,8 @@ import static org.junit.Assert.assertTrue;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.stream.Stream;
 
 import javax.jcr.RepositoryException;
@@ -212,9 +214,14 @@ public class MockNodeTypeTest extends AbstractMockNodeTypeTest {
         NodeType mixCreated = nodeTypeManager.getNodeType("mix:created");
         NodeTypeIterator subtypes = mixCreated.getSubtypes();
         assertEquals(3, subtypes.getSize());
-        assertEquals(JcrConstants.NT_FILE, subtypes.nextNodeType().getName());
-        assertEquals(JcrConstants.NT_HIERARCHYNODE, subtypes.nextNodeType().getName());
-        assertEquals(JcrConstants.NT_FOLDER, subtypes.nextNodeType().getName());
+        // convert to a set to avoid iteration order troubles
+        Set<String> subtypesSet = new HashSet<>();
+        while (subtypes.hasNext()) {
+            subtypesSet.add(subtypes.nextNodeType().getName());
+        }
+        assertTrue(subtypesSet.contains(JcrConstants.NT_FILE));
+        assertTrue(subtypesSet.contains(JcrConstants.NT_HIERARCHYNODE));
+        assertTrue(subtypesSet.contains(JcrConstants.NT_FOLDER));
 
         NodeType ntFolder = nodeTypeManager.getNodeType(JcrConstants.NT_FOLDER);
         subtypes = ntFolder.getSubtypes();

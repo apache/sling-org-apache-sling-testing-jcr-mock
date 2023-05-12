@@ -26,6 +26,9 @@ import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -44,6 +47,7 @@ import javax.jcr.nodetype.NoSuchNodeTypeException;
 import javax.jcr.util.TraversingItemVisitor;
 
 import org.apache.jackrabbit.JcrConstants;
+import org.apache.jackrabbit.commons.cnd.ParseException;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -407,4 +411,53 @@ public class MockNodeTest extends AbstractItemTest {
         assertEquals(4, leaveProperties.size());
     }
 
+    /**
+     * load the node types and switch the nodetypemanager to ONLY_REGISTERED mode
+     */
+    protected void loadNodeTypes() throws ParseException, RepositoryException, IOException {
+        // load the node types and switch the nodetypemanager to ONLY_REGISTERED mode
+        try (Reader reader = new InputStreamReader(getClass().getResourceAsStream("test_nodetypes.cnd"))) {
+            MockJcr.loadNodeTypeDefs(this.session, reader);
+        }
+    }
+
+    /**
+     * SLING-11874 auto-set created/lastModified prop values when appropriate
+     */
+    @Test
+    public void testAddNodeCreatesSystemGeneratedAutoPropertyValues() throws RepositoryException, IOException, ParseException {
+        loadNodeTypes();
+        Node foo = this.session.getRootNode().addNode("foo", JcrConstants.NT_HIERARCHYNODE);
+        Node versionFoo = this.session.getRootNode().addNode("versionFoo", JcrConstants.NT_VERSION);
+
+        // verify that the autocreated props exist
+        assertTrue(foo.hasProperty(JcrConstants.JCR_CREATED));
+        assertTrue(foo.hasProperty("jcr:createdBy"));
+        assertTrue(versionFoo.hasProperty(JcrConstants.JCR_CREATED));
+    }
+
+    /**
+     * SLING-11874 auto-set created/lastModified prop values when appropriate
+     */
+    @Test
+    public void testAddMixinCreatesSystemGeneratedAutoPropertyValues() throws RepositoryException, IOException, ParseException {
+        loadNodeTypes();
+
+        Node foo = this.session.getRootNode().addNode("foo", JcrConstants.NT_UNSTRUCTURED);
+        // verify that the autocreated props do not exist
+        assertFalse(foo.hasProperty(JcrConstants.JCR_CREATED));
+        assertFalse(foo.hasProperty("jcr:createdBy"));
+        assertFalse(foo.hasProperty(JcrConstants.JCR_LASTMODIFIED));
+        assertFalse(foo.hasProperty("jcr:lastModifiedBy"));
+
+        // add mixins
+        foo.addMixin("mix:created");
+        foo.addMixin("mix:lastModified");
+
+        // verify that the autocreated props do exist
+        assertTrue(foo.hasProperty(JcrConstants.JCR_CREATED));
+        assertTrue(foo.hasProperty("jcr:createdBy"));
+        assertTrue(foo.hasProperty(JcrConstants.JCR_LASTMODIFIED));
+        assertTrue(foo.hasProperty("jcr:lastModifiedBy"));
+    }
 }
