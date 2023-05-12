@@ -24,11 +24,13 @@ import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
 import javax.jcr.Credentials;
+import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.SimpleCredentials;
 import javax.jcr.UnsupportedRepositoryOperationException;
 
 import org.apache.jackrabbit.api.security.user.User;
+import org.apache.jackrabbit.oak.spi.security.user.UserConstants;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -186,6 +188,10 @@ public class MockUserTest extends MockAuthorizableTest<User> {
     @Override
     public void testGetPath() throws UnsupportedRepositoryOperationException, RepositoryException {
         assertEquals("/home/users/user1", authorizable.getPath());
+        assertTrue(session.nodeExists(authorizable.getPath()));
+        Node node = session.getNode(authorizable.getPath());
+        assertEquals(authorizable.getID(), 
+                node.getProperty(UserConstants.REP_PRINCIPAL_NAME).getString());
     }
 
 }

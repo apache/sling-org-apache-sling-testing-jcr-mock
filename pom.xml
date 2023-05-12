@@ -76,6 +76,12 @@
             <version>1.22.5</version>
             <scope>compile</scope>
         </dependency>
+        <dependency>
+            <groupId>org.apache.jackrabbit</groupId>
+            <artifactId>oak-security-spi</artifactId>
+            <version>1.22.5</version>
+            <scope>compile</scope>
+        </dependency>
 
         <dependency>
             <groupId>org.apache.commons</groupId>

@@ -75,11 +75,12 @@ class MockSession implements Session, JackrabbitSession {
             String userId, String workspaceName) throws RepositoryException {
         this.repository = repository;
         this.workspace = new MockWorkspace(repository, this, workspaceName);
-        this.userManager = new MockUserManager();
+        this.userManager = new MockUserManager(this);
         this.principalManager = new MockPrincipalManager(this.userManager);
         this.items = items;
         this.userId = userId;
         isLive = true;
+        this.userManager.loadAlreadyExistingAuthorizables();
         hasKnownChanges = false;
         this.save();
     }

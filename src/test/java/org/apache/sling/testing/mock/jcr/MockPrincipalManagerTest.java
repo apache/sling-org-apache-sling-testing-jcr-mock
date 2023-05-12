@@ -30,6 +30,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.jcr.RepositoryException;
+import javax.jcr.Session;
 
 import org.apache.jackrabbit.api.security.principal.PrincipalIterator;
 import org.apache.jackrabbit.api.security.principal.PrincipalManager;
@@ -48,12 +49,14 @@ import ch.qos.logback.classic.Level;
  *
  */
 public class MockPrincipalManagerTest {
+    protected Session session;
     protected UserManager userManager;
     protected MockPrincipalManager principalManager;
 
     @Before
     public void before() throws RepositoryException {
-        userManager = new MockUserManager();
+        session = MockJcr.newSession();
+        userManager = new MockUserManager(session);
         principalManager = new MockPrincipalManager((MockUserManager)userManager);
     }
 

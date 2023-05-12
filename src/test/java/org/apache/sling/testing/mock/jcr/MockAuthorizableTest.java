@@ -28,6 +28,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 import javax.jcr.RepositoryException;
+import javax.jcr.Session;
 import javax.jcr.UnsupportedRepositoryOperationException;
 import javax.jcr.Value;
 import javax.jcr.ValueFactory;
@@ -45,13 +46,15 @@ import org.junit.Test;
  *
  */
 public abstract class MockAuthorizableTest<T extends Authorizable> {
+    protected Session session;
     protected UserManager userManager;
     protected T authorizable;
     protected ValueFactory vf = ValueFactoryImpl.getInstance();
 
     @Before
     public void before() throws RepositoryException {
-        userManager = new MockUserManager();
+        session = MockJcr.newSession();
+        userManager = new MockUserManager(session);
         authorizable = createAuthorizable();
     }
 
@@ -131,13 +134,9 @@ public abstract class MockAuthorizableTest<T extends Authorizable> {
      */
     @Test
     public void testGetPropertyNames() throws RepositoryException {
-        // only rep:principalName property
+        // no properties
         @NotNull Iterator<String> propertyNames = authorizable.getPropertyNames();
-        assertTrue(propertyNames.hasNext());
-        Set<String> propertyNamesSet = new HashSet<>();
-        propertyNames.forEachRemaining(propertyNamesSet::add);
-        assertEquals(1, propertyNamesSet.size());
-        assertTrue(propertyNamesSet.contains(MockAuthorizable.REP_PRINCIPAL_NAME));
+        assertFalse(propertyNames.hasNext());
 
         // set some props
         authorizable.setProperty("prop1", vf.createValue("value1"));
@@ -145,9 +144,9 @@ public abstract class MockAuthorizableTest<T extends Authorizable> {
 
         propertyNames = authorizable.getPropertyNames();
         assertTrue(propertyNames.hasNext());
-        propertyNamesSet.clear();
+        Set<String> propertyNamesSet = new HashSet<>();
         propertyNames.forEachRemaining(propertyNamesSet::add);
-        assertEquals(2, propertyNamesSet.size());
+        assertEquals(1, propertyNamesSet.size());
         assertTrue(propertyNamesSet.contains("prop1"));
     }
 
@@ -169,7 +168,7 @@ public abstract class MockAuthorizableTest<T extends Authorizable> {
         Set<String> propertyNamesSet = new HashSet<>();
         propertyNames.forEachRemaining(propertyNamesSet::add);
         assertEquals(1, propertyNamesSet.size());
-        assertTrue(propertyNamesSet.contains("relPath/prop2"));
+        assertTrue(propertyNamesSet.contains("prop2"));
     }
 
     /**
@@ -192,6 +191,20 @@ public abstract class MockAuthorizableTest<T extends Authorizable> {
         assertNotNull(property);
         assertEquals(1, property.length);
         assertEquals("value1", property[0].getString());
+
+        // nested prop
+        authorizable.setProperty("relPath2/prop2", vf.createValue("value2"));
+        property = authorizable.getProperty("relPath2/prop2");
+        assertNotNull(property);
+        assertEquals(1, property.length);
+        assertEquals("value2", property[0].getString());
+
+        // second nested prop where intermediate subnode already exists
+        authorizable.setProperty("relPath2/prop3", vf.createValue("value3"));
+        property = authorizable.getProperty("relPath2/prop3");
+        assertNotNull(property);
+        assertEquals(1, property.length);
+        assertEquals("value3", property[0].getString());
     }
 
     /**

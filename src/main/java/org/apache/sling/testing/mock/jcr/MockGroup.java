@@ -23,6 +23,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 
 import org.apache.jackrabbit.api.security.user.Authorizable;
@@ -37,9 +38,9 @@ class MockGroup extends MockAuthorizable implements Group {
     private Map<String, Authorizable> declaredMembers = new HashMap<>();
 
     public MockGroup(@Nullable String id, @Nullable Principal principal,
-            @Nullable String intermediatePath,
+            @NotNull Node homeNode,
             @NotNull MockUserManager mockUserMgr) {
-        super(id, principal, intermediatePath, mockUserMgr);
+        super(id, principal, homeNode, mockUserMgr);
     }
 
     @Override
@@ -107,7 +108,6 @@ class MockGroup extends MockAuthorizable implements Group {
         boolean added = false;
         if (!isMember(authorizable)) {
             declaredMembers.put(authorizable.getID(), authorizable);
-            ((MockAuthorizable)authorizable).addDeclaredMemberOf(this);
             added = true;
         }
         return added;
