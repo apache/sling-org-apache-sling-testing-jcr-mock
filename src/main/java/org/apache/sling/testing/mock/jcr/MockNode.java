@@ -87,29 +87,25 @@ class MockNode extends AbstractItem implements Node {
         if (((MockNodeTypeManager)getSession().getWorkspace().getNodeTypeManager()).isMode(ResolveMode.ONLY_REGISTERED)) {
             // auto-add any autocreated children
             NodeDefinition[] childNodeDefinitions = nodeType.getChildNodeDefinitions();
-            if (childNodeDefinitions != null) {
-                for (NodeDefinition nodeDefinition : childNodeDefinitions) {
-                    if (nodeDefinition.isAutoCreated()) {
-                        String defaultPrimaryTypeName = nodeDefinition.getDefaultPrimaryTypeName();
-                        node.addNode(nodeDefinition.getName(), defaultPrimaryTypeName);
-                    }
+            for (NodeDefinition nodeDefinition : childNodeDefinitions) {
+                if (nodeDefinition.isAutoCreated()) {
+                    String defaultPrimaryTypeName = nodeDefinition.getDefaultPrimaryTypeName();
+                    node.addNode(nodeDefinition.getName(), defaultPrimaryTypeName);
                 }
             }
 
             // auto-add any autocreated properties
             PropertyDefinition[] propDefinitions = nodeType.getPropertyDefinitions();
-            if (propDefinitions != null) {
-                for (PropertyDefinition propDefinition : propDefinitions) {
-                    if (propDefinition.isAutoCreated()) {
-                        Value[] defaultValues = propDefinition.getDefaultValues();
-                        if (propDefinition.isMultiple()) {
-                            node.setProperty(propDefinition.getName(), defaultValues);
-                        } else if (defaultValues.length > 0) {
-                            node.setProperty(propDefinition.getName(), defaultValues[0]);
-                        } else {
-                            // compute system generated property values
-                            maybeSetGeneratedPropertyValue(node, propDefinition);
-                        }
+            for (PropertyDefinition propDefinition : propDefinitions) {
+                if (propDefinition.isAutoCreated()) {
+                    Value[] defaultValues = propDefinition.getDefaultValues();
+                    if (propDefinition.isMultiple()) {
+                        node.setProperty(propDefinition.getName(), defaultValues);
+                    } else if (defaultValues.length > 0) {
+                        node.setProperty(propDefinition.getName(), defaultValues[0]);
+                    } else {
+                        // compute system generated property values
+                        maybeSetGeneratedPropertyValue(node, propDefinition);
                     }
                 }
             }
@@ -547,34 +543,30 @@ class MockNode extends AbstractItem implements Node {
                 ).toArray(Value[]::new);
                 this.setProperty(JcrConstants.JCR_MIXINTYPES, newValues);
             }
-            
+
             if (((MockNodeTypeManager)getSession().getWorkspace().getNodeTypeManager()).isMode(ResolveMode.ONLY_REGISTERED)) {
                 NodeType mixinNodeType = getSession().getWorkspace().getNodeTypeManager().getNodeType(mixinName);
                 // auto-add any autocreated children
                 NodeDefinition[] childNodeDefinitions = mixinNodeType.getChildNodeDefinitions();
-                if (childNodeDefinitions != null) {
-                    for (NodeDefinition nodeDefinition : childNodeDefinitions) {
-                        if (nodeDefinition.isAutoCreated()) {
-                            String defaultPrimaryTypeName = nodeDefinition.getDefaultPrimaryTypeName();
-                            addNode(nodeDefinition.getName(), defaultPrimaryTypeName);
-                        }
+                for (NodeDefinition nodeDefinition : childNodeDefinitions) {
+                    if (nodeDefinition.isAutoCreated()) {
+                        String defaultPrimaryTypeName = nodeDefinition.getDefaultPrimaryTypeName();
+                        addNode(nodeDefinition.getName(), defaultPrimaryTypeName);
                     }
                 }
 
                 // auto-add any autocreated properties
                 PropertyDefinition[] propDefinitions = mixinNodeType.getPropertyDefinitions();
-                if (propDefinitions != null) {
-                    for (PropertyDefinition propDefinition : propDefinitions) {
-                        if (propDefinition.isAutoCreated()) {
-                            Value[] defaultValues = propDefinition.getDefaultValues();
-                            if (propDefinition.isMultiple()) {
-                                setProperty(propDefinition.getName(), defaultValues);
-                            } else if (defaultValues.length > 0) {
-                                setProperty(propDefinition.getName(), defaultValues[0]);
-                            } else {
-                                // compute system generated property values
-                                maybeSetGeneratedPropertyValue(this, propDefinition);
-                            }
+                for (PropertyDefinition propDefinition : propDefinitions) {
+                    if (propDefinition.isAutoCreated()) {
+                        Value[] defaultValues = propDefinition.getDefaultValues();
+                        if (propDefinition.isMultiple()) {
+                            setProperty(propDefinition.getName(), defaultValues);
+                        } else if (defaultValues.length > 0) {
+                            setProperty(propDefinition.getName(), defaultValues[0]);
+                        } else {
+                            // compute system generated property values
+                            maybeSetGeneratedPropertyValue(this, propDefinition);
                         }
                     }
                 }

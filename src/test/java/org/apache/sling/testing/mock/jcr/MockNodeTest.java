@@ -460,4 +460,20 @@ public class MockNodeTest extends AbstractItemTest {
         assertTrue(foo.hasProperty(JcrConstants.JCR_LASTMODIFIED));
         assertTrue(foo.hasProperty("jcr:lastModifiedBy"));
     }
+
+    /**
+     * SLING-11874 To test created and lastModified props are not autocreated when not declared in their mixins
+     */
+    @Test
+    public void testAddNodeDoesNotCreateNonMixinCreatedAndLastModified() throws RepositoryException, IOException, ParseException {
+        loadNodeTypes();
+
+        Node foo = this.session.getRootNode().addNode("foo", "nt:nonMixinCreatedAndLastModified");
+        // verify that the autocreated props do not exist
+        assertFalse(foo.hasProperty(JcrConstants.JCR_CREATED));
+        assertFalse(foo.hasProperty("jcr:createdBy"));
+        assertFalse(foo.hasProperty(JcrConstants.JCR_LASTMODIFIED));
+        assertFalse(foo.hasProperty("jcr:lastModifiedBy"));
+    }
+
 }
