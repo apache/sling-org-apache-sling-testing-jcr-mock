@@ -19,6 +19,7 @@
 package org.apache.sling.testing.mock.jcr;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
@@ -67,7 +68,9 @@ public class MockNodeOnlyRegisteredTypesTest {
         auto1.addMixin("mix:autocreatedChildAndProp");
         assertTrue(auto1.hasProperty("prop1"));
         assertTrue(auto1.hasProperty("prop2"));
+        assertFalse(auto1.hasProperty("prop3"));
         assertTrue(auto1.hasNode("child1"));
+        assertFalse(auto1.hasNode("child2"));
     }
 
     @Test

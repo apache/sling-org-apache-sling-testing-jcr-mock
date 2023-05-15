@@ -152,6 +152,100 @@
   mixin
   - jcr:uuid (STRING) mandatory autocreated protected INITIALIZE 
 
+//------------------------------------------------------------------------------
+// V E R S I O N I N G
+//------------------------------------------------------------------------------
+
+/**
+ * @since 2.0
+ */
+[mix:simpleVersionable]
+  mixin
+  - jcr:isCheckedOut (BOOLEAN) = 'true' mandatory autocreated protected IGNORE
+
+/**
+ * @since 1.0
+ */
+[mix:versionable] > mix:simpleVersionable, mix:referenceable
+  mixin
+  - jcr:versionHistory (REFERENCE) mandatory protected IGNORE < 'nt:versionHistory'
+  - jcr:baseVersion (REFERENCE) mandatory protected IGNORE < 'nt:version'
+  - jcr:predecessors (REFERENCE) mandatory protected multiple IGNORE < 'nt:version'
+  - jcr:mergeFailed (REFERENCE) protected multiple ABORT < 'nt:version'
+    /** @since 2.0 */
+  - jcr:activity (REFERENCE) protected < 'nt:activity'
+    /** @since 2.0 */
+  - jcr:configuration (REFERENCE) protected IGNORE < 'nt:configuration'
+
+/**
+ * @since 1.0
+ */
+[nt:versionHistory] > mix:referenceable
+  - jcr:versionableUuid (STRING) mandatory autocreated protected ABORT
+    /** @since 2.0 */
+  - jcr:copiedFrom (WEAKREFERENCE) protected ABORT < 'nt:version'
+  + jcr:rootVersion (nt:version) = nt:version mandatory autocreated protected ABORT
+  + jcr:versionLabels (nt:versionLabels) = nt:versionLabels mandatory autocreated protected ABORT
+  + * (nt:version) = nt:version protected ABORT
+
+/**
+ * @since 1.0
+ */
+[nt:versionLabels]
+  - * (REFERENCE) protected ABORT < 'nt:version'
+
+/**
+ * @since 1.0
+ */
+[nt:version] > mix:referenceable
+  - jcr:created (DATE) mandatory autocreated protected ABORT
+  - jcr:predecessors (REFERENCE) protected multiple ABORT < 'nt:version'
+  - jcr:successors (REFERENCE) protected multiple ABORT < 'nt:version'
+    /** @since 2.0 */
+  - jcr:activity (REFERENCE) protected ABORT < 'nt:activity'
+  + jcr:frozenNode (nt:frozenNode) protected ABORT
+
+/**
+ * @since 1.0
+ */
+[nt:frozenNode]
+  orderable
+  - jcr:frozenPrimaryType (NAME) mandatory autocreated protected ABORT
+  - jcr:frozenMixinTypes (NAME) protected multiple ABORT
+  - jcr:frozenUuid (STRING) mandatory autocreated protected ABORT
+  - * (UNDEFINED) protected ABORT
+  - * (UNDEFINED) protected multiple ABORT
+  + * (nt:base) protected sns ABORT
+
+/**
+ * @since 1.0
+ */
+[nt:versionedChild]
+  - jcr:childVersionHistory (REFERENCE) mandatory autocreated protected ABORT < 'nt:versionHistory'
+
+/**
+ * @since 2.0
+ */
+[nt:activity] > mix:referenceable
+  - jcr:activityTitle (STRING) mandatory autocreated protected
+
+/**
+ * @since 2.0
+ */
+[nt:configuration] > mix:versionable
+  - jcr:root (REFERENCE) mandatory autocreated protected
+
+/**
+ * @since oak 1.0
+ */
+ [rep:VersionablePaths]
+  mixin
+  - * (PATH) protected ABORT
+
+
+//------------------------------------------------------------------------------
+// O T H E R 
+//------------------------------------------------------------------------------
 
 /**
  * For code coverage of the cnd loading
@@ -173,6 +267,16 @@
 [mix:autocreatedChildAndProp]
   mixin
   + child1 (nt:base) = nt:folder autocreated
+  + child2 (nt:base) = nt:folder
   - prop1 (STRING) = 'value1' autocreated
   - prop2 (STRING) = 'value1', 'value2' multiple autocreated
+  - prop3 (STRING) = 'value1'
 
+/**
+ * To test created and lastModified props are not autocreated when not declared in their mixins
+ */
+[nt:nonMixinCreatedAndLastModified]
+  - jcr:created (DATE) autocreated
+  - jcr:createdBy (STRING) autocreated
+  - jcr:lastModified (DATE) autocreated
+  - jcr:lastModifiedBy (STRING) autocreated
