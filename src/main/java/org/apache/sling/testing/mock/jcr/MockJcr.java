@@ -235,9 +235,11 @@ public final class MockJcr {
      * Reads and registers the node types from the reader that supplies the content
      * in the compact node type definition format.  This will also change the mode of
      * the MockNodeTypeManager to consider only the registered node types.
-     * 
+     *
      * @param session session to load the node types into
      * @param reader reader supplying the compact node type definition data
+     * @throws ParseException Parse exception
+     * @throws RepositoryException Repository exception
      */
     public static void loadNodeTypeDefs(@NotNull Session session, @NotNull Reader reader) throws ParseException, RepositoryException {
         // inform the manager to only consider the registered node types
@@ -245,7 +247,7 @@ public final class MockJcr {
         ((MockNodeTypeManager)nodeTypeManager).setMode(ResolveMode.ONLY_REGISTERED);
 
         MockTemplateBuilderFactory factory = new MockTemplateBuilderFactory(session);
-        CompactNodeTypeDefReader<NodeTypeTemplate, NamespaceRegistry> cndReader = 
+        CompactNodeTypeDefReader<NodeTypeTemplate, NamespaceRegistry> cndReader =
                 new CompactNodeTypeDefReader<>(reader, "cnd input stream", factory);
 
         List<NodeTypeTemplate> nodeTypeDefinitions = cndReader.getNodeTypeDefinitions();
@@ -256,7 +258,7 @@ public final class MockJcr {
 
     /**
      * Use the supplied AccessControlManager for the session
-     * 
+     *
      * @param session the session to modify
      * @param acm the access control manager to use for the session
      */

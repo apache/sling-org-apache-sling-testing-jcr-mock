@@ -31,17 +31,15 @@ import javax.jcr.nodetype.NodeTypeManager;
 import javax.jcr.nodetype.NodeTypeTemplate;
 import javax.jcr.nodetype.PropertyDefinitionTemplate;
 
-import org.apache.jackrabbit.commons.cnd.CompactNodeTypeDefReader;
 import org.apache.jackrabbit.commons.cnd.DefinitionBuilderFactory;
-import org.apache.jackrabbit.commons.cnd.TemplateBuilderFactory;
 
 
 /**
  * This is a fork of the {@link TemplateBuilderFactory} that changes the implementation
- * of {@link NodeDefinitionTemplateBuilder#setDeclaringNodeType(String)} 
+ * of {@link NodeDefinitionTemplateBuilder#setDeclaringNodeType(String)}
  * and {@link PropertyDefinitionTemplateBuilder#setDeclaringNodeType(String)} so the
  * declaring node type is assigned to the template items instead of doing nothing.
- * 
+ *
  * This implementation of {@link DefinitionBuilderFactory} can be used with
  * the {@link CompactNodeTypeDefReader} to produce node type definitions of type
  * {@link NodeTypeTemplate} and a namespace map of type {@link NamespaceRegistry}.

@@ -115,7 +115,7 @@ public class MockUserManager implements UserManager {
     /**
      * Callback function for {@link MockUser#remove()} and {@link MockGroup#remove()} to
      * invoke.
-     * 
+     *
      * @param id the user or group id
      * @param a the user or group object
      * @return true if removed, false otherwise
@@ -194,8 +194,8 @@ public class MockUserManager implements UserManager {
     /**
      * Calculates the principal name, preferring the supplied id or
      * fallback to the {@link Principal#getName()} value
-     * 
-     * @param id the user or group id 
+     *
+     * @param id the user or group id
      * @param principal the principal
      * @return the principal name
      */
@@ -209,8 +209,12 @@ public class MockUserManager implements UserManager {
 
     /**
      * Creates the user/group home folder if they don't exist yet
-     * 
+     *
      * @param intermediatePath the parent path
+     * @param principalName Principal name
+     * @param isGroup Is group
+     * @return Existing or created node
+     * @throws RepositoryException Repository exception
      */
     protected Node ensureAuthorizablePathExists(String intermediatePath, String principalName, boolean isGroup) throws RepositoryException {
         if (intermediatePath == null) {
