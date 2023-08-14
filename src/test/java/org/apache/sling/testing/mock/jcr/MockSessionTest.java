@@ -26,6 +26,8 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Set;
+
 import javax.jcr.AccessDeniedException;
 import javax.jcr.ItemExistsException;
 import javax.jcr.ItemNotFoundException;
@@ -43,8 +45,6 @@ import org.apache.jackrabbit.JcrConstants;
 import org.apache.jackrabbit.api.JackrabbitSession;
 import org.junit.Test;
 import org.mockito.Mockito;
-
-import com.google.common.collect.ImmutableSet;
 
 public class MockSessionTest {
 
@@ -215,23 +215,23 @@ public class MockSessionTest {
         // add dummy namespace
         session.setNamespacePrefix("dummy", "http://mydummy");
 
-        assertEquals(ImmutableSet.of("jcr", "dummy"), ImmutableSet.copyOf(session.getNamespacePrefixes()));
+        assertEquals(Set.of("jcr", "dummy"), Set.of(session.getNamespacePrefixes()));
         assertEquals("http://mydummy", session.getNamespaceURI("dummy"));
         assertEquals("dummy", session.getNamespacePrefix("http://mydummy"));
 
         // test via namespace registry
         NamespaceRegistry namespaceRegistry = session.getWorkspace().getNamespaceRegistry();
 
-        assertEquals(ImmutableSet.of("jcr", "dummy"), ImmutableSet.copyOf(namespaceRegistry.getPrefixes()));
-        assertEquals(ImmutableSet.of("http://www.jcp.org/jcr/1.0", "http://mydummy"),
-                ImmutableSet.copyOf(namespaceRegistry.getURIs()));
+        assertEquals(Set.of("jcr", "dummy"), Set.of(namespaceRegistry.getPrefixes()));
+        assertEquals(Set.of("http://www.jcp.org/jcr/1.0", "http://mydummy"),
+                Set.of(namespaceRegistry.getURIs()));
         assertEquals("http://mydummy", namespaceRegistry.getURI("dummy"));
         assertEquals("dummy", namespaceRegistry.getPrefix("http://mydummy"));
 
         // remove dummy namespace
         namespaceRegistry.unregisterNamespace("dummy");
 
-        assertEquals(ImmutableSet.of("jcr"), ImmutableSet.copyOf(session.getNamespacePrefixes()));
+        assertEquals(Set.of("jcr"), Set.of(session.getNamespacePrefixes()));
         assertEquals("http://www.jcp.org/jcr/1.0", session.getNamespaceURI("jcr"));
         assertEquals("jcr", session.getNamespacePrefix("http://www.jcp.org/jcr/1.0"));
     }

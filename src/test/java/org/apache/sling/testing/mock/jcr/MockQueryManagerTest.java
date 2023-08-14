@@ -33,11 +33,10 @@ import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 import javax.jcr.query.Row;
 
+import org.apache.commons.collections4.IteratorUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
-
-import com.google.common.collect.ImmutableList;
 
 public class MockQueryManagerTest {
 
@@ -52,7 +51,7 @@ public class MockQueryManagerTest {
 
         Node rootNode = session.getRootNode();
 
-        sampleNodes = ImmutableList.of(
+        sampleNodes = List.of(
             rootNode.addNode("node1"),
             rootNode.addNode("node2"),
             rootNode.addNode("node3")
@@ -113,11 +112,11 @@ public class MockQueryManagerTest {
     protected QueryResult assertQueryResults_AllQuerys() throws InvalidQueryException, RepositoryException {
         Query query = queryManager.createQuery("query1", Query.JCR_SQL2);
         QueryResult result = query.execute();
-        assertEquals(sampleNodes, ImmutableList.copyOf(result.getNodes()));
+        assertEquals(sampleNodes, IteratorUtils.toList(result.getNodes()));
 
         query = queryManager.createQuery("query2", Query.JCR_SQL2);
         result = query.execute();
-        assertEquals(sampleNodes, ImmutableList.copyOf(result.getNodes()));
+        assertEquals(sampleNodes, IteratorUtils.toList(result.getNodes()));
         return result;
     }
 
@@ -156,7 +155,7 @@ public class MockQueryManagerTest {
     protected QueryResult assertQueryResults_SpecificQuery() throws InvalidQueryException, RepositoryException {
         Query query = queryManager.createQuery("query1", Query.JCR_SQL2);
         QueryResult result1 = query.execute();
-        assertEquals(sampleNodes, ImmutableList.copyOf(result1.getNodes()));
+        assertEquals(sampleNodes, IteratorUtils.toList(result1.getNodes()));
 
         query = queryManager.createQuery("query2", Query.JCR_SQL2);
         QueryResult result2 = query.execute();
@@ -202,7 +201,7 @@ public class MockQueryManagerTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testQueryResults_MultipleResultHandlers() throws RepositoryException {
-        final List<Node> sampleNodes2 = ImmutableList.of(sampleNodes.get(0));
+        final List<Node> sampleNodes2 = List.of(sampleNodes.get(0));
         MockJcr.addQueryResultHandler(session, new MockQueryResultHandler() {
             @Override
             public MockQueryResult executeQuery(MockQuery query) {
@@ -225,11 +224,11 @@ public class MockQueryManagerTest {
 
         Query query = queryManager.createQuery("query1", Query.JCR_SQL2);
         QueryResult result = query.execute();
-        assertEquals(sampleNodes, ImmutableList.copyOf(result.getNodes()));
+        assertEquals(sampleNodes, IteratorUtils.toList(result.getNodes()));
 
         query = queryManager.createQuery("query2", Query.JCR_SQL2);
         result = query.execute();
-        assertEquals(sampleNodes2, ImmutableList.copyOf(result.getNodes()));
+        assertEquals(sampleNodes2, IteratorUtils.toList(result.getNodes()));
 
         query = queryManager.createQuery("query3", Query.JCR_SQL2);
         result = query.execute();
@@ -239,7 +238,7 @@ public class MockQueryManagerTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testQueryResults_ResultHandler_Rows() throws RepositoryException {
-        final List<String> columnNames = ImmutableList.of(
+        final List<String> columnNames = List.of(
             "stringProp",
             "intProp",
             "optionalStringProp"
@@ -254,11 +253,11 @@ public class MockQueryManagerTest {
 
         Query query = queryManager.createQuery("query1", Query.JCR_SQL2);
         QueryResult result = query.execute();
-        assertEquals(sampleNodes, ImmutableList.copyOf(result.getNodes()));
+        assertEquals(sampleNodes, IteratorUtils.toList(result.getNodes()));
 
-        assertEquals(columnNames, ImmutableList.copyOf(result.getColumnNames()));
+        assertEquals(columnNames, List.of(result.getColumnNames()));
 
-        List<Row> rows = ImmutableList.copyOf(result.getRows());
+        List<Row> rows = IteratorUtils.toList(result.getRows());
         assertEquals("value1", rows.get(0).getValue("stringProp").getString());
         assertEquals(1L, rows.get(0).getValue("intProp").getLong());
         assertEquals("optValue1", rows.get(0).getValue("optionalStringProp").getString());
