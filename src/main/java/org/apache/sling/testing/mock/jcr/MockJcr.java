@@ -20,6 +20,7 @@ package org.apache.sling.testing.mock.jcr;
 
 import java.io.Reader;
 import java.util.List;
+import java.util.Objects;
 
 import javax.jcr.NamespaceRegistry;
 import javax.jcr.Node;
@@ -90,8 +91,8 @@ public final class MockJcr {
     public static @NotNull Session newSession(@Nullable String userId, @Nullable String workspaceName) {
         try {
             return newRepository().login(
-                    new SimpleCredentials(StringUtils.defaultString(userId, DEFAULT_USER_ID), new char[0]),
-                    StringUtils.defaultString(workspaceName, DEFAULT_WORKSPACE)
+                    new SimpleCredentials(Objects.toString(userId, DEFAULT_USER_ID), new char[0]),
+                    Objects.toString(workspaceName, DEFAULT_WORKSPACE)
             );
         } catch (RepositoryException ex) {
             throw new RuntimeException("Creating mocked JCR session failed.", ex);

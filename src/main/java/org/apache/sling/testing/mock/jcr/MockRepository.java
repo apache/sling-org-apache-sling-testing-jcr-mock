@@ -20,6 +20,7 @@ package org.apache.sling.testing.mock.jcr;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import javax.jcr.Credentials;
 import javax.jcr.NamespaceRegistry;
@@ -32,7 +33,6 @@ import javax.jcr.nodetype.NodeTypeManager;
 import javax.jcr.observation.ObservationManager;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
 
 /**
  * Mock {@link Repository} implementation. The data is stored inside the mocked
@@ -74,8 +74,8 @@ class MockRepository implements Repository {
             userId = ((SimpleCredentials)credentials).getUserID();
         }
         return new MockSession(this, items,
-                StringUtils.defaultString(userId, MockJcr.DEFAULT_USER_ID),
-                StringUtils.defaultString(workspaceName, MockJcr.DEFAULT_WORKSPACE));
+                Objects.toString(userId, MockJcr.DEFAULT_USER_ID),
+                Objects.toString(workspaceName, MockJcr.DEFAULT_WORKSPACE));
     }
 
     @Override
