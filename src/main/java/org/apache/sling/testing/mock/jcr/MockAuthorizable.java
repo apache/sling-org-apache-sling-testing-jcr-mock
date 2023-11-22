@@ -164,8 +164,7 @@ abstract class MockAuthorizable implements Authorizable {
         return homeNode.hasProperty(relPath);
     }
 
-    @Override
-    public void setProperty(@NotNull String relPath, @Nullable Value value) throws RepositoryException {
+    protected Node createIntermediateNodes(@NotNull String relPath) throws RepositoryException {
         String[] segments = relPath.split("/");
         Node node = homeNode;
         for (int i = 0; i < segments.length - 1; i++) {
@@ -176,13 +175,21 @@ abstract class MockAuthorizable implements Authorizable {
                 node = node.addNode(segment, UserConstants.NT_REP_AUTHORIZABLE_FOLDER);
             }
         }
-        String propName = segments[segments.length - 1];
+        return node;
+    }
+
+    @Override
+    public void setProperty(@NotNull String relPath, @Nullable Value value) throws RepositoryException {
+        Node node = createIntermediateNodes(relPath);
+        String propName = ResourceUtil.getName(relPath);
         node.setProperty(propName, value);
     }
 
     @Override
     public void setProperty(@NotNull String relPath, @Nullable Value[] value) throws RepositoryException {
-        homeNode.setProperty(relPath, value);
+        Node node = createIntermediateNodes(relPath);
+        String propName = ResourceUtil.getName(relPath);
+        node.setProperty(propName, value);
     }
 
     @Override
