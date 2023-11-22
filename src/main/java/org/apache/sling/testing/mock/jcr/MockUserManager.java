@@ -333,10 +333,12 @@ public class MockUserManager implements UserManager {
             throws RepositoryException {
         T a = null;
         Authorizable authorizable = authorizables.get(id);
-        if (authorizableClass.isInstance(authorizable)) {
-            a = authorizableClass.cast(authorizable);
-        } else {
-            throw new AuthorizableTypeException("Not the expected authorizable class");
+        if (authorizable != null) { // SLING-12166
+            if (authorizableClass.isInstance(authorizable)) {
+                a = authorizableClass.cast(authorizable);
+            } else {
+                throw new AuthorizableTypeException("Not the expected authorizable class");
+            }
         }
         return a;
     }

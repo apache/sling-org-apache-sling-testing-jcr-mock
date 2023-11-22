@@ -331,6 +331,14 @@ public class MockUserManagerTest {
 
         assertThrows(AuthorizableTypeException.class, () -> userManager.getAuthorizable("user1", Group.class));
     }
+    /**
+     * Test to verify the fix for SLING-12166
+     */
+    @Test
+    public void testGetAuthorizableStringClassOfTWhenItDoesNotExist() throws AuthorizableExistsException, RepositoryException {
+        @Nullable Authorizable authorizable = userManager.getAuthorizable("user1", User.class);
+        assertNull(authorizable);
+    }
 
     /**
      * Test method for {@link org.apache.sling.testing.mock.jcr.MockUserManager#getAuthorizableByPath(java.lang.String)}.
