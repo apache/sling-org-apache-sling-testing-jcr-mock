@@ -220,6 +220,24 @@ public abstract class MockAuthorizableTest<T extends Authorizable> {
         assertEquals(2, property.length);
         assertEquals("value1", property[0].getString());
         assertEquals("value2", property[1].getString());
+
+        // nested prop
+        authorizable.setProperty("relPath2/prop2", new Value [] {
+                vf.createValue("value2"),
+                vf.createValue("value3") });
+        property = authorizable.getProperty("relPath2/prop2");
+        assertNotNull(property);
+        assertEquals(2, property.length);
+        assertEquals("value2", property[0].getString());
+
+        // second nested prop where intermediate subnode already exists
+        authorizable.setProperty("relPath2/prop3", new Value [] {
+                vf.createValue("value3"),
+                vf.createValue("value4")});
+        property = authorizable.getProperty("relPath2/prop3");
+        assertNotNull(property);
+        assertEquals(2, property.length);
+        assertEquals("value3", property[0].getString());
     }
 
     /**
