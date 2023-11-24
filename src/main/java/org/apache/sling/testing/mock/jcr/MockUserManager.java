@@ -240,11 +240,11 @@ public class MockUserManager implements UserManager {
      *
      * @param intermediatePath the parent path
      * @param principalName Principal name
-     * @param isGroup Is group
+     * @param authorizableNodeType the node type for the user or group node
      * @return Existing or created node
      * @throws RepositoryException Repository exception
      */
-    protected Node ensureAuthorizablePathExists(@NotNull String intermediatePath, @NotNull String principalName, String authorizableNodeType) throws RepositoryException {
+    protected Node ensureAuthorizablePathExists(@NotNull String intermediatePath, @NotNull String principalName, @NotNull String authorizableNodeType) throws RepositoryException {
         // ensure the resource at the path exists
         String[] segments = intermediatePath.split("/");
         Node node = session.getRootNode();
@@ -260,6 +260,8 @@ public class MockUserManager implements UserManager {
             node = node.addNode(principalName, authorizableNodeType);
             node.setProperty(UserConstants.REP_PRINCIPAL_NAME, principalName);
             node.setProperty(UserConstants.REP_AUTHORIZABLE_ID, principalName);
+        } else {
+            node = node.getNode(principalName);
         }
 
         return node;
