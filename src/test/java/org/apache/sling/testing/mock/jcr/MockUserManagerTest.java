@@ -231,6 +231,40 @@ public class MockUserManagerTest {
     }
 
     /**
+     * Test method for {@link org.apache.sling.testing.mock.jcr.MockUserManager#ensureAuthorizablePathExists(java.lang.String, java.lang.String, boolean)}.
+     */
+    @Deprecated
+    @Test
+    public void testEnsureAuthorizablePathExistsStringStringBoolean() throws RepositoryException {
+        // intermedate path supplied
+        Node user1node = userManager.ensureAuthorizablePathExists("/home/users/path1", "user1", false);
+        assertNotNull(user1node);
+        // no intermediate path for the user
+        Node user2node = userManager.ensureAuthorizablePathExists(null, "user2", false);
+        assertNotNull(user2node);
+        // no intermediate path for the group
+        Node group1node = userManager.ensureAuthorizablePathExists(null, "group1", true);
+        assertNotNull(group1node);
+
+        // one more time to ensure it works if the path already exists
+        user1node = userManager.ensureAuthorizablePathExists("/home/users/path1", "user1", false);
+        assertNotNull(user1node);
+    }
+
+    /**
+     * Test method for {@link org.apache.sling.testing.mock.jcr.MockUserManager#ensureAuthorizablePathExists(java.lang.String, java.lang.String, java.lang.String)}.
+     */
+    @Test
+    public void testEnsureAuthorizablePathExistsStringStringString() throws RepositoryException {
+        Node user1node = userManager.ensureAuthorizablePathExists("/home/users/path1", "user1", UserConstants.NT_REP_USER);
+        assertNotNull(user1node);
+
+        // one more time to ensure it works if the path already exists
+        user1node = userManager.ensureAuthorizablePathExists("/home/users/path1", "user1", UserConstants.NT_REP_USER);
+        assertNotNull(user1node);
+    }
+
+    /**
      * Test method for {@link org.apache.sling.testing.mock.jcr.MockUserManager#findAuthorizables(org.apache.jackrabbit.api.security.user.Query)}.
      */
     @Test
