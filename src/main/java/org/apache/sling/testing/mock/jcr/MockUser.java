@@ -26,6 +26,7 @@ import javax.jcr.SimpleCredentials;
 
 import org.apache.jackrabbit.api.security.user.Impersonation;
 import org.apache.jackrabbit.api.security.user.User;
+import org.apache.jackrabbit.oak.spi.security.principal.SystemUserPrincipal;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -62,7 +63,7 @@ class MockUser extends MockAuthorizable implements User {
 
     @Override
     public boolean isSystemUser() {
-        return false;
+        return principal instanceof SystemUserPrincipal;
     }
 
     @Override

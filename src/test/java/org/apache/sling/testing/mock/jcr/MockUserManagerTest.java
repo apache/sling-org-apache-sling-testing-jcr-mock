@@ -191,8 +191,16 @@ public class MockUserManagerTest {
      * Test method for {@link org.apache.sling.testing.mock.jcr.MockUserManager#createSystemUser(java.lang.String, java.lang.String)}.
      */
     @Test
-    public void testCreateSystemUser() {
-        assertThrows(UnsupportedOperationException.class, () -> userManager.createSystemUser("systemuser1", "/home/users/system"));
+    public void testCreateSystemUser() throws RepositoryException {
+        @NotNull User user = userManager.createSystemUser("systemuser1", "/home/users/system/test");
+        assertTrue(user.isSystemUser());
+        assertEquals("/home/users/system/test", ResourceUtil.getParent(user.getPath()));
+    }
+    @Test
+    public void testCreateSystemUserWithNullIntermediatePath() throws RepositoryException {
+        @NotNull User user = userManager.createSystemUser("systemuser1", null);
+        assertTrue(user.isSystemUser());
+        assertEquals("/home/users/system", ResourceUtil.getParent(user.getPath()));
     }
 
     /**
@@ -214,6 +222,12 @@ public class MockUserManagerTest {
         @NotNull User user1 = userManager.createUser("user1", "pwd", () -> "user1", "/home/users/path1");
         assertNotNull(user1);
         assertEquals("/home/users/path1/user1", user1.getPath());
+    }
+    @Test
+    public void testCreateUserStringStringPrincipalStringWithNullIntermediatePath() throws AuthorizableExistsException, RepositoryException {
+        @NotNull User user1 = userManager.createUser("user1", "pwd", () -> "user1", null);
+        assertNotNull(user1);
+        assertEquals("/home/users", ResourceUtil.getParent(user1.getPath()));
     }
 
     /**

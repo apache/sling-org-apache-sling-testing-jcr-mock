@@ -39,6 +39,7 @@ import org.apache.jackrabbit.api.security.user.Query;
 import org.apache.jackrabbit.api.security.user.User;
 import org.apache.jackrabbit.api.security.user.UserManager;
 import org.apache.jackrabbit.commons.visitor.FilteringItemVisitor;
+import org.apache.jackrabbit.oak.spi.security.principal.SystemUserPrincipal;
 import org.apache.jackrabbit.oak.spi.security.user.UserConstants;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -187,7 +188,11 @@ public class MockUserManager implements UserManager {
             throw new AuthorizableExistsException("Group already exists");
         }
         String principalName = toPrincipalName(groupID, principal);
-        Node node = ensureAuthorizablePathExists(intermediatePath, principalName, true);
+        if (intermediatePath == null) {
+            intermediatePath = "/home/groups"; // NOSONAR
+        }
+
+        Node node = ensureAuthorizablePathExists(intermediatePath, principalName, UserConstants.NT_REP_GROUP);
         return (Group)authorizables.computeIfAbsent(groupID, id -> new MockGroup(id, principal, node, this));
     }
 
@@ -215,8 +220,10 @@ public class MockUserManager implements UserManager {
      * @param isGroup Is group
      * @return Existing or created node
      * @throws RepositoryException Repository exception
+     * @deprecated use {@link #ensureAuthorizablePathExists(String, String, String)} instead
      */
-    protected Node ensureAuthorizablePathExists(String intermediatePath, String principalName, boolean isGroup) throws RepositoryException {
+    @Deprecated(forRemoval = true, since = "1.4.0")
+    protected Node ensureAuthorizablePathExists(@Nullable String intermediatePath, @NotNull String principalName, boolean isGroup) throws RepositoryException {
         if (intermediatePath == null) {
             if (isGroup) {
                 intermediatePath = "/home/groups"; // NOSONAR
@@ -224,6 +231,20 @@ public class MockUserManager implements UserManager {
                 intermediatePath = "/home/users"; // NOSONAR
             }
         }
+        String authorizableType = isGroup ? UserConstants.NT_REP_GROUP : UserConstants.NT_REP_USER;
+        return ensureAuthorizablePathExists(intermediatePath, principalName, authorizableType);
+    }
+
+    /**
+     * Creates the user/group home folder if they don't exist yet
+     *
+     * @param intermediatePath the parent path
+     * @param principalName Principal name
+     * @param isGroup Is group
+     * @return Existing or created node
+     * @throws RepositoryException Repository exception
+     */
+    protected Node ensureAuthorizablePathExists(@NotNull String intermediatePath, @NotNull String principalName, String authorizableNodeType) throws RepositoryException {
         // ensure the resource at the path exists
         String[] segments = intermediatePath.split("/");
         Node node = session.getRootNode();
@@ -236,7 +257,7 @@ public class MockUserManager implements UserManager {
             }
         }
         if (!node.hasNode(principalName)) {
-            node = node.addNode(principalName, isGroup ? UserConstants.NT_REP_GROUP : UserConstants.NT_REP_USER);
+            node = node.addNode(principalName, authorizableNodeType);
             node.setProperty(UserConstants.REP_PRINCIPAL_NAME, principalName);
             node.setProperty(UserConstants.REP_AUTHORIZABLE_ID, principalName);
         }
@@ -247,7 +268,8 @@ public class MockUserManager implements UserManager {
     @Override
     public @NotNull User createSystemUser(@NotNull String userID, @Nullable String intermediatePath)
             throws RepositoryException {
-        throw new UnsupportedOperationException();
+        SystemUserPrincipal p = () -> userID;
+        return maybeCreateUser(userID, null, p, intermediatePath);
     }
 
     @Override
@@ -268,7 +290,16 @@ public class MockUserManager implements UserManager {
             throw new AuthorizableExistsException("User already exists");
         }
         String principalName = toPrincipalName(userID, principal);
-        Node node = ensureAuthorizablePathExists(intermediatePath, principalName, false);
+        boolean isSystemUser = principal instanceof SystemUserPrincipal;
+        String authorizableNodeType = isSystemUser ? UserConstants.NT_REP_SYSTEM_USER : UserConstants.NT_REP_USER;
+        if (intermediatePath == null) {
+            if (isSystemUser) {
+                intermediatePath = "/home/users/system"; // NOSONAR
+            } else {
+                intermediatePath = "/home/users"; // NOSONAR
+            }
+        }
+        Node node = ensureAuthorizablePathExists(intermediatePath, principalName, authorizableNodeType);
         return (User)authorizables.computeIfAbsent(userID, id -> new MockUser(id, principal, node, this));
     }
 
