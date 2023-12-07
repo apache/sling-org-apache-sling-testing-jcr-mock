@@ -83,6 +83,10 @@ public class MockUserManager implements UserManager {
                         if (node.isNodeType(UserConstants.NT_REP_USER)) {
                             String userID = node.getProperty(UserConstants.REP_AUTHORIZABLE_ID).getString();
                             authorizables.computeIfAbsent(userID, id -> new MockUser(id, null, node, MockUserManager.this));
+                        } else if (node.isNodeType(UserConstants.NT_REP_SYSTEM_USER)) {
+                            String userID = node.getProperty(UserConstants.REP_AUTHORIZABLE_ID).getString();
+                            SystemUserPrincipal p = () -> userID;
+                            authorizables.computeIfAbsent(userID, id -> new MockUser(id, p, node, MockUserManager.this));
                         } else if (node.isNodeType(UserConstants.NT_REP_GROUP)) {
                             String userID = node.getProperty(UserConstants.REP_AUTHORIZABLE_ID).getString();
                             authorizables.computeIfAbsent(userID, id -> new MockGroup(id, null, node, MockUserManager.this));

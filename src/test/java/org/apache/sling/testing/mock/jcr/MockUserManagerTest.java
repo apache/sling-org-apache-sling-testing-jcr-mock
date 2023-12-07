@@ -95,6 +95,10 @@ public class MockUserManagerTest {
         testuser1.setProperty(UserConstants.REP_AUTHORIZABLE_ID, "testuser1");
         testuser1.setProperty(UserConstants.REP_PRINCIPAL_NAME, "testuser1");
 
+        Node testsystemuser1 = usersNode.addNode("testsystemuser1", UserConstants.NT_REP_SYSTEM_USER);
+        testsystemuser1.setProperty(UserConstants.REP_AUTHORIZABLE_ID, "testsystemuser1");
+        testsystemuser1.setProperty(UserConstants.REP_PRINCIPAL_NAME, "testsystemuser1");
+
         Node groupsNode = homeNode.addNode("groups", UserConstants.NT_REP_AUTHORIZABLE_FOLDER);
         Node testgroup1 = groupsNode.addNode("testgroup1", UserConstants.NT_REP_GROUP);
         testgroup1.setProperty(UserConstants.REP_AUTHORIZABLE_ID, "testgroup1");
@@ -103,6 +107,7 @@ public class MockUserManagerTest {
         userManager.loadAlreadyExistingAuthorizables();
 
         assertNotNull(userManager.getAuthorizable("testuser1"));
+        assertNotNull(userManager.getAuthorizable("testsystemuser1"));
         assertNotNull(userManager.getAuthorizable("testgroup1"));
     }
 
