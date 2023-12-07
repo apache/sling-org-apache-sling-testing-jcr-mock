@@ -95,6 +95,10 @@ public class MockUserManagerTest {
         testuser1.setProperty(UserConstants.REP_AUTHORIZABLE_ID, "testuser1");
         testuser1.setProperty(UserConstants.REP_PRINCIPAL_NAME, "testuser1");
 
+        Node testsystemuser1 = usersNode.addNode("testsystemuser1", UserConstants.NT_REP_SYSTEM_USER);
+        testsystemuser1.setProperty(UserConstants.REP_AUTHORIZABLE_ID, "testsystemuser1");
+        testsystemuser1.setProperty(UserConstants.REP_PRINCIPAL_NAME, "testsystemuser1");
+
         Node groupsNode = homeNode.addNode("groups", UserConstants.NT_REP_AUTHORIZABLE_FOLDER);
         Node testgroup1 = groupsNode.addNode("testgroup1", UserConstants.NT_REP_GROUP);
         testgroup1.setProperty(UserConstants.REP_AUTHORIZABLE_ID, "testgroup1");
@@ -103,6 +107,7 @@ public class MockUserManagerTest {
         userManager.loadAlreadyExistingAuthorizables();
 
         assertNotNull(userManager.getAuthorizable("testuser1"));
+        assertNotNull(userManager.getAuthorizable("testsystemuser1"));
         assertNotNull(userManager.getAuthorizable("testgroup1"));
     }
 
@@ -191,8 +196,16 @@ public class MockUserManagerTest {
      * Test method for {@link org.apache.sling.testing.mock.jcr.MockUserManager#createSystemUser(java.lang.String, java.lang.String)}.
      */
     @Test
-    public void testCreateSystemUser() {
-        assertThrows(UnsupportedOperationException.class, () -> userManager.createSystemUser("systemuser1", "/home/users/system"));
+    public void testCreateSystemUser() throws RepositoryException {
+        @NotNull User user = userManager.createSystemUser("systemuser1", "/home/users/system/test");
+        assertTrue(user.isSystemUser());
+        assertEquals("/home/users/system/test", ResourceUtil.getParent(user.getPath()));
+    }
+    @Test
+    public void testCreateSystemUserWithNullIntermediatePath() throws RepositoryException {
+        @NotNull User user = userManager.createSystemUser("systemuser1", null);
+        assertTrue(user.isSystemUser());
+        assertEquals("/home/users/system", ResourceUtil.getParent(user.getPath()));
     }
 
     /**
@@ -214,6 +227,46 @@ public class MockUserManagerTest {
         @NotNull User user1 = userManager.createUser("user1", "pwd", () -> "user1", "/home/users/path1");
         assertNotNull(user1);
         assertEquals("/home/users/path1/user1", user1.getPath());
+    }
+    @Test
+    public void testCreateUserStringStringPrincipalStringWithNullIntermediatePath() throws AuthorizableExistsException, RepositoryException {
+        @NotNull User user1 = userManager.createUser("user1", "pwd", () -> "user1", null);
+        assertNotNull(user1);
+        assertEquals("/home/users", ResourceUtil.getParent(user1.getPath()));
+    }
+
+    /**
+     * Test method for {@link org.apache.sling.testing.mock.jcr.MockUserManager#ensureAuthorizablePathExists(java.lang.String, java.lang.String, boolean)}.
+     */
+    @Deprecated
+    @Test
+    public void testEnsureAuthorizablePathExistsStringStringBoolean() throws RepositoryException {
+        // intermedate path supplied
+        Node user1node = userManager.ensureAuthorizablePathExists("/home/users/path1", "user1", false);
+        assertNotNull(user1node);
+        // no intermediate path for the user
+        Node user2node = userManager.ensureAuthorizablePathExists(null, "user2", false);
+        assertNotNull(user2node);
+        // no intermediate path for the group
+        Node group1node = userManager.ensureAuthorizablePathExists(null, "group1", true);
+        assertNotNull(group1node);
+
+        // one more time to ensure it works if the path already exists
+        user1node = userManager.ensureAuthorizablePathExists("/home/users/path1", "user1", false);
+        assertNotNull(user1node);
+    }
+
+    /**
+     * Test method for {@link org.apache.sling.testing.mock.jcr.MockUserManager#ensureAuthorizablePathExists(java.lang.String, java.lang.String, java.lang.String)}.
+     */
+    @Test
+    public void testEnsureAuthorizablePathExistsStringStringString() throws RepositoryException {
+        Node user1node = userManager.ensureAuthorizablePathExists("/home/users/path1", "user1", UserConstants.NT_REP_USER);
+        assertNotNull(user1node);
+
+        // one more time to ensure it works if the path already exists
+        user1node = userManager.ensureAuthorizablePathExists("/home/users/path1", "user1", UserConstants.NT_REP_USER);
+        assertNotNull(user1node);
     }
 
     /**
