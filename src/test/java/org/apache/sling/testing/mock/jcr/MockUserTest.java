@@ -16,7 +16,6 @@
  */
 package org.apache.sling.testing.mock.jcr;
 
-import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
@@ -31,6 +30,7 @@ import javax.jcr.UnsupportedRepositoryOperationException;
 
 import org.apache.jackrabbit.api.security.user.User;
 import org.apache.jackrabbit.oak.spi.security.user.UserConstants;
+import org.apache.jackrabbit.oak.spi.security.user.util.PasswordUtil;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -136,7 +136,7 @@ public class MockUserTest extends MockAuthorizableTest<User> {
 
     protected void assertPassword(char [] expectedPwd) throws RepositoryException {
         SimpleCredentials creds = (SimpleCredentials)authorizable.getCredentials();
-        assertArrayEquals(expectedPwd, creds.getPassword());
+        assertTrue(PasswordUtil.isSame(new String(creds.getPassword()), expectedPwd));
     }
 
     /**
@@ -144,7 +144,7 @@ public class MockUserTest extends MockAuthorizableTest<User> {
      */
     @Test
     public void testChangePasswordStringString() throws RepositoryException {
-        authorizable.changePassword("changed", "");
+        authorizable.changePassword("changed", "pwd");
         assertPassword("changed".toCharArray());
 
         assertThrows(RepositoryException.class, () -> authorizable.changePassword("changed2", "wrong"));

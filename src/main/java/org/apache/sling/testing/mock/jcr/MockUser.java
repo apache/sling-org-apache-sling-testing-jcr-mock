@@ -16,8 +16,9 @@
  */
 package org.apache.sling.testing.mock.jcr;
 
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
-import java.util.Arrays;
 
 import javax.jcr.Credentials;
 import javax.jcr.Node;
@@ -27,6 +28,7 @@ import javax.jcr.SimpleCredentials;
 import org.apache.jackrabbit.api.security.user.Impersonation;
 import org.apache.jackrabbit.api.security.user.User;
 import org.apache.jackrabbit.oak.spi.security.principal.SystemUserPrincipal;
+import org.apache.jackrabbit.oak.spi.security.user.util.PasswordUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -44,7 +46,19 @@ class MockUser extends MockAuthorizable implements User {
     public MockUser(@Nullable String id, @Nullable Principal principal,
             @NotNull Node homeNode,
             @NotNull MockUserManager mockUserMgr) {
+        this(id, principal, null, homeNode, mockUserMgr);
+    }
+
+    public MockUser(@Nullable String id, @Nullable Principal principal,
+            @Nullable String pwd,
+            @NotNull Node homeNode,
+            @NotNull MockUserManager mockUserMgr) {
         super(id, principal, homeNode, mockUserMgr);
+        try {
+            this.pwd = pwd == null ? null : PasswordUtil.buildPasswordHash(pwd).toCharArray();
+        } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
+            throw new IllegalArgumentException("Failed to build the password hash", e);
+        }
     }
 
     @Override
@@ -81,13 +95,17 @@ class MockUser extends MockAuthorizable implements User {
         if (password == null) {
             throw new RepositoryException("Attempt to set 'null' password for user " + getID());
         }
-
-        pwd = password.toCharArray();
+        try {
+            pwd = PasswordUtil.buildPasswordHash(password).toCharArray();
+        } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
+            throw new RepositoryException("Failed to build the password hash", e);
+        }
     }
 
     @Override
     public void changePassword(@Nullable String password, @NotNull String oldPassword) throws RepositoryException {
-        if (Arrays.equals(pwd, oldPassword.toCharArray())) {
+        String hashedPwd = pwd == null ? null : new String(pwd);
+        if (PasswordUtil.isSame(hashedPwd, oldPassword.toCharArray())) {
             changePassword(password);
         } else {
             throw new RepositoryException("old password did not match");
