@@ -22,6 +22,9 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
+
 import javax.jcr.Credentials;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
@@ -33,6 +36,7 @@ import org.apache.jackrabbit.oak.spi.security.user.UserConstants;
 import org.apache.jackrabbit.oak.spi.security.user.util.PasswordUtil;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
 import ch.qos.logback.classic.Level;
@@ -45,6 +49,23 @@ public class MockUserTest extends MockAuthorizableTest<User> {
     @Override
     protected User createAuthorizable() throws RepositoryException {
         return userManager.createUser("user1", "pwd");
+    }
+
+    @Test
+    public void testMockUserConstructorWithCaughtNoSuchAlgorithmException() {
+        try (MockedStatic<PasswordUtil> passwordUtilMock = Mockito.mockStatic(PasswordUtil.class);) {
+            passwordUtilMock.when(() -> PasswordUtil.buildPasswordHash("pwd"))
+                .thenThrow(NoSuchAlgorithmException.class);
+            assertThrows(IllegalArgumentException.class, () -> new MockUser("user1", null, "pwd", null, (MockUserManager)userManager));
+        }
+    }
+    @Test
+    public void testMockUserConstructorWithCaughtUnsupportedEncodingExceptionException() {
+        try (MockedStatic<PasswordUtil> passwordUtilMock = Mockito.mockStatic(PasswordUtil.class);) {
+            passwordUtilMock.when(() -> PasswordUtil.buildPasswordHash("pwd"))
+                .thenThrow(UnsupportedEncodingException.class);
+            assertThrows(IllegalArgumentException.class, () -> new MockUser("user1", null, "pwd", null, (MockUserManager)userManager));
+        }
     }
 
     @Test
@@ -132,6 +153,23 @@ public class MockUserTest extends MockAuthorizableTest<User> {
         assertPassword("changed".toCharArray());
 
         assertThrows(RepositoryException.class, () -> authorizable.changePassword(null));
+    }
+
+    @Test
+    public void testChangePasswordStringWithCaughtNoSuchAlgorithmException() throws RepositoryException {
+        try (MockedStatic<PasswordUtil> passwordUtilMock = Mockito.mockStatic(PasswordUtil.class);) {
+            passwordUtilMock.when(() -> PasswordUtil.buildPasswordHash("changed"))
+                .thenThrow(NoSuchAlgorithmException.class);
+            assertThrows(RepositoryException.class, () -> authorizable.changePassword("changed"));
+        }
+    }
+    @Test
+    public void testChangePasswordStringWithCaughtUnsupportedEncodingExceptionException() throws RepositoryException {
+        try (MockedStatic<PasswordUtil> passwordUtilMock = Mockito.mockStatic(PasswordUtil.class);) {
+            passwordUtilMock.when(() -> PasswordUtil.buildPasswordHash("changed"))
+                .thenThrow(UnsupportedEncodingException.class);
+            assertThrows(RepositoryException.class, () -> authorizable.changePassword("changed"));
+        }
     }
 
     protected void assertPassword(char [] expectedPwd) throws RepositoryException {
