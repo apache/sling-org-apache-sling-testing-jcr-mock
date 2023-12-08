@@ -154,6 +154,12 @@ public class MockUserTest extends MockAuthorizableTest<User> {
 
         assertThrows(RepositoryException.class, () -> authorizable.changePassword(null));
     }
+    @Test
+    public void testChangePasswordStringFromNull() throws RepositoryException {
+        // start with a null password - for code coverage
+        authorizable = userManager.createUser("testuser2", null);
+        assertThrows(RepositoryException.class, () -> authorizable.changePassword("changed", "oldPwd"));
+    }
 
     @Test
     public void testChangePasswordStringWithCaughtNoSuchAlgorithmException() throws RepositoryException {
