@@ -16,8 +16,9 @@
  */
 package org.apache.sling.testing.mock.jcr;
 
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
 import java.security.Principal;
-import java.util.Arrays;
 
 import javax.jcr.Credentials;
 import javax.jcr.Node;
@@ -27,6 +28,9 @@ import javax.jcr.SimpleCredentials;
 import org.apache.jackrabbit.api.security.user.Impersonation;
 import org.apache.jackrabbit.api.security.user.User;
 import org.apache.jackrabbit.oak.spi.security.principal.SystemUserPrincipal;
+import org.apache.jackrabbit.oak.spi.security.user.UserConstants;
+import org.apache.jackrabbit.oak.spi.security.user.UserIdCredentials;
+import org.apache.jackrabbit.oak.spi.security.user.util.PasswordUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -37,7 +41,6 @@ import org.slf4j.LoggerFactory;
  */
 class MockUser extends MockAuthorizable implements User {
     private Logger logger = LoggerFactory.getLogger(getClass());
-    private char[] pwd = {};
     private boolean disabled;
     private String disabledReason;
 
@@ -68,7 +71,20 @@ class MockUser extends MockAuthorizable implements User {
 
     @Override
     public @NotNull Credentials getCredentials() throws RepositoryException {
-        return new SimpleCredentials(id, pwd);
+        char[] pwd;
+        if (homeNode.hasProperty(UserConstants.REP_PASSWORD)) {
+            pwd = homeNode.getProperty(UserConstants.REP_PASSWORD).getString().toCharArray();
+        } else {
+            pwd = null;
+        }
+
+        Credentials creds;
+        if (pwd == null) {
+            creds = new UserIdCredentials(id);
+        } else {
+            creds = new SimpleCredentials(id, pwd);
+        }
+        return creds;
     }
 
     @Override
@@ -81,13 +97,24 @@ class MockUser extends MockAuthorizable implements User {
         if (password == null) {
             throw new RepositoryException("Attempt to set 'null' password for user " + getID());
         }
-
-        pwd = password.toCharArray();
+        try {
+            char[] hashedPwd = PasswordUtil.buildPasswordHash(password).toCharArray();
+            homeNode.setProperty(UserConstants.REP_PASSWORD, String.valueOf(hashedPwd));
+        } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
+            throw new RepositoryException("Failed to build the password hash", e);
+        }
     }
 
     @Override
     public void changePassword(@Nullable String password, @NotNull String oldPassword) throws RepositoryException {
-        if (Arrays.equals(pwd, oldPassword.toCharArray())) {
+        String hashedPwd;
+        if (homeNode.hasProperty(UserConstants.REP_PASSWORD)) {
+            String pwd = homeNode.getProperty(UserConstants.REP_PASSWORD).getString();
+            hashedPwd = String.valueOf(pwd);
+        } else {
+            hashedPwd = null;
+        }
+        if (PasswordUtil.isSame(hashedPwd, oldPassword.toCharArray())) {
             changePassword(password);
         } else {
             throw new RepositoryException("old password did not match");

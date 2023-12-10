@@ -16,12 +16,14 @@
  */
 package org.apache.sling.testing.mock.jcr;
 
-import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
+
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
 
 import javax.jcr.Credentials;
 import javax.jcr.Node;
@@ -31,8 +33,11 @@ import javax.jcr.UnsupportedRepositoryOperationException;
 
 import org.apache.jackrabbit.api.security.user.User;
 import org.apache.jackrabbit.oak.spi.security.user.UserConstants;
+import org.apache.jackrabbit.oak.spi.security.user.UserIdCredentials;
+import org.apache.jackrabbit.oak.spi.security.user.util.PasswordUtil;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
+import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
 import ch.qos.logback.classic.Level;
@@ -114,6 +119,15 @@ public class MockUserTest extends MockAuthorizableTest<User> {
         assertTrue(credentials instanceof SimpleCredentials);
         assertEquals(authorizable.getID(), ((SimpleCredentials)credentials).getUserID());
     }
+    @Test
+    public void testGetCredentialsWithNullPassword() throws RepositoryException {
+        // create a user with no password
+        authorizable = userManager.createUser("user2", null);
+
+        @NotNull Credentials credentials = authorizable.getCredentials();
+        assertTrue(credentials instanceof UserIdCredentials);
+        assertEquals(authorizable.getID(), ((UserIdCredentials)credentials).getUserId());
+    }
 
     /**
      * Test method for {@link org.apache.sling.testing.mock.jcr.MockUser#getImpersonation()}.
@@ -133,10 +147,33 @@ public class MockUserTest extends MockAuthorizableTest<User> {
 
         assertThrows(RepositoryException.class, () -> authorizable.changePassword(null));
     }
+    @Test
+    public void testChangePasswordStringFromNull() throws RepositoryException {
+        // start with a null password - for code coverage
+        authorizable = userManager.createUser("testuser2", null);
+        assertThrows(RepositoryException.class, () -> authorizable.changePassword("changed", "oldPwd"));
+    }
+
+    @Test
+    public void testChangePasswordStringWithCaughtNoSuchAlgorithmException() throws RepositoryException {
+        try (MockedStatic<PasswordUtil> passwordUtilMock = Mockito.mockStatic(PasswordUtil.class);) {
+            passwordUtilMock.when(() -> PasswordUtil.buildPasswordHash("changed"))
+                .thenThrow(NoSuchAlgorithmException.class);
+            assertThrows(RepositoryException.class, () -> authorizable.changePassword("changed"));
+        }
+    }
+    @Test
+    public void testChangePasswordStringWithCaughtUnsupportedEncodingExceptionException() throws RepositoryException {
+        try (MockedStatic<PasswordUtil> passwordUtilMock = Mockito.mockStatic(PasswordUtil.class);) {
+            passwordUtilMock.when(() -> PasswordUtil.buildPasswordHash("changed"))
+                .thenThrow(UnsupportedEncodingException.class);
+            assertThrows(RepositoryException.class, () -> authorizable.changePassword("changed"));
+        }
+    }
 
     protected void assertPassword(char [] expectedPwd) throws RepositoryException {
         SimpleCredentials creds = (SimpleCredentials)authorizable.getCredentials();
-        assertArrayEquals(expectedPwd, creds.getPassword());
+        assertTrue(PasswordUtil.isSame(new String(creds.getPassword()), expectedPwd));
     }
 
     /**
@@ -144,7 +181,7 @@ public class MockUserTest extends MockAuthorizableTest<User> {
      */
     @Test
     public void testChangePasswordStringString() throws RepositoryException {
-        authorizable.changePassword("changed", "");
+        authorizable.changePassword("changed", "pwd");
         assertPassword("changed".toCharArray());
 
         assertThrows(RepositoryException.class, () -> authorizable.changePassword("changed2", "wrong"));
@@ -192,6 +229,14 @@ public class MockUserTest extends MockAuthorizableTest<User> {
         Node node = session.getNode(authorizable.getPath());
         assertEquals(authorizable.getID(), 
                 node.getProperty(UserConstants.REP_PRINCIPAL_NAME).getString());
+    }
+
+    @Test
+    @Override
+    public void testGetPropertyNames() throws RepositoryException {
+        // create a user with no password so there are no initial properties
+        authorizable = userManager.createUser("user2", null);
+        super.testGetPropertyNames();
     }
 
 }

@@ -306,7 +306,11 @@ public class MockUserManager implements UserManager {
             }
         }
         Node node = ensureAuthorizablePathExists(intermediatePath, principalName, authorizableNodeType);
-        return (User)authorizables.computeIfAbsent(userID, id -> new MockUser(id, principal, node, this));
+        User user = (User)authorizables.computeIfAbsent(userID, id -> new MockUser(id, principal, node, this));
+        if (password != null) {
+            user.changePassword(password);
+        }
+        return user;
     }
 
     @Override

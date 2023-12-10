@@ -23,12 +23,15 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Iterator;
 import java.util.Set;
 
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.SimpleCredentials;
 import javax.jcr.UnsupportedRepositoryOperationException;
 import javax.jcr.ValueFactory;
 
@@ -40,6 +43,7 @@ import org.apache.jackrabbit.api.security.user.Query;
 import org.apache.jackrabbit.api.security.user.User;
 import org.apache.jackrabbit.api.security.user.UserManager;
 import org.apache.jackrabbit.oak.spi.security.user.UserConstants;
+import org.apache.jackrabbit.oak.spi.security.user.util.PasswordUtil;
 import org.apache.jackrabbit.value.ValueFactoryImpl;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -87,13 +91,19 @@ public class MockUserManagerTest {
     }
 
     @Test
-    public void testLoadAlreadyExistingAuthorizables() throws RepositoryException {
+    public void testLoadAlreadyExistingAuthorizables() throws RepositoryException, NoSuchAlgorithmException, UnsupportedEncodingException {
         Node homeNode = session.getRootNode()
             .addNode("home", UserConstants.NT_REP_AUTHORIZABLE_FOLDER);
         Node usersNode = homeNode.addNode("users", UserConstants.NT_REP_AUTHORIZABLE_FOLDER);
         Node testuser1 = usersNode.addNode("testuser1", UserConstants.NT_REP_USER);
         testuser1.setProperty(UserConstants.REP_AUTHORIZABLE_ID, "testuser1");
         testuser1.setProperty(UserConstants.REP_PRINCIPAL_NAME, "testuser1");
+        testuser1.setProperty(UserConstants.REP_PASSWORD, PasswordUtil.buildPasswordHash("testPwd"));
+
+        // user with no password set - for code coverage
+        Node testuser2 = usersNode.addNode("testuser2", UserConstants.NT_REP_USER);
+        testuser2.setProperty(UserConstants.REP_AUTHORIZABLE_ID, "testuser2");
+        testuser2.setProperty(UserConstants.REP_PRINCIPAL_NAME, "testuser2");
 
         Node testsystemuser1 = usersNode.addNode("testsystemuser1", UserConstants.NT_REP_SYSTEM_USER);
         testsystemuser1.setProperty(UserConstants.REP_AUTHORIZABLE_ID, "testsystemuser1");
@@ -106,7 +116,12 @@ public class MockUserManagerTest {
 
         userManager.loadAlreadyExistingAuthorizables();
 
-        assertNotNull(userManager.getAuthorizable("testuser1"));
+        @Nullable Authorizable authorizable = userManager.getAuthorizable("testuser1");
+        assertTrue(authorizable instanceof User);
+        // verify password state was stored
+        SimpleCredentials creds = (SimpleCredentials)((User)authorizable).getCredentials();
+        assertTrue(PasswordUtil.isSame(String.valueOf(creds.getPassword()), "testPwd"));
+        assertNotNull(userManager.getAuthorizable("testuser2"));
         assertNotNull(userManager.getAuthorizable("testsystemuser1"));
         assertNotNull(userManager.getAuthorizable("testgroup1"));
     }
