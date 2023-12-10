@@ -82,13 +82,7 @@ public class MockUserManager implements UserManager {
                     protected void entering(Node node, int level) throws RepositoryException {
                         if (node.isNodeType(UserConstants.NT_REP_USER)) {
                             String userID = node.getProperty(UserConstants.REP_AUTHORIZABLE_ID).getString();
-                            String pwd;
-                            if (node.hasProperty(UserConstants.REP_PASSWORD)) {
-                                pwd = node.getProperty(UserConstants.REP_PASSWORD).getString();
-                            } else {
-                                pwd = null;
-                            }
-                            authorizables.computeIfAbsent(userID, id -> new MockUser(id, null, pwd, node, MockUserManager.this));
+                            authorizables.computeIfAbsent(userID, id -> new MockUser(id, null, node, MockUserManager.this));
                         } else if (node.isNodeType(UserConstants.NT_REP_SYSTEM_USER)) {
                             String userID = node.getProperty(UserConstants.REP_AUTHORIZABLE_ID).getString();
                             SystemUserPrincipal p = () -> userID;
@@ -312,7 +306,11 @@ public class MockUserManager implements UserManager {
             }
         }
         Node node = ensureAuthorizablePathExists(intermediatePath, principalName, authorizableNodeType);
-        return (User)authorizables.computeIfAbsent(userID, id -> new MockUser(id, principal, password, node, this));
+        User user = (User)authorizables.computeIfAbsent(userID, id -> new MockUser(id, principal, node, this));
+        if (password != null) {
+            user.changePassword(password);
+        }
+        return user;
     }
 
     @Override

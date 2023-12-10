@@ -28,6 +28,7 @@ import javax.jcr.SimpleCredentials;
 import org.apache.jackrabbit.api.security.user.Impersonation;
 import org.apache.jackrabbit.api.security.user.User;
 import org.apache.jackrabbit.oak.spi.security.principal.SystemUserPrincipal;
+import org.apache.jackrabbit.oak.spi.security.user.UserConstants;
 import org.apache.jackrabbit.oak.spi.security.user.util.PasswordUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -39,26 +40,13 @@ import org.slf4j.LoggerFactory;
  */
 class MockUser extends MockAuthorizable implements User {
     private Logger logger = LoggerFactory.getLogger(getClass());
-    private char[] pwd = {};
     private boolean disabled;
     private String disabledReason;
 
     public MockUser(@Nullable String id, @Nullable Principal principal,
             @NotNull Node homeNode,
             @NotNull MockUserManager mockUserMgr) {
-        this(id, principal, null, homeNode, mockUserMgr);
-    }
-
-    public MockUser(@Nullable String id, @Nullable Principal principal,
-            @Nullable String pwd,
-            @NotNull Node homeNode,
-            @NotNull MockUserManager mockUserMgr) {
         super(id, principal, homeNode, mockUserMgr);
-        try {
-            this.pwd = pwd == null ? null : PasswordUtil.buildPasswordHash(pwd).toCharArray();
-        } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
-            throw new IllegalArgumentException("Failed to build the password hash", e);
-        }
     }
 
     @Override
@@ -82,6 +70,13 @@ class MockUser extends MockAuthorizable implements User {
 
     @Override
     public @NotNull Credentials getCredentials() throws RepositoryException {
+        char[] pwd;
+        if (homeNode.hasProperty(UserConstants.REP_PASSWORD)) {
+            pwd = homeNode.getProperty(UserConstants.REP_PASSWORD).getString().toCharArray();
+        } else {
+            pwd = null;
+        }
+
         return new SimpleCredentials(id, pwd);
     }
 
@@ -96,7 +91,8 @@ class MockUser extends MockAuthorizable implements User {
             throw new RepositoryException("Attempt to set 'null' password for user " + getID());
         }
         try {
-            pwd = PasswordUtil.buildPasswordHash(password).toCharArray();
+            char[] hashedPwd = PasswordUtil.buildPasswordHash(password).toCharArray();
+            homeNode.setProperty(UserConstants.REP_PASSWORD, String.valueOf(hashedPwd));
         } catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
             throw new RepositoryException("Failed to build the password hash", e);
         }
@@ -104,7 +100,13 @@ class MockUser extends MockAuthorizable implements User {
 
     @Override
     public void changePassword(@Nullable String password, @NotNull String oldPassword) throws RepositoryException {
-        String hashedPwd = pwd == null ? null : new String(pwd);
+        String hashedPwd;
+        if (homeNode.hasProperty(UserConstants.REP_PASSWORD)) {
+            String pwd = homeNode.getProperty(UserConstants.REP_PASSWORD).getString();
+            hashedPwd = String.valueOf(pwd);
+        } else {
+            hashedPwd = null;
+        }
         if (PasswordUtil.isSame(hashedPwd, oldPassword.toCharArray())) {
             changePassword(password);
         } else {

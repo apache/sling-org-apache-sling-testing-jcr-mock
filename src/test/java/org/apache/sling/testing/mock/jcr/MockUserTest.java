@@ -52,23 +52,6 @@ public class MockUserTest extends MockAuthorizableTest<User> {
     }
 
     @Test
-    public void testMockUserConstructorWithCaughtNoSuchAlgorithmException() {
-        try (MockedStatic<PasswordUtil> passwordUtilMock = Mockito.mockStatic(PasswordUtil.class);) {
-            passwordUtilMock.when(() -> PasswordUtil.buildPasswordHash("pwd"))
-                .thenThrow(NoSuchAlgorithmException.class);
-            assertThrows(IllegalArgumentException.class, () -> new MockUser("user1", null, "pwd", null, (MockUserManager)userManager));
-        }
-    }
-    @Test
-    public void testMockUserConstructorWithCaughtUnsupportedEncodingExceptionException() {
-        try (MockedStatic<PasswordUtil> passwordUtilMock = Mockito.mockStatic(PasswordUtil.class);) {
-            passwordUtilMock.when(() -> PasswordUtil.buildPasswordHash("pwd"))
-                .thenThrow(UnsupportedEncodingException.class);
-            assertThrows(IllegalArgumentException.class, () -> new MockUser("user1", null, "pwd", null, (MockUserManager)userManager));
-        }
-    }
-
-    @Test
     @Override
     public void testGetID() throws RepositoryException {
         assertEquals("user1", authorizable.getID());
@@ -236,6 +219,14 @@ public class MockUserTest extends MockAuthorizableTest<User> {
         Node node = session.getNode(authorizable.getPath());
         assertEquals(authorizable.getID(), 
                 node.getProperty(UserConstants.REP_PRINCIPAL_NAME).getString());
+    }
+
+    @Test
+    @Override
+    public void testGetPropertyNames() throws RepositoryException {
+        // create a user with no password so there are no initial properties
+        authorizable = userManager.createUser("user2", null);
+        super.testGetPropertyNames();
     }
 
 }
