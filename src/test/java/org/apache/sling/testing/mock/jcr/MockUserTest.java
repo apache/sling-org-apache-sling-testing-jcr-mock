@@ -33,6 +33,7 @@ import javax.jcr.UnsupportedRepositoryOperationException;
 
 import org.apache.jackrabbit.api.security.user.User;
 import org.apache.jackrabbit.oak.spi.security.user.UserConstants;
+import org.apache.jackrabbit.oak.spi.security.user.UserIdCredentials;
 import org.apache.jackrabbit.oak.spi.security.user.util.PasswordUtil;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
@@ -117,6 +118,15 @@ public class MockUserTest extends MockAuthorizableTest<User> {
         @NotNull Credentials credentials = authorizable.getCredentials();
         assertTrue(credentials instanceof SimpleCredentials);
         assertEquals(authorizable.getID(), ((SimpleCredentials)credentials).getUserID());
+    }
+    @Test
+    public void testGetCredentialsWithNullPassword() throws RepositoryException {
+        // create a user with no password
+        authorizable = userManager.createUser("user2", null);
+
+        @NotNull Credentials credentials = authorizable.getCredentials();
+        assertTrue(credentials instanceof UserIdCredentials);
+        assertEquals(authorizable.getID(), ((UserIdCredentials)credentials).getUserId());
     }
 
     /**

@@ -29,6 +29,7 @@ import org.apache.jackrabbit.api.security.user.Impersonation;
 import org.apache.jackrabbit.api.security.user.User;
 import org.apache.jackrabbit.oak.spi.security.principal.SystemUserPrincipal;
 import org.apache.jackrabbit.oak.spi.security.user.UserConstants;
+import org.apache.jackrabbit.oak.spi.security.user.UserIdCredentials;
 import org.apache.jackrabbit.oak.spi.security.user.util.PasswordUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -77,7 +78,13 @@ class MockUser extends MockAuthorizable implements User {
             pwd = null;
         }
 
-        return new SimpleCredentials(id, pwd);
+        Credentials creds;
+        if (pwd == null) {
+            creds = new UserIdCredentials(id);
+        } else {
+            creds = new SimpleCredentials(id, pwd);
+        }
+        return creds;
     }
 
     @Override

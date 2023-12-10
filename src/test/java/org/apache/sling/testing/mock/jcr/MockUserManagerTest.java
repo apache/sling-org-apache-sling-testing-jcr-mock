@@ -31,6 +31,7 @@ import java.util.Set;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+import javax.jcr.SimpleCredentials;
 import javax.jcr.UnsupportedRepositoryOperationException;
 import javax.jcr.ValueFactory;
 
@@ -115,7 +116,11 @@ public class MockUserManagerTest {
 
         userManager.loadAlreadyExistingAuthorizables();
 
-        assertNotNull(userManager.getAuthorizable("testuser1"));
+        @Nullable Authorizable authorizable = userManager.getAuthorizable("testuser1");
+        assertTrue(authorizable instanceof User);
+        // verify password state was stored
+        SimpleCredentials creds = (SimpleCredentials)((User)authorizable).getCredentials();
+        assertTrue(PasswordUtil.isSame(String.valueOf(creds.getPassword()), "testPwd"));
         assertNotNull(userManager.getAuthorizable("testuser2"));
         assertNotNull(userManager.getAuthorizable("testsystemuser1"));
         assertNotNull(userManager.getAuthorizable("testgroup1"));
