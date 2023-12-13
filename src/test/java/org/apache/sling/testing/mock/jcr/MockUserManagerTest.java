@@ -104,6 +104,8 @@ public class MockUserManagerTest {
         Node testuser2 = usersNode.addNode("testuser2", UserConstants.NT_REP_USER);
         testuser2.setProperty(UserConstants.REP_AUTHORIZABLE_ID, "testuser2");
         testuser2.setProperty(UserConstants.REP_PRINCIPAL_NAME, "testuser2");
+        // also disabled to verify this state is restored after loading
+        testuser2.setProperty(UserConstants.REP_DISABLED, "Bad Behavior");
 
         Node testsystemuser1 = usersNode.addNode("testsystemuser1", UserConstants.NT_REP_SYSTEM_USER);
         testsystemuser1.setProperty(UserConstants.REP_AUTHORIZABLE_ID, "testsystemuser1");
@@ -121,7 +123,11 @@ public class MockUserManagerTest {
         // verify password state was stored
         SimpleCredentials creds = (SimpleCredentials)((User)authorizable).getCredentials();
         assertTrue(PasswordUtil.isSame(String.valueOf(creds.getPassword()), "testPwd"));
-        assertNotNull(userManager.getAuthorizable("testuser2"));
+        @Nullable Authorizable authorizable2 = userManager.getAuthorizable("testuser2");
+        assertTrue(authorizable2 instanceof User);
+        // verify disabled state was stored
+        assertTrue(((User)authorizable2).isDisabled());
+        assertEquals("Bad Behavior", ((User)authorizable2).getDisabledReason());
         assertNotNull(userManager.getAuthorizable("testsystemuser1"));
         assertNotNull(userManager.getAuthorizable("testgroup1"));
     }

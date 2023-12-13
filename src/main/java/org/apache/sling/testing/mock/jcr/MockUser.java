@@ -41,8 +41,6 @@ import org.slf4j.LoggerFactory;
  */
 class MockUser extends MockAuthorizable implements User {
     private Logger logger = LoggerFactory.getLogger(getClass());
-    private boolean disabled;
-    private String disabledReason;
 
     public MockUser(@Nullable String id, @Nullable Principal principal,
             @NotNull Node homeNode,
@@ -124,21 +122,25 @@ class MockUser extends MockAuthorizable implements User {
     @Override
     public void disable(@Nullable String reason) throws RepositoryException {
         if (reason == null) {
-            this.disabled = false;
-            this.disabledReason = null;
+            if (homeNode.hasProperty(UserConstants.REP_DISABLED)) {
+                homeNode.getProperty(UserConstants.REP_DISABLED).remove();
+            }
         } else {
-            this.disabled = true;
-            this.disabledReason = reason;
+            homeNode.setProperty(UserConstants.REP_DISABLED, reason);
         }
     }
 
     @Override
     public boolean isDisabled() throws RepositoryException {
-        return disabled;
+        return homeNode.hasProperty(UserConstants.REP_DISABLED);
     }
 
     @Override
     public @Nullable String getDisabledReason() throws RepositoryException {
+        String disabledReason = null;
+        if (homeNode.hasProperty(UserConstants.REP_DISABLED)) {
+            disabledReason = homeNode.getProperty(UserConstants.REP_DISABLED).getString();
+        }
         return disabledReason;
     }
 

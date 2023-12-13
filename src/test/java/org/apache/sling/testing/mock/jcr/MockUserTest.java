@@ -199,6 +199,11 @@ public class MockUserTest extends MockAuthorizableTest<User> {
         authorizable.disable(null);
         assertFalse(authorizable.isDisabled());
         assertNull(authorizable.getDisabledReason());
+
+        // one more time for code coverage of user not previously disabled
+        authorizable.disable(null);
+        assertFalse(authorizable.isDisabled());
+        assertNull(authorizable.getDisabledReason());
     }
 
     /**
