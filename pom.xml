@@ -28,7 +28,7 @@
     </parent>
 
     <artifactId>org.apache.sling.testing.jcr-mock</artifactId>
-    <version>1.6.11-SNAPSHOT</version>
+    <version>1.6.12</version>
     <packaging>jar</packaging>
 
     <name>Apache Sling Testing JCR Mock</name>
@@ -38,11 +38,11 @@
         <connection>scm:git:https://gitbox.apache.org/repos/asf/sling-org-apache-sling-testing-jcr-mock.git</connection>
         <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/sling-org-apache-sling-testing-jcr-mock.git</developerConnection>
         <url>https://github.com/apache/sling-org-apache-sling-testing-jcr-mock.git</url>
-        <tag>HEAD</tag>
+        <tag>org.apache.sling.testing.jcr-mock-1.6.12</tag>
     </scm>
     
     <properties>
-        <project.build.outputTimestamp>2023-05-16T08:16:20Z</project.build.outputTimestamp>
+        <project.build.outputTimestamp>2023-12-18T19:42:57Z</project.build.outputTimestamp>
         <oak.version>1.22.5</oak.version>
         <jackrabbit.version>2.20.1</jackrabbit.version>
     </properties>
