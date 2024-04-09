@@ -23,12 +23,12 @@
     <parent>
         <groupId>org.apache.sling</groupId>
         <artifactId>sling-bundle-parent</artifactId>
-        <version>52</version>
+        <version>60</version>
         <relativePath />
     </parent>
 
     <artifactId>org.apache.sling.testing.jcr-mock</artifactId>
-    <version>1.6.15-SNAPSHOT</version>
+    <version>1.7.0-SNAPSHOT</version>
     <packaging>jar</packaging>
 
     <name>Apache Sling Testing JCR Mock</name>
