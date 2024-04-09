@@ -18,8 +18,6 @@
  */
 package org.apache.sling.testing.mock.jcr;
 
-import java.io.InputStream;
-
 import javax.jcr.NamespaceRegistry;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
@@ -30,6 +28,8 @@ import javax.jcr.observation.ObservationManager;
 import javax.jcr.query.QueryManager;
 import javax.jcr.version.Version;
 import javax.jcr.version.VersionManager;
+
+import java.io.InputStream;
 
 import org.xml.sax.ContentHandler;
 
@@ -95,8 +95,9 @@ class MockWorkspace implements Workspace {
     }
 
     @Override
-    public void clone(final String srcWorkspace, final String srcAbsPath, final String destAbsPath,
-            final boolean removeExisting) throws RepositoryException {
+    public void clone(
+            final String srcWorkspace, final String srcAbsPath, final String destAbsPath, final boolean removeExisting)
+            throws RepositoryException {
         throw new UnsupportedOperationException();
     }
 
@@ -126,12 +127,14 @@ class MockWorkspace implements Workspace {
     }
 
     @Override
-    public ContentHandler getImportContentHandler(final String parentAbsPath, final int uuidBehavior) throws RepositoryException {
+    public ContentHandler getImportContentHandler(final String parentAbsPath, final int uuidBehavior)
+            throws RepositoryException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void importXML(final String parentAbsPath, final InputStream in, final int uuidBehavior) throws RepositoryException {
+    public void importXML(final String parentAbsPath, final InputStream in, final int uuidBehavior)
+            throws RepositoryException {
         throw new UnsupportedOperationException();
     }
 
@@ -149,5 +152,4 @@ class MockWorkspace implements Workspace {
     public void deleteWorkspace(final String name) throws RepositoryException {
         throw new UnsupportedOperationException();
     }
-
 }

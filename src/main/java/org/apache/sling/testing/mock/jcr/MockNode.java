@@ -18,14 +18,6 @@
  */
 package org.apache.sling.testing.mock.jcr;
 
-import java.io.InputStream;
-import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Objects;
-import java.util.regex.Pattern;
-import java.util.stream.Stream;
-
 import javax.jcr.Binary;
 import javax.jcr.Item;
 import javax.jcr.ItemNotFoundException;
@@ -47,13 +39,20 @@ import javax.jcr.nodetype.PropertyDefinition;
 import javax.jcr.version.Version;
 import javax.jcr.version.VersionHistory;
 
+import java.io.InputStream;
+import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Objects;
+import java.util.regex.Pattern;
+import java.util.stream.Stream;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.jackrabbit.commons.ItemNameMatcher;
 import org.apache.jackrabbit.commons.iterator.NodeIteratorAdapter;
 import org.apache.jackrabbit.commons.iterator.PropertyIteratorAdapter;
 import org.apache.sling.testing.mock.jcr.MockNodeTypeManager.ResolveMode;
-
 
 /**
  * Mock {@link Node} implementation
@@ -84,7 +83,8 @@ class MockNode extends AbstractItem implements Node {
         getMockedSession().addItem(itemData);
         node.setProperty(JcrConstants.JCR_PRIMARYTYPE, primaryNodeTypeName);
 
-        if (((MockNodeTypeManager)getSession().getWorkspace().getNodeTypeManager()).isMode(ResolveMode.ONLY_REGISTERED)) {
+        if (((MockNodeTypeManager) getSession().getWorkspace().getNodeTypeManager())
+                .isMode(ResolveMode.ONLY_REGISTERED)) {
             // auto-add any autocreated children
             NodeDefinition[] childNodeDefinitions = nodeType.getChildNodeDefinitions();
             for (NodeDefinition nodeDefinition : childNodeDefinitions) {
@@ -123,7 +123,7 @@ class MockNode extends AbstractItem implements Node {
     /**
      * Sets a system generated value if the specified property definition is known
      * to need it.
-     * 
+     *
      * @param node the node to set property on
      * @param propDefinition the property definition to consider
      */
@@ -131,8 +131,8 @@ class MockNode extends AbstractItem implements Node {
             throws RepositoryException {
         String name = propDefinition.getName();
         String declaringNT = propDefinition.getDeclaringNodeType().getName();
-        if (JcrConstants.JCR_CREATED.equals(name) &&
-                (MIX_CREATED.equals(declaringNT) || JcrConstants.NT_VERSION.equals(declaringNT))) {
+        if (JcrConstants.JCR_CREATED.equals(name)
+                && (MIX_CREATED.equals(declaringNT) || JcrConstants.NT_VERSION.equals(declaringNT))) {
             // jcr:created property of a version or a mix:created
             node.setProperty(name, Calendar.getInstance());
         } else if (JCR_CREATEDBY.equals(name) && MIX_CREATED.equals(declaringNT)) {
@@ -187,7 +187,6 @@ class MockNode extends AbstractItem implements Node {
         return new NodeIteratorAdapter(items, items.getSize());
     }
 
-
     @Override
     public PropertyIterator getProperties() throws RepositoryException {
         RangeIterator items = getMockedSession().listChildren(getPath(), new ItemFilter() {
@@ -216,7 +215,7 @@ class MockNode extends AbstractItem implements Node {
         RangeIterator items = getMockedSession().listChildren(getPath(), new ItemFilter() {
             @Override
             public boolean accept(final ItemData item) throws RepositoryException {
-            return item.isProperty() && ItemNameMatcher.matches(item.getName(), nameGlobs);
+                return item.isProperty() && ItemNameMatcher.matches(item.getName(), nameGlobs);
             }
         });
         return new PropertyIteratorAdapter(items, items.getSize());
@@ -388,8 +387,7 @@ class MockNode extends AbstractItem implements Node {
     private void addItemOrRemoveIfValueNull(ItemData itemData, Object value) throws RepositoryException {
         if (value == null) {
             getMockedSession().removeItem(itemData.getPath());
-        }
-        else {
+        } else {
             getMockedSession().addItem(itemData);
         }
         this.itemData.setIsChanged(true);
@@ -405,7 +403,8 @@ class MockNode extends AbstractItem implements Node {
         boolean istype = this.itemData.getNodeType().isNodeType(nodeTypeName);
         if (!istype) {
             // SLING-11786 also check the mixin types
-            istype = Arrays.stream(getMixinNodeTypes()).anyMatch(nt -> nt.getName().equals(nodeTypeName));
+            istype = Arrays.stream(getMixinNodeTypes())
+                    .anyMatch(nt -> nt.getName().equals(nodeTypeName));
         }
         return istype;
     }
@@ -435,14 +434,14 @@ class MockNode extends AbstractItem implements Node {
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof MockNode) {
-            return itemData.equals(((MockNode)obj).itemData);
+            return itemData.equals(((MockNode) obj).itemData);
         }
         return false;
     }
 
     @Override
     public NodeType[] getMixinNodeTypes() throws RepositoryException {
-        try{
+        try {
             Value[] mixinNames = getProperty(JcrConstants.JCR_MIXINTYPES).getValues();
             return Arrays.stream(mixinNames)
                     .map(value -> {
@@ -455,14 +454,17 @@ class MockNode extends AbstractItem implements Node {
                     .filter(Objects::nonNull)
                     .map(name -> {
                         try {
-                            return getSession().getWorkspace().getNodeTypeManager().getNodeType(name);
+                            return getSession()
+                                    .getWorkspace()
+                                    .getNodeTypeManager()
+                                    .getNodeType(name);
                         } catch (RepositoryException e) {
                             return null;
                         }
                     })
                     .filter(Objects::nonNull)
                     .toArray(NodeType[]::new);
-        } catch(PathNotFoundException e) {
+        } catch (PathNotFoundException e) {
             // if there are not already mixin types added, return empty array
             return new NodeType[0];
         }
@@ -471,13 +473,14 @@ class MockNode extends AbstractItem implements Node {
     @Override
     public void orderBefore(final String srcChildRelPath, final String destChildRelPath) throws RepositoryException {
         Item srcChild = srcChildRelPath == null ? null : getMockedSession().getItem(getPath() + "/" + srcChildRelPath);
-        Item destChild = destChildRelPath == null ? null : getMockedSession().getItem(getPath() + "/" + destChildRelPath);
+        Item destChild =
+                destChildRelPath == null ? null : getMockedSession().getItem(getPath() + "/" + destChildRelPath);
         getMockedSession().orderBefore(srcChild, destChild);
     }
 
     @Override
     public NodeDefinition getDefinition() throws RepositoryException {
-        if (((MockNodeTypeManager)getSession().getWorkspace().getNodeTypeManager()).isMode(ResolveMode.MOCK_ALL)) {
+        if (((MockNodeTypeManager) getSession().getWorkspace().getNodeTypeManager()).isMode(ResolveMode.MOCK_ALL)) {
             // for backward compatibility
             return new MockNodeDefinition();
         } else {
@@ -499,16 +502,18 @@ class MockNode extends AbstractItem implements Node {
             NodeType nt = parent.getPrimaryNodeType();
             NodeDefinition[] childNodeDefinitions = nt.getChildNodeDefinitions();
             nodeDef = Stream.of(childNodeDefinitions)
-                .filter(def -> name.equals(def.getName()))
-                .findFirst().orElse(null);
+                    .filter(def -> name.equals(def.getName()))
+                    .findFirst()
+                    .orElse(null);
             if (nodeDef == null) {
                 // try the mixins
                 NodeType[] mixinNodeTypes = parent.getMixinNodeTypes();
                 for (NodeType nodeType : mixinNodeTypes) {
                     childNodeDefinitions = nodeType.getChildNodeDefinitions();
                     nodeDef = Stream.of(childNodeDefinitions)
-                        .filter(def -> name.equals(def.getName()))
-                        .findFirst().orElse(null);
+                            .filter(def -> name.equals(def.getName()))
+                            .findFirst()
+                            .orElse(null);
                     if (nodeDef != null) {
                         break;
                     }
@@ -532,20 +537,23 @@ class MockNode extends AbstractItem implements Node {
     @Override
     public void addMixin(final String mixinName) throws RepositoryException {
         if (StringUtils.isNotBlank(mixinName)) {
-            if(!this.hasProperty(JcrConstants.JCR_MIXINTYPES)) {
-                String[] mixinNames = new String[]{mixinName};
+            if (!this.hasProperty(JcrConstants.JCR_MIXINTYPES)) {
+                String[] mixinNames = new String[] {mixinName};
                 setProperty(JcrConstants.JCR_MIXINTYPES, mixinNames);
             } else {
                 Value value = this.getSession().getValueFactory().createValue(mixinName);
                 Value[] newValues = Stream.concat(
-                        Arrays.stream(getProperty(JcrConstants.JCR_MIXINTYPES).getValues()),
-                        Stream.of(value)
-                ).toArray(Value[]::new);
+                                Arrays.stream(
+                                        getProperty(JcrConstants.JCR_MIXINTYPES).getValues()),
+                                Stream.of(value))
+                        .toArray(Value[]::new);
                 this.setProperty(JcrConstants.JCR_MIXINTYPES, newValues);
             }
 
-            if (((MockNodeTypeManager)getSession().getWorkspace().getNodeTypeManager()).isMode(ResolveMode.ONLY_REGISTERED)) {
-                NodeType mixinNodeType = getSession().getWorkspace().getNodeTypeManager().getNodeType(mixinName);
+            if (((MockNodeTypeManager) getSession().getWorkspace().getNodeTypeManager())
+                    .isMode(ResolveMode.ONLY_REGISTERED)) {
+                NodeType mixinNodeType =
+                        getSession().getWorkspace().getNodeTypeManager().getNodeType(mixinName);
                 // auto-add any autocreated children
                 NodeDefinition[] childNodeDefinitions = mixinNodeType.getChildNodeDefinitions();
                 for (NodeDefinition nodeDefinition : childNodeDefinitions) {
@@ -622,7 +630,7 @@ class MockNode extends AbstractItem implements Node {
     }
 
     @Override
-    public Version checkin() throws RepositoryException  {
+    public Version checkin() throws RepositoryException {
         throw new UnsupportedOperationException();
     }
 
@@ -702,7 +710,8 @@ class MockNode extends AbstractItem implements Node {
     }
 
     @Override
-    public void restore(final Version version, final String relPath, final boolean removeExisting) throws RepositoryException {
+    public void restore(final Version version, final String relPath, final boolean removeExisting)
+            throws RepositoryException {
         throw new UnsupportedOperationException();
     }
 
@@ -765,5 +774,4 @@ class MockNode extends AbstractItem implements Node {
     public void accept(ItemVisitor visitor) throws RepositoryException {
         visitor.visit(this);
     }
-
 }

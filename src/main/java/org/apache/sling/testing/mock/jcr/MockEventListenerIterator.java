@@ -18,10 +18,10 @@
  */
 package org.apache.sling.testing.mock.jcr;
 
-import java.util.Collection;
-
 import javax.jcr.observation.EventListener;
 import javax.jcr.observation.EventListenerIterator;
+
+import java.util.Collection;
 
 import org.apache.jackrabbit.commons.iterator.RangeIteratorAdapter;
 
@@ -33,7 +33,6 @@ class MockEventListenerIterator extends RangeIteratorAdapter implements EventLis
 
     @Override
     public EventListener nextEventListener() {
-        return (EventListener)this.next();
+        return (EventListener) this.next();
     }
-
 }

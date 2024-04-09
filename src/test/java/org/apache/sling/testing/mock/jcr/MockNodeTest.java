@@ -18,23 +18,6 @@
  */
 package org.apache.sling.testing.mock.jcr;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
-
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
 import javax.jcr.ItemNotFoundException;
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
@@ -46,10 +29,27 @@ import javax.jcr.Session;
 import javax.jcr.nodetype.NoSuchNodeTypeException;
 import javax.jcr.util.TraversingItemVisitor;
 
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.jackrabbit.commons.cnd.ParseException;
 import org.junit.Assert;
 import org.junit.Test;
+
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class MockNodeTest extends AbstractItemTest {
 
@@ -69,7 +69,7 @@ public class MockNodeTest extends AbstractItemTest {
         assertEquals(1, nodes.getSize());
         assertEquals(this.node11, nodes.nextNode());
 
-        nodes = this.node1.getNodes(new String[]{"node*"});
+        nodes = this.node1.getNodes(new String[] {"node*"});
         assertEquals(1, nodes.getSize());
         assertEquals(this.node11, nodes.nextNode());
 
@@ -91,7 +91,7 @@ public class MockNodeTest extends AbstractItemTest {
         assertEquals(1, properties.getSize());
         assertEquals(this.prop1, properties.next());
 
-        properties = this.node1.getProperties(new String[]{"prop*"});
+        properties = this.node1.getProperties(new String[] {"prop*"});
         assertEquals(1, properties.getSize());
         assertEquals(this.prop1, properties.next());
 
@@ -111,7 +111,8 @@ public class MockNodeTest extends AbstractItemTest {
     @Test
     public void testPrimaryType() throws RepositoryException {
         assertEquals("nt:unstructured", this.node1.getPrimaryNodeType().getName());
-        assertEquals("nt:unstructured", this.node1.getProperty("jcr:primaryType").getString());
+        assertEquals(
+                "nt:unstructured", this.node1.getProperty("jcr:primaryType").getString());
         final PropertyIterator properties = this.node1.getProperties();
         while (properties.hasNext()) {
             final Property property = properties.nextProperty();
@@ -185,8 +186,9 @@ public class MockNodeTest extends AbstractItemTest {
         node1.addMixin("mix:referenceable");
         node1.addMixin("mix:taggable");
         assertEquals(2, node1.getMixinNodeTypes().length);
-        assertEquals("mix:taggable" ,node1.getMixinNodeTypes()[1].getName());
+        assertEquals("mix:taggable", node1.getMixinNodeTypes()[1].getName());
     }
+
     @Test
     public void testGetMixinNodeNoMixinTypes() throws RepositoryException {
         assertEquals(0, node1.getMixinNodeTypes().length);
@@ -214,19 +216,16 @@ public class MockNodeTest extends AbstractItemTest {
         foo.addNode("two");
         foo.addNode("three");
         session.save();
-        assertArrayEquals("Expected nodes order mismatch",
-                new String[] {"one", "two", "three"},
-                getNodeNames(foo.getNodes()));
+        assertArrayEquals(
+                "Expected nodes order mismatch", new String[] {"one", "two", "three"}, getNodeNames(foo.getNodes()));
         foo.orderBefore("three", "two");
         session.save();
-        assertArrayEquals("Expected nodes order mismatch",
-                new String[] {"one", "three", "two"},
-                getNodeNames(foo.getNodes()));
+        assertArrayEquals(
+                "Expected nodes order mismatch", new String[] {"one", "three", "two"}, getNodeNames(foo.getNodes()));
         foo.orderBefore("one", null);
         session.save();
-        assertArrayEquals("Expected nodes order mismatch",
-                new String[] {"three", "two", "one"},
-                getNodeNames(foo.getNodes()));
+        assertArrayEquals(
+                "Expected nodes order mismatch", new String[] {"three", "two", "one"}, getNodeNames(foo.getNodes()));
     }
 
     /**
@@ -241,17 +240,20 @@ public class MockNodeTest extends AbstractItemTest {
         foo.addNode("child10");
         foo.addNode("child1");
         session.save();
-        assertArrayEquals("Expected nodes order mismatch",
+        assertArrayEquals(
+                "Expected nodes order mismatch",
                 new String[] {"child100", "child10", "child1"},
                 getNodeNames(foo.getNodes()));
         foo.orderBefore("child10", "child100");
         session.save();
-        assertArrayEquals("Expected nodes order mismatch",
+        assertArrayEquals(
+                "Expected nodes order mismatch",
                 new String[] {"child10", "child100", "child1"},
                 getNodeNames(foo.getNodes()));
         foo.orderBefore("child10", null);
         session.save();
-        assertArrayEquals("Expected nodes order mismatch",
+        assertArrayEquals(
+                "Expected nodes order mismatch",
                 new String[] {"child100", "child1", "child10"},
                 getNodeNames(foo.getNodes()));
     }
@@ -266,9 +268,9 @@ public class MockNodeTest extends AbstractItemTest {
     public static List<Node> getUnprotectedChildNodes(Node src) throws RepositoryException {
         List<Node> result = new LinkedList<>();
         NodeIterator iterator = src.getNodes();
-        while(iterator.hasNext()) {
+        while (iterator.hasNext()) {
             Node node = iterator.nextNode();
-            if(!node.getDefinition().isProtected()) {
+            if (!node.getDefinition().isProtected()) {
                 result.add(node);
             }
         }
@@ -280,18 +282,20 @@ public class MockNodeTest extends AbstractItemTest {
         List<String> names = new LinkedList<>();
         nodeIterator.forEachRemaining(node -> {
             try {
-                names.add(((Node)node).getName());
+                names.add(((Node) node).getName());
             } catch (RepositoryException e) {
                 Assert.fail(e.getMessage());
             }
         });
         return names.toArray(new String[names.size()]);
     }
-    
+
     @Test
     public void addMixinTest() throws RepositoryException {
         node1.addMixin("mix:referenceable");
-        assertEquals("mix:referenceable", node1.getProperty(JcrConstants.JCR_MIXINTYPES).getValues()[0].getString());
+        assertEquals(
+                "mix:referenceable",
+                node1.getProperty(JcrConstants.JCR_MIXINTYPES).getValues()[0].getString());
     }
 
     @Test
@@ -312,8 +316,10 @@ public class MockNodeTest extends AbstractItemTest {
         node1.addMixin("mix:taggable");
         node1.addMixin("mix:mixin");
         node1.removeMixin("mix:taggable");
-        assertEquals(1 , node1.getProperty(JcrConstants.JCR_MIXINTYPES).getValues().length);
-        assertEquals("mix:mixin" , node1.getProperty(JcrConstants.JCR_MIXINTYPES).getValues()[0].getString());
+        assertEquals(1, node1.getProperty(JcrConstants.JCR_MIXINTYPES).getValues().length);
+        assertEquals(
+                "mix:mixin",
+                node1.getProperty(JcrConstants.JCR_MIXINTYPES).getValues()[0].getString());
     }
 
     @Test
@@ -425,7 +431,8 @@ public class MockNodeTest extends AbstractItemTest {
      * SLING-11874 auto-set created/lastModified prop values when appropriate
      */
     @Test
-    public void testAddNodeCreatesSystemGeneratedAutoPropertyValues() throws RepositoryException, IOException, ParseException {
+    public void testAddNodeCreatesSystemGeneratedAutoPropertyValues()
+            throws RepositoryException, IOException, ParseException {
         loadNodeTypes();
         Node foo = this.session.getRootNode().addNode("foo", JcrConstants.NT_HIERARCHYNODE);
         Node versionFoo = this.session.getRootNode().addNode("versionFoo", JcrConstants.NT_VERSION);
@@ -440,7 +447,8 @@ public class MockNodeTest extends AbstractItemTest {
      * SLING-11874 auto-set created/lastModified prop values when appropriate
      */
     @Test
-    public void testAddMixinCreatesSystemGeneratedAutoPropertyValues() throws RepositoryException, IOException, ParseException {
+    public void testAddMixinCreatesSystemGeneratedAutoPropertyValues()
+            throws RepositoryException, IOException, ParseException {
         loadNodeTypes();
 
         Node foo = this.session.getRootNode().addNode("foo", JcrConstants.NT_UNSTRUCTURED);
@@ -465,7 +473,8 @@ public class MockNodeTest extends AbstractItemTest {
      * SLING-11874 To test created and lastModified props are not autocreated when not declared in their mixins
      */
     @Test
-    public void testAddNodeDoesNotCreateNonMixinCreatedAndLastModified() throws RepositoryException, IOException, ParseException {
+    public void testAddNodeDoesNotCreateNonMixinCreatedAndLastModified()
+            throws RepositoryException, IOException, ParseException {
         loadNodeTypes();
 
         Node foo = this.session.getRootNode().addNode("foo", "nt:nonMixinCreatedAndLastModified");
@@ -475,5 +484,4 @@ public class MockNodeTest extends AbstractItemTest {
         assertFalse(foo.hasProperty(JcrConstants.JCR_LASTMODIFIED));
         assertFalse(foo.hasProperty("jcr:lastModifiedBy"));
     }
-
 }

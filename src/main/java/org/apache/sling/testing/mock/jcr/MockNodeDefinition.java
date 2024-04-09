@@ -18,13 +18,13 @@
  */
 package org.apache.sling.testing.mock.jcr;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.jcr.RepositoryException;
 import javax.jcr.nodetype.NodeDefinition;
 import javax.jcr.nodetype.NodeType;
 import javax.jcr.nodetype.NodeTypeManager;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Mock {@link NodeDefinition} implementation.
@@ -38,6 +38,7 @@ class MockNodeDefinition extends MockItemDefinition implements NodeDefinition {
         // for backward compatibility
         this(null, null);
     }
+
     public MockNodeDefinition(String declaringNodeTypeName, NodeTypeManager ntMgr) {
         super(declaringNodeTypeName, ntMgr);
     }
@@ -82,5 +83,4 @@ class MockNodeDefinition extends MockItemDefinition implements NodeDefinition {
     public String getDefaultPrimaryTypeName() {
         return this.defaultPrimaryTypeName;
     }
-
 }

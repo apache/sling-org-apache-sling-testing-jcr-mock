@@ -1,23 +1,22 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.apache.sling.testing.mock.jcr;
-
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.jcr.NamespaceRegistry;
 import javax.jcr.RepositoryException;
@@ -31,8 +30,10 @@ import javax.jcr.nodetype.NodeTypeManager;
 import javax.jcr.nodetype.NodeTypeTemplate;
 import javax.jcr.nodetype.PropertyDefinitionTemplate;
 
-import org.apache.jackrabbit.commons.cnd.DefinitionBuilderFactory;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.apache.jackrabbit.commons.cnd.DefinitionBuilderFactory;
 
 /**
  * This is a fork of the {@link TemplateBuilderFactory} that changes the implementation
@@ -53,8 +54,8 @@ class MockTemplateBuilderFactory extends DefinitionBuilderFactory<NodeTypeTempla
     private final ValueFactory valueFactory;
     private NamespaceRegistry namespaceRegistry;
 
-    public MockTemplateBuilderFactory(NodeTypeManager nodeTypeManager, ValueFactory valueFactory,
-            NamespaceRegistry namespaceRegistry) {
+    public MockTemplateBuilderFactory(
+            NodeTypeManager nodeTypeManager, ValueFactory valueFactory, NamespaceRegistry namespaceRegistry) {
 
         this.nodeTypeManager = nodeTypeManager;
         this.valueFactory = valueFactory;
@@ -72,7 +73,10 @@ class MockTemplateBuilderFactory extends DefinitionBuilderFactory<NodeTypeTempla
      * @throws RepositoryException If an error occurs.
      */
     public MockTemplateBuilderFactory(Session session) throws RepositoryException {
-        this(session.getWorkspace().getNodeTypeManager(), session.getValueFactory(), session.getWorkspace().getNamespaceRegistry());
+        this(
+                session.getWorkspace().getNodeTypeManager(),
+                session.getValueFactory(),
+                session.getWorkspace().getNamespaceRegistry());
     }
 
     @Override
@@ -110,8 +114,7 @@ class MockTemplateBuilderFactory extends DefinitionBuilderFactory<NodeTypeTempla
         }
 
         @Override
-        public AbstractNodeDefinitionBuilder<NodeTypeTemplate> newNodeDefinitionBuilder()
-                throws RepositoryException {
+        public AbstractNodeDefinitionBuilder<NodeTypeTemplate> newNodeDefinitionBuilder() throws RepositoryException {
 
             return new NodeDefinitionTemplateBuilder(this);
         }
@@ -148,19 +151,16 @@ class MockTemplateBuilderFactory extends DefinitionBuilderFactory<NodeTypeTempla
         public void setPrimaryItemName(String name) throws ConstraintViolationException {
             template.setPrimaryItemName(name);
         }
-
     }
 
-    public class PropertyDefinitionTemplateBuilder extends
-            AbstractPropertyDefinitionBuilder<NodeTypeTemplate> {
+    public class PropertyDefinitionTemplateBuilder extends AbstractPropertyDefinitionBuilder<NodeTypeTemplate> {
 
         private final NodeTypeTemplateBuilder ntd;
         private final PropertyDefinitionTemplate template;
         private final List<Value> values = new ArrayList<>();
         private final List<String> constraints = new ArrayList<>();
 
-        public PropertyDefinitionTemplateBuilder(NodeTypeTemplateBuilder ntd)
-                throws RepositoryException {
+        public PropertyDefinitionTemplateBuilder(NodeTypeTemplateBuilder ntd) throws RepositoryException {
 
             super();
             this.ntd = ntd;
@@ -186,7 +186,7 @@ class MockTemplateBuilderFactory extends DefinitionBuilderFactory<NodeTypeTempla
         @Override
         public void setDeclaringNodeType(String name) {
             if (template instanceof MockPropertyDefinitionTemplate) {
-                ((MockPropertyDefinitionTemplate)template).setDeclaringNodeType(name);
+                ((MockPropertyDefinitionTemplate) template).setDeclaringNodeType(name);
             }
         }
 
@@ -208,7 +208,6 @@ class MockTemplateBuilderFactory extends DefinitionBuilderFactory<NodeTypeTempla
             List<PropertyDefinitionTemplate> templates = ntd.template.getPropertyDefinitionTemplates();
             templates.add(template);
         }
-
     }
 
     public class NodeDefinitionTemplateBuilder extends AbstractNodeDefinitionBuilder<NodeTypeTemplate> {
@@ -216,8 +215,7 @@ class MockTemplateBuilderFactory extends DefinitionBuilderFactory<NodeTypeTempla
         private final NodeDefinitionTemplate template;
         private final List<String> requiredPrimaryTypes = new ArrayList<>();
 
-        public NodeDefinitionTemplateBuilder(NodeTypeTemplateBuilder ntd)
-                throws RepositoryException {
+        public NodeDefinitionTemplateBuilder(NodeTypeTemplateBuilder ntd) throws RepositoryException {
 
             super();
             this.ntd = ntd;
@@ -243,7 +241,7 @@ class MockTemplateBuilderFactory extends DefinitionBuilderFactory<NodeTypeTempla
         @Override
         public void setDeclaringNodeType(String name) {
             if (template instanceof MockNodeDefinitionTemplate) {
-                ((MockNodeDefinitionTemplate)template).setDeclaringNodeType(name);
+                ((MockNodeDefinitionTemplate) template).setDeclaringNodeType(name);
             }
         }
 
@@ -253,8 +251,7 @@ class MockTemplateBuilderFactory extends DefinitionBuilderFactory<NodeTypeTempla
             template.setMandatory(super.isMandatory);
             template.setOnParentVersion(super.onParent);
             template.setProtected(super.isProtected);
-            template.setRequiredPrimaryTypeNames(requiredPrimaryTypes
-                    .toArray(new String[requiredPrimaryTypes.size()]));
+            template.setRequiredPrimaryTypeNames(requiredPrimaryTypes.toArray(new String[requiredPrimaryTypes.size()]));
             template.setSameNameSiblings(super.allowSns);
 
             @SuppressWarnings("unchecked")

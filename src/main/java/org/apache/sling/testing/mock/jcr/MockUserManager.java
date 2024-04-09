@@ -1,20 +1,28 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.apache.sling.testing.mock.jcr;
+
+import javax.jcr.Node;
+import javax.jcr.Property;
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
+import javax.jcr.Value;
 
 import java.security.Principal;
 import java.util.HashMap;
@@ -23,12 +31,6 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-
-import javax.jcr.Node;
-import javax.jcr.Property;
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-import javax.jcr.Value;
 
 import org.apache.jackrabbit.api.security.principal.PrincipalManager;
 import org.apache.jackrabbit.api.security.user.Authorizable;
@@ -81,15 +83,21 @@ public class MockUserManager implements UserManager {
                     @Override
                     protected void entering(Node node, int level) throws RepositoryException {
                         if (node.isNodeType(UserConstants.NT_REP_USER)) {
-                            String userID = node.getProperty(UserConstants.REP_AUTHORIZABLE_ID).getString();
-                            authorizables.computeIfAbsent(userID, id -> new MockUser(id, null, node, MockUserManager.this));
+                            String userID = node.getProperty(UserConstants.REP_AUTHORIZABLE_ID)
+                                    .getString();
+                            authorizables.computeIfAbsent(
+                                    userID, id -> new MockUser(id, null, node, MockUserManager.this));
                         } else if (node.isNodeType(UserConstants.NT_REP_SYSTEM_USER)) {
-                            String userID = node.getProperty(UserConstants.REP_AUTHORIZABLE_ID).getString();
+                            String userID = node.getProperty(UserConstants.REP_AUTHORIZABLE_ID)
+                                    .getString();
                             SystemUserPrincipal p = () -> userID;
-                            authorizables.computeIfAbsent(userID, id -> new MockUser(id, p, node, MockUserManager.this));
+                            authorizables.computeIfAbsent(
+                                    userID, id -> new MockUser(id, p, node, MockUserManager.this));
                         } else if (node.isNodeType(UserConstants.NT_REP_GROUP)) {
-                            String userID = node.getProperty(UserConstants.REP_AUTHORIZABLE_ID).getString();
-                            authorizables.computeIfAbsent(userID, id -> new MockGroup(id, null, node, MockUserManager.this));
+                            String userID = node.getProperty(UserConstants.REP_AUTHORIZABLE_ID)
+                                    .getString();
+                            authorizables.computeIfAbsent(
+                                    userID, id -> new MockGroup(id, null, node, MockUserManager.this));
                         }
                     }
 
@@ -137,21 +145,21 @@ public class MockUserManager implements UserManager {
     }
 
     Set<Authorizable> all(int searchType) throws RepositoryException { // NOSONAR
-       return authorizables.values().stream()
-               .filter(a -> {
-                   boolean match;
-                   if (PrincipalManager.SEARCH_TYPE_ALL == searchType) {
-                       match = true;
-                   } else if (PrincipalManager.SEARCH_TYPE_GROUP == searchType) {
-                       match = a.isGroup();
-                   } else if (PrincipalManager.SEARCH_TYPE_NOT_GROUP == searchType) {
-                       match = !a.isGroup();
-                   } else {
-                       match = false;
-                   }
-                   return match;
-               })
-               .collect(Collectors.toSet());
+        return authorizables.values().stream()
+                .filter(a -> {
+                    boolean match;
+                    if (PrincipalManager.SEARCH_TYPE_ALL == searchType) {
+                        match = true;
+                    } else if (PrincipalManager.SEARCH_TYPE_GROUP == searchType) {
+                        match = a.isGroup();
+                    } else if (PrincipalManager.SEARCH_TYPE_NOT_GROUP == searchType) {
+                        match = !a.isGroup();
+                    } else {
+                        match = false;
+                    }
+                    return match;
+                })
+                .collect(Collectors.toSet());
     }
 
     @Override
@@ -181,12 +189,14 @@ public class MockUserManager implements UserManager {
     }
 
     @Override
-    public @NotNull Group createGroup(@NotNull String groupID, @NotNull Principal principal, @Nullable String intermediatePath)
+    public @NotNull Group createGroup(
+            @NotNull String groupID, @NotNull Principal principal, @Nullable String intermediatePath)
             throws RepositoryException {
         return maybeCreateGroup(groupID, principal, intermediatePath);
     }
 
-    private @NotNull Group maybeCreateGroup(@Nullable String groupID, @Nullable Principal principal, @Nullable String intermediatePath)
+    private @NotNull Group maybeCreateGroup(
+            @Nullable String groupID, @Nullable Principal principal, @Nullable String intermediatePath)
             throws RepositoryException {
         if (authorizables.containsKey(groupID)) {
             throw new AuthorizableExistsException("Group already exists");
@@ -197,7 +207,7 @@ public class MockUserManager implements UserManager {
         }
 
         Node node = ensureAuthorizablePathExists(intermediatePath, principalName, UserConstants.NT_REP_GROUP);
-        return (Group)authorizables.computeIfAbsent(groupID, id -> new MockGroup(id, principal, node, this));
+        return (Group) authorizables.computeIfAbsent(groupID, id -> new MockGroup(id, principal, node, this));
     }
 
     /**
@@ -227,7 +237,9 @@ public class MockUserManager implements UserManager {
      * @deprecated use {@link #ensureAuthorizablePathExists(String, String, String)} instead
      */
     @Deprecated(forRemoval = true, since = "1.4.0")
-    protected Node ensureAuthorizablePathExists(@Nullable String intermediatePath, @NotNull String principalName, boolean isGroup) throws RepositoryException {
+    protected Node ensureAuthorizablePathExists(
+            @Nullable String intermediatePath, @NotNull String principalName, boolean isGroup)
+            throws RepositoryException {
         if (intermediatePath == null) {
             if (isGroup) {
                 intermediatePath = "/home/groups"; // NOSONAR
@@ -248,7 +260,9 @@ public class MockUserManager implements UserManager {
      * @return Existing or created node
      * @throws RepositoryException Repository exception
      */
-    protected Node ensureAuthorizablePathExists(@NotNull String intermediatePath, @NotNull String principalName, @NotNull String authorizableNodeType) throws RepositoryException {
+    protected Node ensureAuthorizablePathExists(
+            @NotNull String intermediatePath, @NotNull String principalName, @NotNull String authorizableNodeType)
+            throws RepositoryException {
         // ensure the resource at the path exists
         String[] segments = intermediatePath.split("/");
         Node node = session.getRootNode();
@@ -279,19 +293,26 @@ public class MockUserManager implements UserManager {
     }
 
     @Override
-    public @NotNull User createUser(@NotNull String userID, @Nullable String password)
-            throws RepositoryException {
+    public @NotNull User createUser(@NotNull String userID, @Nullable String password) throws RepositoryException {
         return maybeCreateUser(userID, password, null, null);
     }
 
     @Override
-    public @NotNull User createUser(@NotNull String userID, @Nullable String password, @NotNull Principal principal,
-            @Nullable String intermediatePath) throws RepositoryException {
+    public @NotNull User createUser(
+            @NotNull String userID,
+            @Nullable String password,
+            @NotNull Principal principal,
+            @Nullable String intermediatePath)
+            throws RepositoryException {
         return maybeCreateUser(userID, password, principal, intermediatePath);
     }
 
-    private @NotNull User maybeCreateUser(@Nullable String userID, @Nullable String password, @Nullable Principal principal,
-            @Nullable String intermediatePath) throws RepositoryException {
+    private @NotNull User maybeCreateUser(
+            @Nullable String userID,
+            @Nullable String password,
+            @Nullable Principal principal,
+            @Nullable String intermediatePath)
+            throws RepositoryException {
         if (authorizables.containsKey(userID)) {
             throw new AuthorizableExistsException("User already exists");
         }
@@ -306,7 +327,7 @@ public class MockUserManager implements UserManager {
             }
         }
         Node node = ensureAuthorizablePathExists(intermediatePath, principalName, authorizableNodeType);
-        User user = (User)authorizables.computeIfAbsent(userID, id -> new MockUser(id, principal, node, this));
+        User user = (User) authorizables.computeIfAbsent(userID, id -> new MockUser(id, principal, node, this));
         if (password != null) {
             user.changePassword(password);
         }
@@ -325,17 +346,17 @@ public class MockUserManager implements UserManager {
     }
 
     @Override
-    public @NotNull Iterator<Authorizable> findAuthorizables(@NotNull String relPath, @Nullable String value, int searchType)
-            throws RepositoryException {
+    public @NotNull Iterator<Authorizable> findAuthorizables(
+            @NotNull String relPath, @Nullable String value, int searchType) throws RepositoryException {
         Set<Authorizable> matches = new HashSet<>();
         for (Authorizable authorizable : authorizables.values()) {
             if (UserManager.SEARCH_TYPE_GROUP == searchType) {
                 if (!authorizable.isGroup()) {
-                    continue; //not a group, so skip it
+                    continue; // not a group, so skip it
                 }
             } else if (UserManager.SEARCH_TYPE_USER == searchType) {
                 if (authorizable.isGroup()) {
-                    continue; //not a user, so skip it
+                    continue; // not a user, so skip it
                 }
             } else if (UserManager.SEARCH_TYPE_AUTHORIZABLE != searchType) {
                 continue; // some other invalid value?
@@ -344,7 +365,7 @@ public class MockUserManager implements UserManager {
             if (property != null) {
                 if (value == null) {
                     // found a match?
-                   matches.add(authorizable);
+                    matches.add(authorizable);
                 } else {
                     for (Value value2 : property) {
                         if (value.equals(value2.getString())) {
@@ -385,22 +406,20 @@ public class MockUserManager implements UserManager {
     }
 
     @Override
-    public @Nullable Authorizable getAuthorizableByPath(@NotNull String path)
-            throws RepositoryException {
+    public @Nullable Authorizable getAuthorizableByPath(@NotNull String path) throws RepositoryException {
         return authorizables.values().stream()
-            .filter(a -> {
-                try {
-                    return path.equals(a.getPath());
-                } catch (RepositoryException e) {
-                    // ignore and log
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("Failed to match authorizable path", e);
+                .filter(a -> {
+                    try {
+                        return path.equals(a.getPath());
+                    } catch (RepositoryException e) {
+                        // ignore and log
+                        if (logger.isDebugEnabled()) {
+                            logger.debug("Failed to match authorizable path", e);
+                        }
+                        return false;
                     }
-                    return false;
-                }
-            })
-            .findFirst()
-            .orElse(null);
+                })
+                .findFirst()
+                .orElse(null);
     }
-
 }

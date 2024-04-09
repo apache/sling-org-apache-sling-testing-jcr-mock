@@ -18,16 +18,6 @@
  */
 package org.apache.sling.testing.mock.jcr;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
-
-import java.util.Set;
-
 import javax.jcr.AccessDeniedException;
 import javax.jcr.ItemExistsException;
 import javax.jcr.ItemNotFoundException;
@@ -41,10 +31,20 @@ import javax.jcr.Session;
 import javax.jcr.UnsupportedRepositoryOperationException;
 import javax.jcr.security.AccessControlManager;
 
+import java.util.Set;
+
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.jackrabbit.api.JackrabbitSession;
 import org.junit.Test;
 import org.mockito.Mockito;
+
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 
 public class MockSessionTest {
 
@@ -128,7 +128,6 @@ public class MockSessionTest {
         assertEquals(JcrConstants.NT_UNSTRUCTURED, node1.getPrimaryNodeType().getName());
         assertTrue(node1.isNodeType(JcrConstants.NT_UNSTRUCTURED));
         assertTrue(node1.getPrimaryNodeType().isNodeType(JcrConstants.NT_UNSTRUCTURED));
-
     }
 
     @Test
@@ -208,7 +207,7 @@ public class MockSessionTest {
         Session session = MockJcr.newSession();
 
         // test initial namespaces
-        assertArrayEquals(new String[] { "jcr" }, session.getNamespacePrefixes());
+        assertArrayEquals(new String[] {"jcr"}, session.getNamespacePrefixes());
         assertEquals("http://www.jcp.org/jcr/1.0", session.getNamespaceURI("jcr"));
         assertEquals("jcr", session.getNamespacePrefix("http://www.jcp.org/jcr/1.0"));
 
@@ -223,8 +222,7 @@ public class MockSessionTest {
         NamespaceRegistry namespaceRegistry = session.getWorkspace().getNamespaceRegistry();
 
         assertEquals(Set.of("jcr", "dummy"), Set.of(namespaceRegistry.getPrefixes()));
-        assertEquals(Set.of("http://www.jcp.org/jcr/1.0", "http://mydummy"),
-                Set.of(namespaceRegistry.getURIs()));
+        assertEquals(Set.of("http://www.jcp.org/jcr/1.0", "http://mydummy"), Set.of(namespaceRegistry.getURIs()));
         assertEquals("http://mydummy", namespaceRegistry.getURI("dummy"));
         assertEquals("dummy", namespaceRegistry.getPrefix("http://mydummy"));
 
@@ -415,12 +413,11 @@ public class MockSessionTest {
         assertTrue(session.propertyExists("/node1/child2/grandchild1/prop1"));
     }
 
-
     // --- jackrabbit session operations ---
 
     @Test
     public void testGetItemOrNull() throws RepositoryException {
-        JackrabbitSession s = (JackrabbitSession)MockJcr.newSession();
+        JackrabbitSession s = (JackrabbitSession) MockJcr.newSession();
         Node node1 = s.getRootNode().addNode("node1");
         Node child1 = node1.addNode("child1");
         String childPath = child1.getPath();
@@ -437,7 +434,7 @@ public class MockSessionTest {
 
     @Test
     public void testGetNodeOrNull() throws RepositoryException {
-        JackrabbitSession s = (JackrabbitSession)MockJcr.newSession();
+        JackrabbitSession s = (JackrabbitSession) MockJcr.newSession();
         Node node1 = s.getRootNode().addNode("node1");
         Node child1 = node1.addNode("child1");
         String path = child1.getPath();
@@ -448,7 +445,7 @@ public class MockSessionTest {
 
     @Test
     public void testGetPropertyOrNull() throws RepositoryException {
-        JackrabbitSession s = (JackrabbitSession)MockJcr.newSession();
+        JackrabbitSession s = (JackrabbitSession) MockJcr.newSession();
         Node node1 = s.getRootNode().addNode("node1");
         Node child1 = node1.addNode("child1");
         Property prop1 = child1.setProperty("prop1", "value1");
@@ -461,21 +458,24 @@ public class MockSessionTest {
     @Test
     public void testGetPrincipalManager()
             throws AccessDeniedException, UnsupportedRepositoryOperationException, RepositoryException {
-        JackrabbitSession s = (JackrabbitSession)MockJcr.newSession();
+        JackrabbitSession s = (JackrabbitSession) MockJcr.newSession();
         assertNotNull(s.getPrincipalManager());
     }
 
     @Test
     public void testGetUserManager()
             throws AccessDeniedException, UnsupportedRepositoryOperationException, RepositoryException {
-        JackrabbitSession s = (JackrabbitSession)MockJcr.newSession();
+        JackrabbitSession s = (JackrabbitSession) MockJcr.newSession();
         assertNotNull(s.getUserManager());
     }
 
     @Test
     public void testHasPermission() throws RepositoryException {
-        JackrabbitSession s = (JackrabbitSession)MockJcr.newSession();
-        assertThrows(UnsupportedOperationException.class, () -> s.hasPermission("/path1", JackrabbitSession.ACTION_ADD_PROPERTY, JackrabbitSession.ACTION_MODIFY_PROPERTY));
+        JackrabbitSession s = (JackrabbitSession) MockJcr.newSession();
+        assertThrows(
+                UnsupportedOperationException.class,
+                () -> s.hasPermission(
+                        "/path1", JackrabbitSession.ACTION_ADD_PROPERTY, JackrabbitSession.ACTION_MODIFY_PROPERTY));
     }
 
     @Test
@@ -488,5 +488,4 @@ public class MockSessionTest {
 
         assertEquals(mockAccessControlManager, s.getAccessControlManager());
     }
-
 }

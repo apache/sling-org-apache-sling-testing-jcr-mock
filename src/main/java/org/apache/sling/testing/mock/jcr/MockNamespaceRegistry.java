@@ -18,10 +18,10 @@
  */
 package org.apache.sling.testing.mock.jcr;
 
-import java.util.Set;
-
 import javax.jcr.NamespaceRegistry;
 import javax.jcr.RepositoryException;
+
+import java.util.Set;
 
 import org.apache.commons.collections4.BidiMap;
 import org.apache.commons.collections4.bidimap.TreeBidiMap;
@@ -68,5 +68,4 @@ class MockNamespaceRegistry implements NamespaceRegistry {
         Set<String> values = this.namespacePrefixMapping.values();
         return values.toArray(new String[values.size()]);
     }
-
 }

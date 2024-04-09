@@ -1,32 +1,34 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.apache.sling.testing.mock.jcr;
-
-import java.security.Principal;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
 
 import javax.jcr.Node;
 import javax.jcr.Property;
 import javax.jcr.PropertyIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.Value;
+
+import java.security.Principal;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.jackrabbit.api.security.principal.PrincipalManager;
@@ -42,16 +44,16 @@ import org.jetbrains.annotations.Nullable;
 abstract class MockAuthorizable implements Authorizable {
     // internal property names to filter out of the authorizable properties
     protected Set<String> notAuthorizablePropNames = new HashSet<>(Arrays.asList(
-            JcrConstants.JCR_PRIMARYTYPE,
-            UserConstants.REP_AUTHORIZABLE_ID,
-            UserConstants.REP_PRINCIPAL_NAME));
+            JcrConstants.JCR_PRIMARYTYPE, UserConstants.REP_AUTHORIZABLE_ID, UserConstants.REP_PRINCIPAL_NAME));
 
     protected String id;
     protected Principal principal;
     protected MockUserManager mockUserMgr;
     protected Node homeNode;
 
-    MockAuthorizable(@Nullable String id, @Nullable Principal principal,
+    MockAuthorizable(
+            @Nullable String id,
+            @Nullable Principal principal,
             @NotNull Node homeNode,
             @NotNull MockUserManager mockUserMgr) {
         this.principal = principal;
@@ -88,7 +90,7 @@ abstract class MockAuthorizable implements Authorizable {
         Set<Group> declaredMemberOf = new HashSet<>();
         Set<Authorizable> all = mockUserMgr.all(PrincipalManager.SEARCH_TYPE_GROUP);
         for (Authorizable authorizable : all) {
-            Group group = (Group)authorizable;
+            Group group = (Group) authorizable;
             if (group.isDeclaredMember(this)) {
                 declaredMemberOf.add(group);
             }
@@ -104,19 +106,20 @@ abstract class MockAuthorizable implements Authorizable {
     }
     /**
      * Drills down into nested groups to find all the members
-     * 
+     *
      * @param members the set to add the found people to
      * @param group the group to process
      * @param processedGroups the set of groups that have already been processed
      * @throws RepositoryException
      */
-    private void calcMemberOf(Set<Group> memberOf, Authorizable authorizable, Set<Authorizable> processedAuthorizables) throws RepositoryException {
+    private void calcMemberOf(Set<Group> memberOf, Authorizable authorizable, Set<Authorizable> processedAuthorizables)
+            throws RepositoryException {
         if (!processedAuthorizables.contains(authorizable)) {
             // mark as processed
             processedAuthorizables.add(authorizable);
 
             @NotNull Iterator<Group> declaredIt = authorizable.declaredMemberOf();
-            while(declaredIt.hasNext()) {
+            while (declaredIt.hasNext()) {
                 Group group = declaredIt.next();
                 memberOf.add(group);
 
@@ -124,7 +127,6 @@ abstract class MockAuthorizable implements Authorizable {
             }
         }
     }
-
 
     @Override
     public void remove() throws RepositoryException {
@@ -220,5 +222,4 @@ abstract class MockAuthorizable implements Authorizable {
     public @NotNull String getPath() throws RepositoryException {
         return homeNode.getPath();
     }
-
 }

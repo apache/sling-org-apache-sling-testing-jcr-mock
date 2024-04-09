@@ -1,32 +1,30 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.apache.sling.testing.mock.jcr;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
 
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.UnsupportedRepositoryOperationException;
+
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 import org.apache.jackrabbit.api.security.user.Authorizable;
 import org.apache.jackrabbit.api.security.user.AuthorizableExistsException;
@@ -35,6 +33,10 @@ import org.apache.jackrabbit.api.security.user.User;
 import org.apache.jackrabbit.oak.spi.security.user.UserConstants;
 import org.jetbrains.annotations.NotNull;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 /**
  *
@@ -111,6 +113,7 @@ public class MockGroupTest extends MockAuthorizableTest<Group> {
         assertTrue(membersSet.contains(member1));
         assertTrue(membersSet.contains(member2));
     }
+
     @Test
     public void testGetMembersWithNestedGroups() throws RepositoryException {
         @NotNull Group member1 = userManager.createGroup("member1");
@@ -192,7 +195,8 @@ public class MockGroupTest extends MockAuthorizableTest<Group> {
     public void testAddMembers() throws AuthorizableExistsException, RepositoryException {
         @NotNull Group member1 = userManager.createGroup("member1");
         @NotNull User member2 = userManager.createUser("member2", "pwd");
-        @NotNull Set<String> added = authorizable.addMembers(member1.getID(), member2.getID(), member1.getID(), "invalid");
+        @NotNull
+        Set<String> added = authorizable.addMembers(member1.getID(), member2.getID(), member1.getID(), "invalid");
         assertEquals(2, added.size());
 
         @NotNull Iterator<Authorizable> declaredMembers = authorizable.getDeclaredMembers();
@@ -244,8 +248,8 @@ public class MockGroupTest extends MockAuthorizableTest<Group> {
         assertEquals("/home/groups/group1", authorizable.getPath());
         assertTrue(session.nodeExists(authorizable.getPath()));
         Node node = session.getNode(authorizable.getPath());
-        assertEquals(authorizable.getID(), 
+        assertEquals(
+                authorizable.getID(),
                 node.getProperty(UserConstants.REP_PRINCIPAL_NAME).getString());
     }
-
 }

@@ -18,14 +18,14 @@
  */
 package org.apache.sling.testing.mock.jcr;
 
-import java.util.List;
-
 import javax.jcr.ItemNotFoundException;
 import javax.jcr.Node;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.RepositoryException;
 import javax.jcr.Value;
 import javax.jcr.query.Row;
+
+import java.util.List;
 
 /**
  * Mock implementation of {@link Row}.
@@ -46,8 +46,7 @@ class MockRow implements Row {
         for (int i = 0; i < values.length; i++) {
             try {
                 values[i] = getValue(columnNames.get(i));
-            }
-            catch (PathNotFoundException ex) {
+            } catch (PathNotFoundException ex) {
                 values[i] = null;
             }
         }
@@ -88,5 +87,4 @@ class MockRow implements Row {
     public double getScore(String selectorName) throws RepositoryException {
         return 0;
     }
-
 }

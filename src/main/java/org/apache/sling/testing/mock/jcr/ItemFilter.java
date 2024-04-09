@@ -26,5 +26,4 @@ import javax.jcr.RepositoryException;
 interface ItemFilter {
 
     boolean accept(ItemData item) throws RepositoryException;
-
 }

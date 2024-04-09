@@ -18,12 +18,6 @@
  */
 package org.apache.sling.testing.mock.jcr;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
-
 import javax.jcr.Node;
 import javax.jcr.PathNotFoundException;
 import javax.jcr.Repository;
@@ -33,6 +27,12 @@ import javax.jcr.SimpleCredentials;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.fail;
 
 public class MockRepositoryTest {
 
@@ -85,10 +85,8 @@ public class MockRepositoryTest {
         try {
             session1.getNode("/test");
             fail("Node was not removed");
-        }
-        catch (PathNotFoundException ex) {
+        } catch (PathNotFoundException ex) {
             // expected
         }
     }
-
 }

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="ISO-8859-1"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--
   Licensed to the Apache Software Foundation (ASF) under one
   or more contributor license agreements.  See the NOTICE file
@@ -37,10 +37,10 @@
     <scm>
         <connection>scm:git:https://gitbox.apache.org/repos/asf/sling-org-apache-sling-testing-jcr-mock.git</connection>
         <developerConnection>scm:git:https://gitbox.apache.org/repos/asf/sling-org-apache-sling-testing-jcr-mock.git</developerConnection>
-        <url>https://github.com/apache/sling-org-apache-sling-testing-jcr-mock.git</url>
         <tag>HEAD</tag>
+        <url>https://github.com/apache/sling-org-apache-sling-testing-jcr-mock.git</url>
     </scm>
-    
+
     <properties>
         <project.build.outputTimestamp>2024-01-22T13:51:21Z</project.build.outputTimestamp>
         <oak.version>1.22.15</oak.version>

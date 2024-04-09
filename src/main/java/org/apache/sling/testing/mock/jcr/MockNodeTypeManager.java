@@ -18,12 +18,6 @@
  */
 package org.apache.sling.testing.mock.jcr;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
 import javax.jcr.RepositoryException;
 import javax.jcr.nodetype.NoSuchNodeTypeException;
 import javax.jcr.nodetype.NodeDefinitionTemplate;
@@ -34,6 +28,12 @@ import javax.jcr.nodetype.NodeTypeIterator;
 import javax.jcr.nodetype.NodeTypeManager;
 import javax.jcr.nodetype.NodeTypeTemplate;
 import javax.jcr.nodetype.PropertyDefinitionTemplate;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.jackrabbit.commons.iterator.NodeTypeIteratorAdapter;
 
@@ -53,7 +53,7 @@ class MockNodeTypeManager implements NodeTypeManager {
 
     /**
      * Sets how the node types are resolved
-     * 
+     *
      * @param mode the mode to use
      */
     public void setMode(ResolveMode mode) {
@@ -102,8 +102,7 @@ class MockNodeTypeManager implements NodeTypeManager {
             throw new UnsupportedOperationException();
         }
 
-        List<NodeType> mixins = registeredNTs.values().stream()
-                .collect(Collectors.toList());
+        List<NodeType> mixins = registeredNTs.values().stream().collect(Collectors.toList());
         return new NodeTypeIteratorAdapter(mixins);
     }
 
@@ -113,9 +112,8 @@ class MockNodeTypeManager implements NodeTypeManager {
             throw new UnsupportedOperationException();
         }
 
-        List<NodeType> notMixins = registeredNTs.values().stream()
-                .filter(nt -> !nt.isMixin())
-                .collect(Collectors.toList());
+        List<NodeType> notMixins =
+                registeredNTs.values().stream().filter(nt -> !nt.isMixin()).collect(Collectors.toList());
         return new NodeTypeIteratorAdapter(notMixins);
     }
 
@@ -125,9 +123,8 @@ class MockNodeTypeManager implements NodeTypeManager {
             throw new UnsupportedOperationException();
         }
 
-        List<NodeType> mixins = registeredNTs.values().stream()
-            .filter(NodeType::isMixin)
-            .collect(Collectors.toList());
+        List<NodeType> mixins =
+                registeredNTs.values().stream().filter(NodeType::isMixin).collect(Collectors.toList());
         return new NodeTypeIteratorAdapter(mixins);
     }
 
@@ -175,11 +172,12 @@ class MockNodeTypeManager implements NodeTypeManager {
     }
 
     @Override
-    public NodeTypeIterator registerNodeTypes(NodeTypeDefinition[] ntds, boolean allowUpdate) throws RepositoryException {
+    public NodeTypeIterator registerNodeTypes(NodeTypeDefinition[] ntds, boolean allowUpdate)
+            throws RepositoryException {
         if (ResolveMode.MOCK_ALL.equals(this.mode)) {
             throw new UnsupportedOperationException();
         }
-        List<NodeType> registered = new ArrayList<>(); 
+        List<NodeType> registered = new ArrayList<>();
         for (NodeTypeDefinition ntd : ntds) {
             if (!allowUpdate && registeredNTs.containsKey(ntd.getName())) {
                 throw new NodeTypeExistsException(String.format(NODETYPE_ALREADY_EXISTS, ntd.getName()));
@@ -214,5 +212,4 @@ class MockNodeTypeManager implements NodeTypeManager {
             registeredNTs.remove(name);
         }
     }
-
 }

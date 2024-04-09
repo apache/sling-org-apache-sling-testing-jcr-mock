@@ -1,37 +1,31 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.apache.sling.testing.mock.jcr;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyString;
+import javax.jcr.RepositoryException;
+import javax.jcr.Session;
 
 import java.security.Principal;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.jcr.RepositoryException;
-import javax.jcr.Session;
-
+import ch.qos.logback.classic.Level;
 import org.apache.jackrabbit.api.security.principal.PrincipalIterator;
 import org.apache.jackrabbit.api.security.principal.PrincipalManager;
 import org.apache.jackrabbit.api.security.user.AuthorizableExistsException;
@@ -43,7 +37,14 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import ch.qos.logback.classic.Level;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.anyString;
 
 /**
  *
@@ -57,7 +58,7 @@ public class MockPrincipalManagerTest {
     public void before() throws RepositoryException {
         session = MockJcr.newSession();
         userManager = new MockUserManager(session);
-        principalManager = new MockPrincipalManager((MockUserManager)userManager);
+        principalManager = new MockPrincipalManager((MockUserManager) userManager);
     }
 
     /**
@@ -88,7 +89,8 @@ public class MockPrincipalManagerTest {
         @NotNull User user1 = userManager.createUser("user1", "pwd", () -> "user1", "/home/users/path1");
         @NotNull Group group1 = userManager.createGroup("group1", () -> "group1", "/home/groups/path1");
 
-        @NotNull PrincipalIterator principals = principalManager.findPrincipals("other", PrincipalManager.SEARCH_TYPE_ALL);
+        @NotNull
+        PrincipalIterator principals = principalManager.findPrincipals("other", PrincipalManager.SEARCH_TYPE_ALL);
         assertFalse(principals.hasNext());
 
         principals = principalManager.findPrincipals("user1", PrincipalManager.SEARCH_TYPE_NOT_GROUP);
@@ -99,10 +101,13 @@ public class MockPrincipalManagerTest {
         assertTrue(principals.hasNext());
         assertEquals(group1.getPrincipal(), principals.nextPrincipal());
     }
+
     @Test
     public void testFindPrincipalsStringIntCatchRepositoryException() throws Exception {
-        MockUserManager mockUserManager = Mockito.spy((MockUserManager)userManager);
-        Mockito.doThrow(RepositoryException.class).when(mockUserManager).findAuthorizables(anyString(), anyString(), anyInt());
+        MockUserManager mockUserManager = Mockito.spy((MockUserManager) userManager);
+        Mockito.doThrow(RepositoryException.class)
+                .when(mockUserManager)
+                .findAuthorizables(anyString(), anyString(), anyInt());
         // replace the field with our mocked variant
         principalManager.mockUserManager = mockUserManager;
 
@@ -112,7 +117,8 @@ public class MockPrincipalManagerTest {
             capture.setLoggerLevel(Level.WARN);
 
             // this should log an warning message
-            @NotNull PrincipalIterator principals = principalManager.findPrincipals("other", PrincipalManager.SEARCH_TYPE_ALL);
+            @NotNull
+            PrincipalIterator principals = principalManager.findPrincipals("other", PrincipalManager.SEARCH_TYPE_ALL);
             assertFalse(principals.hasNext());
 
             // verify the msg was not logged
@@ -125,7 +131,8 @@ public class MockPrincipalManagerTest {
             capture.setLoggerLevel(Level.DEBUG);
 
             // this should log an warning message
-            @NotNull PrincipalIterator principals = principalManager.findPrincipals("other", PrincipalManager.SEARCH_TYPE_ALL);
+            @NotNull
+            PrincipalIterator principals = principalManager.findPrincipals("other", PrincipalManager.SEARCH_TYPE_ALL);
             assertFalse(principals.hasNext());
 
             // verify the msg was logged
@@ -171,9 +178,10 @@ public class MockPrincipalManagerTest {
         groupMembership = principalManager.getGroupMembership(() -> "other");
         assertFalse(groupMembership.hasNext());
     }
+
     @Test
     public void testGetGroupMembershipCatchRepositoryException() throws Exception {
-        MockUserManager mockUserManager = Mockito.spy((MockUserManager)userManager);
+        MockUserManager mockUserManager = Mockito.spy((MockUserManager) userManager);
         Mockito.doThrow(RepositoryException.class).when(mockUserManager).getAuthorizable(any(Principal.class));
         // replace the field with our mocked variant
         principalManager.mockUserManager = mockUserManager;
@@ -219,9 +227,10 @@ public class MockPrincipalManagerTest {
         assertNotNull(principal);
         assertEquals("user1", principal.getName());
     }
+
     @Test
     public void testGetPrincipalCatchRepositoryException() throws Exception {
-        MockUserManager mockUserManager = Mockito.spy((MockUserManager)userManager);
+        MockUserManager mockUserManager = Mockito.spy((MockUserManager) userManager);
         Mockito.doThrow(RepositoryException.class).when(mockUserManager).getAuthorizable(anyString());
         // replace the field with our mocked variant
         principalManager.mockUserManager = mockUserManager;
@@ -284,9 +293,10 @@ public class MockPrincipalManagerTest {
         assertEquals(1, principalsSet.size());
         assertEquals("user1", principalsSet.iterator().next().getName());
     }
+
     @Test
     public void testGetPrincipalsCatchRepositoryException() throws Exception {
-        MockUserManager mockUserManager = Mockito.spy((MockUserManager)userManager);
+        MockUserManager mockUserManager = Mockito.spy((MockUserManager) userManager);
         Mockito.doThrow(RepositoryException.class).when(mockUserManager).all(anyInt());
         // replace the field with our mocked variant
         principalManager.mockUserManager = mockUserManager;
@@ -330,9 +340,10 @@ public class MockPrincipalManagerTest {
         userManager.createUser("user1", "pwd");
         assertTrue(principalManager.hasPrincipal("user1"));
     }
+
     @Test
     public void testHasPrincipalCatchRepositoryException() throws Exception {
-        MockUserManager mockUserManager = Mockito.spy((MockUserManager)userManager);
+        MockUserManager mockUserManager = Mockito.spy((MockUserManager) userManager);
         Mockito.doThrow(RepositoryException.class).when(mockUserManager).getAuthorizable(anyString());
         // replace the field with our mocked variant
         principalManager.mockUserManager = mockUserManager;
@@ -361,5 +372,4 @@ public class MockPrincipalManagerTest {
             capture.assertContains(Level.DEBUG, "Failed to determine principal exists");
         }
     }
-
 }

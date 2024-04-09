@@ -18,17 +18,17 @@
  */
 package org.apache.sling.testing.mock.jcr;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-
 import javax.jcr.RepositoryException;
 import javax.jcr.Workspace;
 import javax.jcr.observation.ObservationManager;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 
 public class MockWorkspaceTest {
 
@@ -65,5 +65,4 @@ public class MockWorkspaceTest {
     public void testNodeTypeManager() throws RepositoryException {
         assertNotNull(underTest.getNodeTypeManager());
     }
-
 }

@@ -45,5 +45,4 @@ public final class MockNodeTypes {
      * Node type NT_FILE
      */
     public static final NodeType NT_FILE = new MockNodeType(JcrConstants.NT_FILE);
-
 }

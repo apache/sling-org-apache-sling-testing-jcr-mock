@@ -18,10 +18,6 @@
  */
 package org.apache.sling.testing.mock.jcr;
 
-import java.io.Reader;
-import java.util.List;
-import java.util.Objects;
-
 import javax.jcr.NamespaceRegistry;
 import javax.jcr.Node;
 import javax.jcr.Repository;
@@ -32,6 +28,10 @@ import javax.jcr.nodetype.NodeTypeManager;
 import javax.jcr.nodetype.NodeTypeTemplate;
 import javax.jcr.query.QueryManager;
 import javax.jcr.security.AccessControlManager;
+
+import java.io.Reader;
+import java.util.List;
+import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.commons.cnd.CompactNodeTypeDefReader;
@@ -90,10 +90,10 @@ public final class MockJcr {
      */
     public static @NotNull Session newSession(@Nullable String userId, @Nullable String workspaceName) {
         try {
-            return newRepository().login(
-                    new SimpleCredentials(Objects.toString(userId, DEFAULT_USER_ID), new char[0]),
-                    Objects.toString(workspaceName, DEFAULT_WORKSPACE)
-            );
+            return newRepository()
+                    .login(
+                            new SimpleCredentials(Objects.toString(userId, DEFAULT_USER_ID), new char[0]),
+                            Objects.toString(workspaceName, DEFAULT_WORKSPACE));
         } catch (RepositoryException ex) {
             throw new RuntimeException("Creating mocked JCR session failed.", ex);
         }
@@ -114,11 +114,10 @@ public final class MockJcr {
      * @param resultList Result list
      * @param simulateUnknownSize true to simulate the result iterator having an unknown size
      */
-    public static void setQueryResult(@NotNull final Session session, @NotNull final List<Node> resultList,
-            boolean simulateUnknownSize) {
+    public static void setQueryResult(
+            @NotNull final Session session, @NotNull final List<Node> resultList, boolean simulateUnknownSize) {
         setQueryResult(getQueryManager(session), resultList, simulateUnknownSize);
     }
-
 
     /**
      * Sets the expected result list for all queries executed with the given query manager.
@@ -135,7 +134,9 @@ public final class MockJcr {
      * @param resultList Result list
      * @param simulateUnknownSize true to simulate the result iterator having an unknown size
      */
-    public static void setQueryResult(@NotNull final QueryManager queryManager, @NotNull final List<Node> resultList,
+    public static void setQueryResult(
+            @NotNull final QueryManager queryManager,
+            @NotNull final List<Node> resultList,
             boolean simulateUnknownSize) {
         addQueryResultHandler(queryManager, query -> {
             MockQueryResult result = new MockQueryResult(resultList);
@@ -151,8 +152,11 @@ public final class MockJcr {
      * @param language Query language
      * @param resultList Result list
      */
-    public static void setQueryResult(@NotNull final Session session, @NotNull final String statement,
-            @NotNull final String language, @NotNull final List<Node> resultList) {
+    public static void setQueryResult(
+            @NotNull final Session session,
+            @NotNull final String statement,
+            @NotNull final String language,
+            @NotNull final List<Node> resultList) {
         setQueryResult(session, statement, language, resultList, false);
     }
 
@@ -164,8 +168,11 @@ public final class MockJcr {
      * @param resultList Result list
      * @param simulateUnknownSize true to simulate the result iterator having an unknown size
      */
-    public static void setQueryResult(@NotNull final Session session, @NotNull final String statement,
-            @NotNull final String language, @NotNull final List<Node> resultList,
+    public static void setQueryResult(
+            @NotNull final Session session,
+            @NotNull final String statement,
+            @NotNull final String language,
+            @NotNull final List<Node> resultList,
             boolean simulateUnknownSize) {
         setQueryResult(getQueryManager(session), statement, language, resultList, simulateUnknownSize);
     }
@@ -177,8 +184,11 @@ public final class MockJcr {
      * @param language Query language
      * @param resultList Result list
      */
-    public static void setQueryResult(@NotNull final QueryManager queryManager, @NotNull final String statement,
-            @NotNull final String language, @NotNull final List<Node> resultList) {
+    public static void setQueryResult(
+            @NotNull final QueryManager queryManager,
+            @NotNull final String statement,
+            @NotNull final String language,
+            @NotNull final List<Node> resultList) {
         setQueryResult(queryManager, statement, language, resultList, false);
     }
     /**
@@ -189,8 +199,11 @@ public final class MockJcr {
      * @param resultList Result list
      * @param simulateUnknownSize true to simulate the result iterator having an unknown size
      */
-    public static void setQueryResult(@NotNull final QueryManager queryManager, @NotNull final String statement,
-            @NotNull final String language, @NotNull final List<Node> resultList,
+    public static void setQueryResult(
+            @NotNull final QueryManager queryManager,
+            @NotNull final String statement,
+            @NotNull final String language,
+            @NotNull final List<Node> resultList,
             boolean simulateUnknownSize) {
         addQueryResultHandler(queryManager, query -> {
             if (StringUtils.equals(query.getStatement(), statement)
@@ -198,8 +211,7 @@ public final class MockJcr {
                 MockQueryResult mockQueryResult = new MockQueryResult(resultList);
                 mockQueryResult.setSimulateUnknownSize(simulateUnknownSize);
                 return mockQueryResult;
-            }
-            else {
+            } else {
                 return null;
             }
         });
@@ -210,7 +222,8 @@ public final class MockJcr {
      * @param session JCR session
      * @param resultHandler Mock query result handler
      */
-    public static void addQueryResultHandler(@NotNull final Session session, @NotNull final MockQueryResultHandler resultHandler) {
+    public static void addQueryResultHandler(
+            @NotNull final Session session, @NotNull final MockQueryResultHandler resultHandler) {
         addQueryResultHandler(getQueryManager(session), resultHandler);
     }
 
@@ -219,15 +232,15 @@ public final class MockJcr {
      * @param queryManager Mocked query manager
      * @param resultHandler Mock query result handler
      */
-    public static void addQueryResultHandler(@NotNull final QueryManager queryManager, @NotNull final MockQueryResultHandler resultHandler) {
-        ((MockQueryManager)queryManager).addResultHandler(resultHandler);
+    public static void addQueryResultHandler(
+            @NotNull final QueryManager queryManager, @NotNull final MockQueryResultHandler resultHandler) {
+        ((MockQueryManager) queryManager).addResultHandler(resultHandler);
     }
 
     private static @NotNull QueryManager getQueryManager(@NotNull Session session) {
         try {
             return session.getWorkspace().getQueryManager();
-        }
-        catch (RepositoryException ex) {
+        } catch (RepositoryException ex) {
             throw new RuntimeException("Unable to access query manager.", ex);
         }
     }
@@ -242,10 +255,11 @@ public final class MockJcr {
      * @throws ParseException Parse exception
      * @throws RepositoryException Repository exception
      */
-    public static void loadNodeTypeDefs(@NotNull Session session, @NotNull Reader reader) throws ParseException, RepositoryException {
+    public static void loadNodeTypeDefs(@NotNull Session session, @NotNull Reader reader)
+            throws ParseException, RepositoryException {
         // inform the manager to only consider the registered node types
         NodeTypeManager nodeTypeManager = session.getWorkspace().getNodeTypeManager();
-        ((MockNodeTypeManager)nodeTypeManager).setMode(ResolveMode.ONLY_REGISTERED);
+        ((MockNodeTypeManager) nodeTypeManager).setMode(ResolveMode.ONLY_REGISTERED);
 
         MockTemplateBuilderFactory factory = new MockTemplateBuilderFactory(session);
         CompactNodeTypeDefReader<NodeTypeTemplate, NamespaceRegistry> cndReader =
@@ -264,6 +278,6 @@ public final class MockJcr {
      * @param acm the access control manager to use for the session
      */
     public static void setAccessControlManager(@NotNull Session session, @Nullable AccessControlManager acm) {
-        ((MockSession)session).setAccessControlManager(acm);
+        ((MockSession) session).setAccessControlManager(acm);
     }
 }

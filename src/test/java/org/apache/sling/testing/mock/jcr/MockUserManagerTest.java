@@ -1,32 +1,22 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.apache.sling.testing.mock.jcr;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
-
-import java.io.UnsupportedEncodingException;
-import java.security.NoSuchAlgorithmException;
-import java.util.Iterator;
-import java.util.Set;
 
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
@@ -35,6 +25,12 @@ import javax.jcr.SimpleCredentials;
 import javax.jcr.UnsupportedRepositoryOperationException;
 import javax.jcr.ValueFactory;
 
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
+import java.util.Iterator;
+import java.util.Set;
+
+import ch.qos.logback.classic.Level;
 import org.apache.jackrabbit.api.security.user.Authorizable;
 import org.apache.jackrabbit.api.security.user.AuthorizableExistsException;
 import org.apache.jackrabbit.api.security.user.AuthorizableTypeException;
@@ -51,7 +47,12 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import ch.qos.logback.classic.Level;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 
 /**
  *
@@ -91,9 +92,9 @@ public class MockUserManagerTest {
     }
 
     @Test
-    public void testLoadAlreadyExistingAuthorizables() throws RepositoryException, NoSuchAlgorithmException, UnsupportedEncodingException {
-        Node homeNode = session.getRootNode()
-            .addNode("home", UserConstants.NT_REP_AUTHORIZABLE_FOLDER);
+    public void testLoadAlreadyExistingAuthorizables()
+            throws RepositoryException, NoSuchAlgorithmException, UnsupportedEncodingException {
+        Node homeNode = session.getRootNode().addNode("home", UserConstants.NT_REP_AUTHORIZABLE_FOLDER);
         Node usersNode = homeNode.addNode("users", UserConstants.NT_REP_AUTHORIZABLE_FOLDER);
         Node testuser1 = usersNode.addNode("testuser1", UserConstants.NT_REP_USER);
         testuser1.setProperty(UserConstants.REP_AUTHORIZABLE_ID, "testuser1");
@@ -121,13 +122,13 @@ public class MockUserManagerTest {
         @Nullable Authorizable authorizable = userManager.getAuthorizable("testuser1");
         assertTrue(authorizable instanceof User);
         // verify password state was stored
-        SimpleCredentials creds = (SimpleCredentials)((User)authorizable).getCredentials();
+        SimpleCredentials creds = (SimpleCredentials) ((User) authorizable).getCredentials();
         assertTrue(PasswordUtil.isSame(String.valueOf(creds.getPassword()), "testPwd"));
         @Nullable Authorizable authorizable2 = userManager.getAuthorizable("testuser2");
         assertTrue(authorizable2 instanceof User);
         // verify disabled state was stored
-        assertTrue(((User)authorizable2).isDisabled());
-        assertEquals("Bad Behavior", ((User)authorizable2).getDisabledReason());
+        assertTrue(((User) authorizable2).isDisabled());
+        assertEquals("Bad Behavior", ((User) authorizable2).getDisabledReason());
         assertNotNull(userManager.getAuthorizable("testsystemuser1"));
         assertNotNull(userManager.getAuthorizable("testgroup1"));
     }
@@ -222,6 +223,7 @@ public class MockUserManagerTest {
         assertTrue(user.isSystemUser());
         assertEquals("/home/users/system/test", ResourceUtil.getParent(user.getPath()));
     }
+
     @Test
     public void testCreateSystemUserWithNullIntermediatePath() throws RepositoryException {
         @NotNull User user = userManager.createSystemUser("systemuser1", null);
@@ -249,8 +251,10 @@ public class MockUserManagerTest {
         assertNotNull(user1);
         assertEquals("/home/users/path1/user1", user1.getPath());
     }
+
     @Test
-    public void testCreateUserStringStringPrincipalStringWithNullIntermediatePath() throws AuthorizableExistsException, RepositoryException {
+    public void testCreateUserStringStringPrincipalStringWithNullIntermediatePath()
+            throws AuthorizableExistsException, RepositoryException {
         @NotNull User user1 = userManager.createUser("user1", "pwd", () -> "user1", null);
         assertNotNull(user1);
         assertEquals("/home/users", ResourceUtil.getParent(user1.getPath()));
@@ -282,7 +286,8 @@ public class MockUserManagerTest {
      */
     @Test
     public void testEnsureAuthorizablePathExistsStringStringString() throws RepositoryException {
-        Node user1node = userManager.ensureAuthorizablePathExists("/home/users/path1", "user1", UserConstants.NT_REP_USER);
+        Node user1node =
+                userManager.ensureAuthorizablePathExists("/home/users/path1", "user1", UserConstants.NT_REP_USER);
         assertNotNull(user1node);
 
         // one more time to ensure it works if the path already exists
@@ -337,7 +342,9 @@ public class MockUserManagerTest {
         user1.setProperty("sub1/prop2", vf.createValue("prop2Value"));
 
         // none found
-        @NotNull Iterator<Authorizable> authorizables = userManager.findAuthorizables("prop1", "other", UserManager.SEARCH_TYPE_AUTHORIZABLE);
+        @NotNull
+        Iterator<Authorizable> authorizables =
+                userManager.findAuthorizables("prop1", "other", UserManager.SEARCH_TYPE_AUTHORIZABLE);
         assertFalse(authorizables.hasNext());
 
         // found by name
@@ -366,7 +373,7 @@ public class MockUserManagerTest {
         assertEquals(group1, authorizables.next());
 
         // not found by relPath
-        authorizables = userManager.findAuthorizables("sub1/prop3","prop3Value", UserManager.SEARCH_TYPE_GROUP);
+        authorizables = userManager.findAuthorizables("sub1/prop3", "prop3Value", UserManager.SEARCH_TYPE_GROUP);
         assertFalse(authorizables.hasNext());
 
         // some invalid type
@@ -409,7 +416,8 @@ public class MockUserManagerTest {
      * Test to verify the fix for SLING-12166
      */
     @Test
-    public void testGetAuthorizableStringClassOfTWhenItDoesNotExist() throws AuthorizableExistsException, RepositoryException {
+    public void testGetAuthorizableStringClassOfTWhenItDoesNotExist()
+            throws AuthorizableExistsException, RepositoryException {
         @Nullable Authorizable authorizable = userManager.getAuthorizable("user1", User.class);
         assertNull(authorizable);
     }
@@ -422,9 +430,10 @@ public class MockUserManagerTest {
         @NotNull User user1 = userManager.createUser("user1", "pwd", () -> "user1", "/home/users/path1");
         @Nullable Authorizable authorizable = userManager.getAuthorizableByPath(user1.getPath());
         assertEquals(user1, authorizable);
-        
-        //throws exception
+
+        // throws exception
     }
+
     @Test
     public void testGetAuthorizableByPathCatchRepositoryException() throws Exception {
         @NotNull User user1 = userManager.createUser("user1", "pwd", () -> "user1", "/home/users/path1");
@@ -457,5 +466,4 @@ public class MockUserManagerTest {
             capture.assertContains(Level.DEBUG, "Failed to match authorizable path");
         }
     }
-
 }

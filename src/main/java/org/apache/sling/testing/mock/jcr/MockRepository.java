@@ -18,10 +18,6 @@
  */
 package org.apache.sling.testing.mock.jcr;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Objects;
-
 import javax.jcr.Credentials;
 import javax.jcr.NamespaceRegistry;
 import javax.jcr.Repository;
@@ -31,6 +27,10 @@ import javax.jcr.SimpleCredentials;
 import javax.jcr.Value;
 import javax.jcr.nodetype.NodeTypeManager;
 import javax.jcr.observation.ObservationManager;
+
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Objects;
 
 import org.apache.commons.lang3.ArrayUtils;
 
@@ -71,9 +71,11 @@ class MockRepository implements Repository {
     public Session login(final Credentials credentials, final String workspaceName) throws RepositoryException {
         String userId = null;
         if (credentials instanceof SimpleCredentials) {
-            userId = ((SimpleCredentials)credentials).getUserID();
+            userId = ((SimpleCredentials) credentials).getUserID();
         }
-        return new MockSession(this, items,
+        return new MockSession(
+                this,
+                items,
                 Objects.toString(userId, MockJcr.DEFAULT_USER_ID),
                 Objects.toString(workspaceName, MockJcr.DEFAULT_WORKSPACE));
     }
@@ -119,5 +121,4 @@ class MockRepository implements Repository {
     NodeTypeManager getNodeTypeManager() {
         return nodeTypeManager;
     }
-
 }

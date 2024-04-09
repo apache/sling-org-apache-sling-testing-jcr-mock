@@ -18,12 +18,12 @@
  */
 package org.apache.sling.testing.mock.jcr;
 
-import java.util.UUID;
-
 import javax.jcr.Item;
 import javax.jcr.Session;
 import javax.jcr.Value;
 import javax.jcr.nodetype.NodeType;
+
+import java.util.UUID;
 
 /**
  * Holds node and property item data independently from session.
@@ -135,8 +135,7 @@ class ItemData {
     public Item getItem(Session session) {
         if (isNode) {
             return new MockNode(this, session);
-        }
-        else {
+        } else {
             return new MockProperty(this, session);
         }
     }
@@ -157,7 +156,6 @@ class ItemData {
         this.isChanged = isChanged;
     }
 
-
     @Override
     public int hashCode() {
         return path.hashCode();
@@ -166,7 +164,7 @@ class ItemData {
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof ItemData) {
-            return path.equals(((ItemData)obj).path);
+            return path.equals(((ItemData) obj).path);
         }
         return false;
     }
@@ -182,5 +180,4 @@ class ItemData {
     public static ItemData newProperty(String path) {
         return new ItemData(path, false, null, null);
     }
-
 }

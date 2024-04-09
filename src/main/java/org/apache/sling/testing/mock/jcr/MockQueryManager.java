@@ -18,12 +18,6 @@
  */
 package org.apache.sling.testing.mock.jcr;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.query.InvalidQueryException;
@@ -31,6 +25,12 @@ import javax.jcr.query.Query;
 import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 import javax.jcr.query.qom.QueryObjectModelFactory;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -42,12 +42,8 @@ class MockQueryManager implements QueryManager {
     private List<MockQueryResultHandler> resultHandlers = new ArrayList<MockQueryResultHandler>();
 
     @SuppressWarnings("deprecation")
-    private static final List<String> SUPPORTED_QUERY_LANGUAGES = Stream.of(
-      Query.JCR_SQL2,
-      Query.JCR_JQOM,
-      Query.XPATH,
-      Query.SQL
-    ).collect(Collectors.toList());
+    private static final List<String> SUPPORTED_QUERY_LANGUAGES =
+            Stream.of(Query.JCR_SQL2, Query.JCR_JQOM, Query.XPATH, Query.SQL).collect(Collectors.toList());
 
     @Override
     public Query createQuery(String statement, String language) throws RepositoryException {
@@ -88,5 +84,4 @@ class MockQueryManager implements QueryManager {
     public Query getQuery(Node node) throws RepositoryException {
         throw new UnsupportedOperationException();
     }
-
 }
