@@ -1,25 +1,28 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.apache.sling.testing.mock.jcr;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import javax.jcr.RepositoryException;
+import javax.jcr.nodetype.NodeDefinition;
+import javax.jcr.nodetype.NodeType;
+import javax.jcr.nodetype.NodeTypeIterator;
+import javax.jcr.nodetype.PropertyDefinition;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -28,15 +31,14 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import javax.jcr.RepositoryException;
-import javax.jcr.nodetype.NodeDefinition;
-import javax.jcr.nodetype.NodeType;
-import javax.jcr.nodetype.NodeTypeIterator;
-import javax.jcr.nodetype.PropertyDefinition;
-
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.jackrabbit.commons.cnd.ParseException;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  *
@@ -79,7 +81,8 @@ public class MockNodeTypeTest extends AbstractMockNodeTypeTest {
         assertEquals(JcrConstants.JCR_CONTENT, childNodeDefinitions[0].getName());
 
         // test inheritence from supertype
-        NodeType autocreatedChildAndPropExt = this.session.getWorkspace().getNodeTypeManager().getNodeType("nt:autocreatedChildAndPropExt");
+        NodeType autocreatedChildAndPropExt =
+                this.session.getWorkspace().getNodeTypeManager().getNodeType("nt:autocreatedChildAndPropExt");
         childNodeDefinitions = autocreatedChildAndPropExt.getChildNodeDefinitions();
         assertEquals(2, childNodeDefinitions.length);
         assertTrue(Stream.of(childNodeDefinitions).anyMatch(cd -> "child1".equals(cd.getName())));
@@ -155,7 +158,8 @@ public class MockNodeTypeTest extends AbstractMockNodeTypeTest {
         assertEquals(JcrConstants.JCR_MIXINTYPES, propertyDefinitions[3].getName());
 
         // test inheritence from supertype
-        NodeType autocreatedChildAndPropExt = this.session.getWorkspace().getNodeTypeManager().getNodeType("nt:autocreatedChildAndPropExt");
+        NodeType autocreatedChildAndPropExt =
+                this.session.getWorkspace().getNodeTypeManager().getNodeType("nt:autocreatedChildAndPropExt");
         propertyDefinitions = autocreatedChildAndPropExt.getPropertyDefinitions();
         assertEquals(5, propertyDefinitions.length);
         assertTrue(Stream.of(propertyDefinitions).anyMatch(pd -> "prop1".equals(pd.getName())));
@@ -263,5 +267,4 @@ public class MockNodeTypeTest extends AbstractMockNodeTypeTest {
         NodeType ntFolder = nodeTypeManager.getNodeType(JcrConstants.NT_FOLDER);
         assertTrue(ntFolder.isQueryable());
     }
-
 }

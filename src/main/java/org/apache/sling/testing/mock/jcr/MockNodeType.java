@@ -18,14 +18,6 @@
  */
 package org.apache.sling.testing.mock.jcr;
 
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Stream;
-
 import javax.jcr.RepositoryException;
 import javax.jcr.Value;
 import javax.jcr.nodetype.NodeDefinition;
@@ -34,6 +26,14 @@ import javax.jcr.nodetype.NodeTypeDefinition;
 import javax.jcr.nodetype.NodeTypeIterator;
 import javax.jcr.nodetype.NodeTypeManager;
 import javax.jcr.nodetype.PropertyDefinition;
+
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.JcrConstants;
@@ -90,7 +90,6 @@ class MockNodeType implements NodeType {
         // support only well-known built-in node type
         return StringUtils.equals(getName(), JcrConstants.NT_UNSTRUCTURED);
     }
-
 
     // --- unsupported operations ---
     @Override
@@ -160,13 +159,15 @@ class MockNodeType implements NodeType {
         if (ntd != null && ntMgr != null) {
             String[] supertypeNames = ntd.getDeclaredSupertypeNames();
             // lookup the NodeTypes from the manager
-            return Stream.of(supertypeNames).map(n -> {
-                try {
-                    return ntMgr.getNodeType(n);
-                } catch (RepositoryException e) {
-                    throw new RuntimeException("Getting declared supertype failed.", e);
-                }
-            }).toArray(NodeType[]::new);
+            return Stream.of(supertypeNames)
+                    .map(n -> {
+                        try {
+                            return ntMgr.getNodeType(n);
+                        } catch (RepositoryException e) {
+                            throw new RuntimeException("Getting declared supertype failed.", e);
+                        }
+                    })
+                    .toArray(NodeType[]::new);
         }
         throw new UnsupportedOperationException();
     }
@@ -253,7 +254,7 @@ class MockNodeType implements NodeType {
 
     @Override
     public NodeTypeIterator getDeclaredSubtypes() {
-        if (ntMgr != null && ((MockNodeTypeManager)ntMgr).isMode(ResolveMode.MOCK_ALL)) {
+        if (ntMgr != null && ((MockNodeTypeManager) ntMgr).isMode(ResolveMode.MOCK_ALL)) {
             throw new UnsupportedOperationException();
         }
         List<NodeType> subtypes = new ArrayList<>();
@@ -262,7 +263,8 @@ class MockNodeType implements NodeType {
                 NodeTypeIterator allNodeTypes = ntMgr.getAllNodeTypes();
                 while (allNodeTypes.hasNext()) {
                     NodeType nextNodeType = allNodeTypes.nextNodeType();
-                    boolean issubtype = Stream.of(nextNodeType.getDeclaredSupertypes()).anyMatch(nt -> nt.getName().equals(getName()));
+                    boolean issubtype = Stream.of(nextNodeType.getDeclaredSupertypes())
+                            .anyMatch(nt -> nt.getName().equals(getName()));
                     if (issubtype) {
                         subtypes.add(nextNodeType);
                     }
@@ -276,7 +278,7 @@ class MockNodeType implements NodeType {
 
     @Override
     public NodeTypeIterator getSubtypes() {
-        if (ntMgr != null && ((MockNodeTypeManager)ntMgr).isMode(ResolveMode.MOCK_ALL)) {
+        if (ntMgr != null && ((MockNodeTypeManager) ntMgr).isMode(ResolveMode.MOCK_ALL)) {
             throw new UnsupportedOperationException();
         }
         List<NodeType> subtypes = new ArrayList<>();
@@ -285,7 +287,8 @@ class MockNodeType implements NodeType {
                 NodeTypeIterator allNodeTypes = ntMgr.getAllNodeTypes();
                 while (allNodeTypes.hasNext()) {
                     NodeType nextNodeType = allNodeTypes.nextNodeType();
-                    boolean issubtype = Stream.of(nextNodeType.getSupertypes()).anyMatch(nt -> nt.getName().equals(getName()));
+                    boolean issubtype = Stream.of(nextNodeType.getSupertypes())
+                            .anyMatch(nt -> nt.getName().equals(getName()));
                     if (issubtype) {
                         subtypes.add(nextNodeType);
                     }
@@ -329,5 +332,4 @@ class MockNodeType implements NodeType {
         builder.append("]");
         return builder.toString();
     }
-
 }

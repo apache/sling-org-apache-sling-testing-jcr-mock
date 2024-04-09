@@ -18,11 +18,11 @@
  */
 package org.apache.sling.testing.mock.jcr;
 
+import org.junit.Test;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.fail;
-
-import org.junit.Test;
 
 public class ResourceUtilTest {
 
@@ -217,5 +217,4 @@ public class ResourceUtilTest {
         assertEquals("/", ResourceUtil.getParent("/b/c/d", 3));
         assertEquals("/", ResourceUtil.getParent("/b///", 1));
     }
-
 }

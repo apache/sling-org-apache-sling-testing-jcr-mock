@@ -18,22 +18,21 @@
  */
 package org.apache.sling.testing.mock.jcr;
 
-import static org.junit.Assert.fail;
-
 import java.util.function.Predicate;
 import java.util.stream.Stream;
-
-import org.slf4j.LoggerFactory;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.spi.ILoggingEvent;
 import ch.qos.logback.core.read.ListAppender;
+import org.slf4j.LoggerFactory;
 
-/** 
- * Capture logs for testing 
- * 
+import static org.junit.Assert.fail;
+
+/**
+ * Capture logs for testing
+ *
  * Initially cloned from: https://github.com/apache/sling-org-apache-sling-graphql-core/blob/0b1c1dd72ed04324ea84d2227c3223ec65b0b21e/src/test/java/org/apache/sling/graphql/core/util/LogCapture.java
  */
 public class LogCapture extends ListAppender<ILoggingEvent> implements AutoCloseable {
@@ -50,7 +49,7 @@ public class LogCapture extends ListAppender<ILoggingEvent> implements AutoClose
     }
 
     public void setLoggerLevel(Level newLevel) {
-        ((ch.qos.logback.classic.Logger)logger).setLevel(newLevel);
+        ((ch.qos.logback.classic.Logger) logger).setLevel(newLevel);
     }
 
     @Override
@@ -64,9 +63,10 @@ public class LogCapture extends ListAppender<ILoggingEvent> implements AutoClose
         return this.list.stream().anyMatch(p);
     }
 
-    public void assertContains(Level atLevel, String ... substrings) {
+    public void assertContains(Level atLevel, String... substrings) {
         Stream.of(substrings).forEach(substring -> {
-            if (!anyMatch(event -> event.getLevel() == atLevel && event.getFormattedMessage().contains(substring))) {
+            if (!anyMatch(event ->
+                    event.getLevel() == atLevel && event.getFormattedMessage().contains(substring))) {
                 if (verboseFailure) {
                     fail(String.format("No log message contains [%s] in log%n%s", substring, this.list.toString()));
                 } else {
@@ -76,16 +76,17 @@ public class LogCapture extends ListAppender<ILoggingEvent> implements AutoClose
         });
     }
 
-    public void assertNotContains(Level atLevel, String ... substrings) {
+    public void assertNotContains(Level atLevel, String... substrings) {
         Stream.of(substrings).forEach(substring -> {
-            if (anyMatch(event -> event.getLevel() == atLevel && event.getFormattedMessage().contains(substring))) {
+            if (anyMatch(event ->
+                    event.getLevel() == atLevel && event.getFormattedMessage().contains(substring))) {
                 if (verboseFailure) {
-                    fail(String.format("Unexpected log message contains [%s] in log%n%s", substring, this.list.toString()));
+                    fail(String.format(
+                            "Unexpected log message contains [%s] in log%n%s", substring, this.list.toString()));
                 } else {
                     fail(String.format("Unexpacted log message contains [%s]", substring));
                 }
             }
         });
     }
-
 }

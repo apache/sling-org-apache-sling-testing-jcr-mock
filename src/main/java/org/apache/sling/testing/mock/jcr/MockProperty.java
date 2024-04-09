@@ -18,11 +18,6 @@
  */
 package org.apache.sling.testing.mock.jcr;
 
-import java.io.InputStream;
-import java.math.BigDecimal;
-import java.util.Arrays;
-import java.util.Calendar;
-
 import javax.jcr.Binary;
 import javax.jcr.ItemVisitor;
 import javax.jcr.Node;
@@ -35,6 +30,11 @@ import javax.jcr.ValueFormatException;
 import javax.jcr.nodetype.NodeType;
 import javax.jcr.nodetype.PropertyDefinition;
 
+import java.io.InputStream;
+import java.math.BigDecimal;
+import java.util.Arrays;
+import java.util.Calendar;
+
 import org.apache.jackrabbit.value.BinaryValue;
 
 /**
@@ -46,9 +46,9 @@ class MockProperty extends AbstractItem implements Property {
         super(itemData, session);
         if (this.itemData.getValues() == null) {
             try {
-                this.itemData.setValues(new Value[] { getSession().getValueFactory().createValue("") });
-            }
-            catch (RepositoryException ex) {
+                this.itemData.setValues(
+                        new Value[] {getSession().getValueFactory().createValue("")});
+            } catch (RepositoryException ex) {
                 throw new RuntimeException("Initializing property failed.", ex);
             }
         }
@@ -56,8 +56,8 @@ class MockProperty extends AbstractItem implements Property {
 
     private Value internalGetValue() throws RepositoryException {
         if (this.itemData.isMultiple()) {
-            throw new ValueFormatException(this
-                    + " is a multi-valued property, so it's values can only be retrieved as an array");
+            throw new ValueFormatException(
+                    this + " is a multi-valued property, so it's values can only be retrieved as an array");
         } else {
             return this.itemData.getValues()[0];
         }
@@ -82,7 +82,7 @@ class MockProperty extends AbstractItem implements Property {
         if (removePropertyIfValueNull(newValue)) {
             return;
         }
-        this.itemData.setValues(new Value[] { newValue });
+        this.itemData.setValues(new Value[] {newValue});
         this.itemData.setMultiple(false);
     }
 
@@ -91,7 +91,7 @@ class MockProperty extends AbstractItem implements Property {
         if (removePropertyIfValueNull(newValues)) {
             return;
         }
-        Value[] values =  Arrays.copyOf(newValues, newValues.length);
+        Value[] values = Arrays.copyOf(newValues, newValues.length);
         this.itemData.setValues(values);
         this.itemData.setMultiple(true);
     }
@@ -101,7 +101,7 @@ class MockProperty extends AbstractItem implements Property {
         if (removePropertyIfValueNull(newValue)) {
             return;
         }
-        this.itemData.setValues(new Value[] { getSession().getValueFactory().createValue(newValue) });
+        this.itemData.setValues(new Value[] {getSession().getValueFactory().createValue(newValue)});
         this.itemData.setMultiple(false);
     }
 
@@ -123,19 +123,19 @@ class MockProperty extends AbstractItem implements Property {
         if (removePropertyIfValueNull(newValue)) {
             return;
         }
-        this.itemData.setValues(new Value[] { new BinaryValue(newValue) });
+        this.itemData.setValues(new Value[] {new BinaryValue(newValue)});
         this.itemData.setMultiple(false);
     }
 
     @Override
     public void setValue(final long newValue) throws RepositoryException {
-        this.itemData.setValues(new Value[] { getSession().getValueFactory().createValue(newValue) });
+        this.itemData.setValues(new Value[] {getSession().getValueFactory().createValue(newValue)});
         this.itemData.setMultiple(false);
     }
 
     @Override
     public void setValue(final double newValue) throws RepositoryException {
-        this.itemData.setValues(new Value[] { getSession().getValueFactory().createValue(newValue) });
+        this.itemData.setValues(new Value[] {getSession().getValueFactory().createValue(newValue)});
         this.itemData.setMultiple(false);
     }
 
@@ -144,13 +144,13 @@ class MockProperty extends AbstractItem implements Property {
         if (removePropertyIfValueNull(newValue)) {
             return;
         }
-        this.itemData.setValues(new Value[] { getSession().getValueFactory().createValue(newValue) });
+        this.itemData.setValues(new Value[] {getSession().getValueFactory().createValue(newValue)});
         this.itemData.setMultiple(false);
     }
 
     @Override
     public void setValue(final boolean newValue) throws RepositoryException {
-        this.itemData.setValues(new Value[] { getSession().getValueFactory().createValue(newValue) });
+        this.itemData.setValues(new Value[] {getSession().getValueFactory().createValue(newValue)});
         this.itemData.setMultiple(false);
     }
 
@@ -159,7 +159,7 @@ class MockProperty extends AbstractItem implements Property {
         if (removePropertyIfValueNull(newValue)) {
             return;
         }
-        this.itemData.setValues(new Value[] { getSession().getValueFactory().createValue(newValue) });
+        this.itemData.setValues(new Value[] {getSession().getValueFactory().createValue(newValue)});
         this.itemData.setMultiple(false);
     }
 
@@ -168,7 +168,7 @@ class MockProperty extends AbstractItem implements Property {
         if (removePropertyIfValueNull(newValue)) {
             return;
         }
-        this.itemData.setValues(new Value[] { new BinaryValue(newValue) });
+        this.itemData.setValues(new Value[] {new BinaryValue(newValue)});
         this.itemData.setMultiple(false);
     }
 
@@ -177,7 +177,7 @@ class MockProperty extends AbstractItem implements Property {
         if (removePropertyIfValueNull(newValue)) {
             return;
         }
-        this.itemData.setValues(new Value[] { getSession().getValueFactory().createValue(newValue) });
+        this.itemData.setValues(new Value[] {getSession().getValueFactory().createValue(newValue)});
         this.itemData.setMultiple(false);
     }
 
@@ -240,8 +240,7 @@ class MockProperty extends AbstractItem implements Property {
     public int getType() throws RepositoryException {
         if (this.itemData.getValues().length > 0) {
             return this.itemData.getValues()[0].getType();
-        }
-        else {
+        } else {
             return PropertyType.UNDEFINED;
         }
     }
@@ -291,7 +290,7 @@ class MockProperty extends AbstractItem implements Property {
     @Override
     public boolean equals(Object obj) {
         if (obj instanceof MockProperty) {
-            return itemData.equals(((MockProperty)obj).itemData);
+            return itemData.equals(((MockProperty) obj).itemData);
         }
         return false;
     }
@@ -374,7 +373,5 @@ class MockProperty extends AbstractItem implements Property {
         public String[] getAvailableQueryOperators() {
             throw new UnsupportedOperationException();
         }
-
     }
-
 }

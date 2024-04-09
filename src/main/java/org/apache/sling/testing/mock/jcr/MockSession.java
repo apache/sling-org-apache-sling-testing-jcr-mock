@@ -18,18 +18,6 @@
  */
 package org.apache.sling.testing.mock.jcr;
 
-import static java.util.Objects.requireNonNull;
-
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.regex.Pattern;
-
 import javax.jcr.Credentials;
 import javax.jcr.Item;
 import javax.jcr.ItemExistsException;
@@ -46,6 +34,16 @@ import javax.jcr.Workspace;
 import javax.jcr.retention.RetentionManager;
 import javax.jcr.security.AccessControlManager;
 
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.regex.Pattern;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.jackrabbit.api.JackrabbitSession;
 import org.apache.jackrabbit.api.security.principal.PrincipalManager;
@@ -54,6 +52,8 @@ import org.apache.jackrabbit.commons.iterator.RangeIteratorAdapter;
 import org.apache.jackrabbit.value.ValueFactoryImpl;
 import org.jetbrains.annotations.NotNull;
 import org.xml.sax.ContentHandler;
+
+import static java.util.Objects.requireNonNull;
 
 /**
  * Mock {@link Session} implementation. This instance holds the JCR data in a
@@ -71,8 +71,8 @@ class MockSession implements Session, JackrabbitSession {
     private MockUserManager userManager;
     private AccessControlManager accessControlManager = null;
 
-    public MockSession(MockRepository repository, Map<String, ItemData> items,
-            String userId, String workspaceName) throws RepositoryException {
+    public MockSession(MockRepository repository, Map<String, ItemData> items, String userId, String workspaceName)
+            throws RepositoryException {
         this.repository = repository;
         this.workspace = new MockWorkspace(repository, this, workspaceName);
         this.userManager = new MockUserManager(this);
@@ -104,8 +104,7 @@ class MockSession implements Session, JackrabbitSession {
         if (itemData != null) {
             if (itemData.isNode()) {
                 return new MockNode(itemData, this);
-            }
-            else {
+            } else {
                 return new MockProperty(itemData, this);
             }
         } else {
@@ -218,7 +217,7 @@ class MockSession implements Session, JackrabbitSession {
     RangeIterator listChildren(final String parentPath, final ItemFilter filter) throws RepositoryException {
         List<Item> children = new ArrayList<Item>();
 
-        //remove trailing slash or make root path / empty string
+        // remove trailing slash or make root path / empty string
         final String path = parentPath.replaceFirst("/$", "");
 
         // build regex pattern for all child paths of parent
@@ -269,7 +268,6 @@ class MockSession implements Session, JackrabbitSession {
             items.put(key, items.remove(key));
         }
     }
-
 
     @Override
     public boolean hasPendingChanges() throws RepositoryException {
@@ -350,9 +348,9 @@ class MockSession implements Session, JackrabbitSession {
         // do nothing
         checkLive();
 
-        if (!keepChanges){
-            //if reverting change instruction has been requested,
-            //warn upper user this won't happen
+        if (!keepChanges) {
+            // if reverting change instruction has been requested,
+            // warn upper user this won't happen
             throw new UnsupportedOperationException();
         }
     }
@@ -383,7 +381,6 @@ class MockSession implements Session, JackrabbitSession {
         return new String[0];
     }
 
-
     // --- unsupported operations ---
     @Override
     public void addLockToken(final String lt) {
@@ -391,31 +388,42 @@ class MockSession implements Session, JackrabbitSession {
     }
 
     @Override
-    public void exportDocumentView(final String absPath, final ContentHandler contentHandler, final boolean skipBinary,
-            final boolean noRecurse) throws RepositoryException {
+    public void exportDocumentView(
+            final String absPath,
+            final ContentHandler contentHandler,
+            final boolean skipBinary,
+            final boolean noRecurse)
+            throws RepositoryException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void exportDocumentView(final String absPath, final OutputStream out, final boolean skipBinary,
-            final boolean noRecurse) throws RepositoryException {
+    public void exportDocumentView(
+            final String absPath, final OutputStream out, final boolean skipBinary, final boolean noRecurse)
+            throws RepositoryException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void exportSystemView(final String absPath, final ContentHandler contentHandler, final boolean skipBinary,
-            final boolean noRecurse) throws RepositoryException {
+    public void exportSystemView(
+            final String absPath,
+            final ContentHandler contentHandler,
+            final boolean skipBinary,
+            final boolean noRecurse)
+            throws RepositoryException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public void exportSystemView(final String absPath, final OutputStream out, final boolean skipBinary,
-            final boolean noRecurse) throws RepositoryException {
+    public void exportSystemView(
+            final String absPath, final OutputStream out, final boolean skipBinary, final boolean noRecurse)
+            throws RepositoryException {
         throw new UnsupportedOperationException();
     }
 
     @Override
-    public ContentHandler getImportContentHandler(final String parentAbsPath, final int uuidBehavior) throws RepositoryException {
+    public ContentHandler getImportContentHandler(final String parentAbsPath, final int uuidBehavior)
+            throws RepositoryException {
         throw new UnsupportedOperationException();
     }
 
@@ -430,7 +438,8 @@ class MockSession implements Session, JackrabbitSession {
     }
 
     @Override
-    public void importXML(final String parentAbsPath, final InputStream in, final int uuidBehavior) throws RepositoryException {
+    public void importXML(final String parentAbsPath, final InputStream in, final int uuidBehavior)
+            throws RepositoryException {
         throw new UnsupportedOperationException();
     }
 
@@ -445,8 +454,10 @@ class MockSession implements Session, JackrabbitSession {
             throw new RepositoryException("The destination path must not have an index on its final element");
         }
 
-        if (nodeExists(destAbsPath) &&
-                !"true".equals(getRepository().getDescriptor(Repository.NODE_TYPE_MANAGEMENT_SAME_NAME_SIBLINGS_SUPPORTED))) {
+        if (nodeExists(destAbsPath)
+                && !"true"
+                        .equals(getRepository()
+                                .getDescriptor(Repository.NODE_TYPE_MANAGEMENT_SAME_NAME_SIBLINGS_SUPPORTED))) {
             throw new ItemExistsException("The destination path already exists");
         }
         String destParentPath = ResourceUtil.getParent(destAbsPath);
@@ -502,7 +513,8 @@ class MockSession implements Session, JackrabbitSession {
     }
 
     @Override
-    public boolean hasCapability(final String methodName, final Object target, final Object[] arguments) throws RepositoryException {
+    public boolean hasCapability(final String methodName, final Object target, final Object[] arguments)
+            throws RepositoryException {
         throw new UnsupportedOperationException();
     }
 
@@ -510,7 +522,6 @@ class MockSession implements Session, JackrabbitSession {
     public boolean hasPermission(final String absPath, final String actions) throws RepositoryException {
         throw new UnsupportedOperationException();
     }
-
 
     // --- jackrabbit session operations ---
 
@@ -542,14 +553,12 @@ class MockSession implements Session, JackrabbitSession {
     }
 
     @Override
-    public PrincipalManager getPrincipalManager()
-            throws RepositoryException {
+    public PrincipalManager getPrincipalManager() throws RepositoryException {
         return principalManager;
     }
 
     @Override
-    public UserManager getUserManager()
-            throws RepositoryException {
+    public UserManager getUserManager() throws RepositoryException {
         return userManager;
     }
 

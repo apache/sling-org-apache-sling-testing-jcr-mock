@@ -18,14 +18,14 @@
  */
 package org.apache.sling.testing.mock.jcr;
 
-import java.util.Collections;
-import java.util.List;
-
 import javax.jcr.Node;
 import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.query.QueryResult;
 import javax.jcr.query.RowIterator;
+
+import java.util.Collections;
+import java.util.List;
 
 import org.apache.jackrabbit.commons.iterator.NodeIteratorAdapter;
 import org.apache.jackrabbit.commons.iterator.RowIteratorAdapter;
@@ -63,9 +63,8 @@ public final class MockQueryResult implements QueryResult {
 
     @Override
     public RowIterator getRows() throws RepositoryException {
-        return new RowIteratorAdapter(nodes.stream()
-                .map(node -> new MockRow(columnNames, node))
-                .iterator());
+        return new RowIteratorAdapter(
+                nodes.stream().map(node -> new MockRow(columnNames, node)).iterator());
     }
 
     @Override
@@ -81,5 +80,4 @@ public final class MockQueryResult implements QueryResult {
     public String[] getSelectorNames() throws RepositoryException {
         return new String[0];
     }
-
 }

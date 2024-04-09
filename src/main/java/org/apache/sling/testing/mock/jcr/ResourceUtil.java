@@ -175,13 +175,13 @@ class ResourceUtil {
      * @since 2.2
      */
     public static String getParent(final String path, final int level) {
-        if ( level < 0 ) {
+        if (level < 0) {
             throw new IllegalArgumentException("level must be non-negative");
         }
         String result = path;
-        for(int i=0; i<level; i++) {
+        for (int i = 0; i < level; i++) {
             result = getParent(result);
-            if ( result == null ) {
+            if (result == null) {
                 break;
             }
         }
@@ -215,5 +215,4 @@ class ResourceUtil {
         // find the last slash
         return path.substring(path.lastIndexOf('/') + 1);
     }
-
 }

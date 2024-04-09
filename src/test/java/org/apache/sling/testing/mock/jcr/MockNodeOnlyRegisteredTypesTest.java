@@ -18,25 +18,25 @@
  */
 package org.apache.sling.testing.mock.jcr;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
-
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.nodetype.NodeDefinition;
 import javax.jcr.nodetype.NodeType;
 
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.jackrabbit.commons.cnd.ParseException;
 import org.junit.Before;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class MockNodeOnlyRegisteredTypesTest {
     protected Session session;
@@ -62,6 +62,7 @@ public class MockNodeOnlyRegisteredTypesTest {
         assertTrue(auto1.hasProperty("prop2"));
         assertTrue(auto1.hasNode("child1"));
     }
+
     @Test
     public void testAutocreatedItemsForMixin() throws RepositoryException {
         Node auto1 = this.node1.addNode("auto1");
@@ -100,7 +101,8 @@ public class MockNodeOnlyRegisteredTypesTest {
         assertEquals(JcrConstants.NT_FOLDER, def3child1DefaultPrimaryType.getName());
 
         // verify the child definition was defined in the primary type
-        NodeType mixAutoCreatedChildAndProp = this.session.getWorkspace().getNodeTypeManager().getNodeType("mix:autocreatedChildAndProp");
+        NodeType mixAutoCreatedChildAndProp =
+                this.session.getWorkspace().getNodeTypeManager().getNodeType("mix:autocreatedChildAndProp");
         assertEquals(mixAutoCreatedChildAndProp, definition3.getDeclaringNodeType());
 
         NodeType[] def3child1RequiredPrimaryTypes = definition3.getRequiredPrimaryTypes();
@@ -108,5 +110,4 @@ public class MockNodeOnlyRegisteredTypesTest {
         assertEquals(1, def3child1RequiredPrimaryTypes.length);
         assertEquals(JcrConstants.NT_BASE, def3child1RequiredPrimaryTypes[0].getName());
     }
-
 }

@@ -18,16 +18,16 @@
  */
 package org.apache.sling.testing.mock.jcr;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Value;
 import javax.jcr.query.Query;
 import javax.jcr.query.QueryResult;
+
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 import org.osgi.annotation.versioning.ConsumerType;
 
@@ -43,7 +43,7 @@ public final class MockQuery implements Query {
 
     private long limit;
     private long offset;
-    private Map<String,Value> variables = new HashMap<String, Value>();
+    private Map<String, Value> variables = new HashMap<String, Value>();
 
     MockQuery(MockQueryManager queryManager, String statement, String language) {
         this.queryManager = queryManager;
@@ -86,7 +86,7 @@ public final class MockQuery implements Query {
 
     @Override
     public void bindValue(String varName, Value value) throws RepositoryException {
-        variables.put(varName,  value);
+        variables.put(varName, value);
     }
 
     @Override
@@ -99,7 +99,6 @@ public final class MockQuery implements Query {
         return Collections.unmodifiableMap(variables);
     }
 
-
     // --- unsupported operations ---
 
     @Override
@@ -111,5 +110,4 @@ public final class MockQuery implements Query {
     public Node storeAsNode(String absPath) throws RepositoryException {
         throw new UnsupportedOperationException();
     }
-
 }

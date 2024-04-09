@@ -18,12 +18,6 @@
  */
 package org.apache.sling.testing.mock.jcr;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-
-import java.util.List;
-
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
@@ -33,10 +27,16 @@ import javax.jcr.query.QueryManager;
 import javax.jcr.query.QueryResult;
 import javax.jcr.query.Row;
 
+import java.util.List;
+
 import org.apache.commons.collections4.IteratorUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 
 public class MockQueryManagerTest {
 
@@ -51,13 +51,9 @@ public class MockQueryManagerTest {
 
         Node rootNode = session.getRootNode();
 
-        sampleNodes = List.of(
-            rootNode.addNode("node1"),
-            rootNode.addNode("node2"),
-            rootNode.addNode("node3")
-        );
+        sampleNodes = List.of(rootNode.addNode("node1"), rootNode.addNode("node2"), rootNode.addNode("node3"));
 
-        for (int i=0; i<sampleNodes.size(); i++) {
+        for (int i = 0; i < sampleNodes.size(); i++) {
             Node node = sampleNodes.get(i);
             node.setProperty("stringProp", "value" + (i + 1));
             node.setProperty("intProp", i + 1);
@@ -72,7 +68,7 @@ public class MockQueryManagerTest {
         assertFalse(result.getNodes().hasNext());
     }
 
-    @Test(expected=InvalidQueryException.class)
+    @Test(expected = InvalidQueryException.class)
     public void testInvalidQueryLanguage() throws RepositoryException {
         queryManager.createQuery("dummy", "wurst");
     }
@@ -84,6 +80,7 @@ public class MockQueryManagerTest {
         QueryResult result = assertQueryResults_AllQuerys();
         assertEquals(sampleNodes.size(), result.getNodes().getSize());
     }
+
     @Test
     public void testQueryResultsForSession_AllQuerys() throws RepositoryException {
         MockJcr.setQueryResult(session, sampleNodes);
@@ -100,6 +97,7 @@ public class MockQueryManagerTest {
         QueryResult result = assertQueryResults_AllQuerys();
         assertEquals(-1, result.getNodes().getSize());
     }
+
     @Test
     public void testQueryResultsForSession_AllQuerys_WithUnknownSize() throws RepositoryException {
         MockJcr.setQueryResult(session, sampleNodes, true);
@@ -127,6 +125,7 @@ public class MockQueryManagerTest {
         QueryResult result = assertQueryResults_SpecificQuery();
         assertEquals(sampleNodes.size(), result.getNodes().getSize());
     }
+
     @Test
     public void testQueryResultsForSession_SpecificQuery() throws RepositoryException {
         MockJcr.setQueryResult(session, "query1", Query.JCR_SQL2, sampleNodes);
@@ -143,6 +142,7 @@ public class MockQueryManagerTest {
         QueryResult result = assertQueryResults_SpecificQuery();
         assertEquals(-1, result.getNodes().getSize());
     }
+
     @Test
     public void testQueryResultsForSession_SpecificQuery_WithUnknownSize() throws RepositoryException {
         MockJcr.setQueryResult(session, "query1", Query.JCR_SQL2, sampleNodes, true);
@@ -238,11 +238,7 @@ public class MockQueryManagerTest {
     @SuppressWarnings("unchecked")
     @Test
     public void testQueryResults_ResultHandler_Rows() throws RepositoryException {
-        final List<String> columnNames = List.of(
-            "stringProp",
-            "intProp",
-            "optionalStringProp"
-        );
+        final List<String> columnNames = List.of("stringProp", "intProp", "optionalStringProp");
 
         MockJcr.addQueryResultHandler(queryManager, new MockQueryResultHandler() {
             @Override
@@ -270,5 +266,4 @@ public class MockQueryManagerTest {
         assertEquals(3L, rows.get(2).getValues()[1].getLong());
         assertNull(rows.get(2).getValues()[2]);
     }
-
 }

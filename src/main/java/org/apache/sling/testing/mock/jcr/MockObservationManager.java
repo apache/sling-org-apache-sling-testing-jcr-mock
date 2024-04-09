@@ -18,13 +18,13 @@
  */
 package org.apache.sling.testing.mock.jcr;
 
-import java.util.Collections;
-
 import javax.jcr.RepositoryException;
 import javax.jcr.observation.EventJournal;
 import javax.jcr.observation.EventListener;
 import javax.jcr.observation.EventListenerIterator;
 import javax.jcr.observation.ObservationManager;
+
+import java.util.Collections;
 
 import org.apache.jackrabbit.api.observation.JackrabbitEventFilter;
 import org.apache.jackrabbit.api.observation.JackrabbitObservationManager;
@@ -35,8 +35,14 @@ import org.apache.jackrabbit.api.observation.JackrabbitObservationManager;
 class MockObservationManager implements ObservationManager, JackrabbitObservationManager {
 
     @Override
-    public void addEventListener(final EventListener listener, final int eventTypes, final String absPath,
-            final boolean isDeep, final String[] uuid, final String[] nodeTypeName, final boolean noLocal)
+    public void addEventListener(
+            final EventListener listener,
+            final int eventTypes,
+            final String absPath,
+            final boolean isDeep,
+            final String[] uuid,
+            final String[] nodeTypeName,
+            final boolean noLocal)
             throws RepositoryException {
         // do nothing
     }
@@ -68,10 +74,14 @@ class MockObservationManager implements ObservationManager, JackrabbitObservatio
     }
 
     @Override
-    public EventJournal getEventJournal(final int eventTypes, final String absPath, final boolean isDeep,
-            final String[] uuid, final String[] nodeTypeName) throws RepositoryException {
+    public EventJournal getEventJournal(
+            final int eventTypes,
+            final String absPath,
+            final boolean isDeep,
+            final String[] uuid,
+            final String[] nodeTypeName)
+            throws RepositoryException {
         // always return null
         return null;
     }
-
 }

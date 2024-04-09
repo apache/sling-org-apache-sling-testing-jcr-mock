@@ -1,28 +1,30 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.apache.sling.testing.mock.jcr;
+
+import javax.jcr.RepositoryException;
 
 import java.security.Principal;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
-
-import javax.jcr.RepositoryException;
 
 import org.apache.jackrabbit.api.security.principal.PrincipalIterator;
 import org.apache.jackrabbit.api.security.principal.PrincipalManager;
@@ -57,8 +59,9 @@ public class MockPrincipalManager implements PrincipalManager {
     public @NotNull PrincipalIterator findPrincipals(@Nullable String simpleFilter, int searchType) {
         Set<Principal> principals = new HashSet<>();
         try {
-            @NotNull Iterator<Authorizable> authorizables = mockUserManager.findAuthorizables(
-                    UserConstants.REP_PRINCIPAL_NAME, simpleFilter, searchType);
+            @NotNull
+            Iterator<Authorizable> authorizables =
+                    mockUserManager.findAuthorizables(UserConstants.REP_PRINCIPAL_NAME, simpleFilter, searchType);
             while (authorizables.hasNext()) {
                 Authorizable next = authorizables.next();
                 principals.add(next.getPrincipal());
@@ -82,7 +85,7 @@ public class MockPrincipalManager implements PrincipalManager {
         Set<Principal> groups = new HashSet<>();
         try {
             @Nullable Authorizable authorizable = mockUserManager.getAuthorizable(principal);
-            if (authorizable  != null) {
+            if (authorizable != null) {
                 @NotNull Iterator<Group> memberOf = authorizable.memberOf();
                 while (memberOf.hasNext()) {
                     groups.add(memberOf.next().getPrincipal());
@@ -139,9 +142,8 @@ public class MockPrincipalManager implements PrincipalManager {
 
         @Override
         public @NotNull Principal nextPrincipal() {
-            return (Principal)next();
+            return (Principal) next();
         }
-
     }
 
     @Override
@@ -157,5 +159,4 @@ public class MockPrincipalManager implements PrincipalManager {
         }
         return value;
     }
-
 }

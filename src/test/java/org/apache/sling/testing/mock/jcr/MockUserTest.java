@@ -1,29 +1,22 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.apache.sling.testing.mock.jcr;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
-
-import java.io.UnsupportedEncodingException;
-import java.security.NoSuchAlgorithmException;
 
 import javax.jcr.Credentials;
 import javax.jcr.Node;
@@ -31,6 +24,10 @@ import javax.jcr.RepositoryException;
 import javax.jcr.SimpleCredentials;
 import javax.jcr.UnsupportedRepositoryOperationException;
 
+import java.io.UnsupportedEncodingException;
+import java.security.NoSuchAlgorithmException;
+
+import ch.qos.logback.classic.Level;
 import org.apache.jackrabbit.api.security.user.User;
 import org.apache.jackrabbit.oak.spi.security.user.UserConstants;
 import org.apache.jackrabbit.oak.spi.security.user.UserIdCredentials;
@@ -40,7 +37,11 @@ import org.junit.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
-import ch.qos.logback.classic.Level;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 
 /**
  *
@@ -72,6 +73,7 @@ public class MockUserTest extends MockAuthorizableTest<User> {
         assertFalse(authorizable.isAdmin());
         assertTrue(userManager.createUser("admin", "admin").isAdmin());
     }
+
     @Test
     public void testIsAdminCatchRepositoryException() throws Exception {
         User mockAuthorizable = Mockito.spy(authorizable);
@@ -117,8 +119,9 @@ public class MockUserTest extends MockAuthorizableTest<User> {
     public void testGetCredentials() throws RepositoryException {
         @NotNull Credentials credentials = authorizable.getCredentials();
         assertTrue(credentials instanceof SimpleCredentials);
-        assertEquals(authorizable.getID(), ((SimpleCredentials)credentials).getUserID());
+        assertEquals(authorizable.getID(), ((SimpleCredentials) credentials).getUserID());
     }
+
     @Test
     public void testGetCredentialsWithNullPassword() throws RepositoryException {
         // create a user with no password
@@ -126,7 +129,7 @@ public class MockUserTest extends MockAuthorizableTest<User> {
 
         @NotNull Credentials credentials = authorizable.getCredentials();
         assertTrue(credentials instanceof UserIdCredentials);
-        assertEquals(authorizable.getID(), ((UserIdCredentials)credentials).getUserId());
+        assertEquals(authorizable.getID(), ((UserIdCredentials) credentials).getUserId());
     }
 
     /**
@@ -147,6 +150,7 @@ public class MockUserTest extends MockAuthorizableTest<User> {
 
         assertThrows(RepositoryException.class, () -> authorizable.changePassword(null));
     }
+
     @Test
     public void testChangePasswordStringFromNull() throws RepositoryException {
         // start with a null password - for code coverage
@@ -156,23 +160,26 @@ public class MockUserTest extends MockAuthorizableTest<User> {
 
     @Test
     public void testChangePasswordStringWithCaughtNoSuchAlgorithmException() throws RepositoryException {
-        try (MockedStatic<PasswordUtil> passwordUtilMock = Mockito.mockStatic(PasswordUtil.class);) {
-            passwordUtilMock.when(() -> PasswordUtil.buildPasswordHash("changed"))
-                .thenThrow(NoSuchAlgorithmException.class);
-            assertThrows(RepositoryException.class, () -> authorizable.changePassword("changed"));
-        }
-    }
-    @Test
-    public void testChangePasswordStringWithCaughtUnsupportedEncodingExceptionException() throws RepositoryException {
-        try (MockedStatic<PasswordUtil> passwordUtilMock = Mockito.mockStatic(PasswordUtil.class);) {
-            passwordUtilMock.when(() -> PasswordUtil.buildPasswordHash("changed"))
-                .thenThrow(UnsupportedEncodingException.class);
+        try (MockedStatic<PasswordUtil> passwordUtilMock = Mockito.mockStatic(PasswordUtil.class); ) {
+            passwordUtilMock
+                    .when(() -> PasswordUtil.buildPasswordHash("changed"))
+                    .thenThrow(NoSuchAlgorithmException.class);
             assertThrows(RepositoryException.class, () -> authorizable.changePassword("changed"));
         }
     }
 
-    protected void assertPassword(char [] expectedPwd) throws RepositoryException {
-        SimpleCredentials creds = (SimpleCredentials)authorizable.getCredentials();
+    @Test
+    public void testChangePasswordStringWithCaughtUnsupportedEncodingExceptionException() throws RepositoryException {
+        try (MockedStatic<PasswordUtil> passwordUtilMock = Mockito.mockStatic(PasswordUtil.class); ) {
+            passwordUtilMock
+                    .when(() -> PasswordUtil.buildPasswordHash("changed"))
+                    .thenThrow(UnsupportedEncodingException.class);
+            assertThrows(RepositoryException.class, () -> authorizable.changePassword("changed"));
+        }
+    }
+
+    protected void assertPassword(char[] expectedPwd) throws RepositoryException {
+        SimpleCredentials creds = (SimpleCredentials) authorizable.getCredentials();
         assertTrue(PasswordUtil.isSame(new String(creds.getPassword()), expectedPwd));
     }
 
@@ -232,7 +239,8 @@ public class MockUserTest extends MockAuthorizableTest<User> {
         assertEquals("/home/users/user1", authorizable.getPath());
         assertTrue(session.nodeExists(authorizable.getPath()));
         Node node = session.getNode(authorizable.getPath());
-        assertEquals(authorizable.getID(), 
+        assertEquals(
+                authorizable.getID(),
                 node.getProperty(UserConstants.REP_PRINCIPAL_NAME).getString());
     }
 
@@ -243,5 +251,4 @@ public class MockUserTest extends MockAuthorizableTest<User> {
         authorizable = userManager.createUser("user2", null);
         super.testGetPropertyNames();
     }
-
 }

@@ -18,13 +18,13 @@
  */
 package org.apache.sling.testing.mock.jcr;
 
-import java.util.Objects;
-
 import javax.jcr.Item;
 import javax.jcr.ItemNotFoundException;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
+
+import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -57,7 +57,7 @@ abstract class AbstractItem implements Item {
     }
 
     @Override
-    public Session getSession()throws RepositoryException {
+    public Session getSession() throws RepositoryException {
         return this.session;
     }
 
@@ -111,18 +111,22 @@ abstract class AbstractItem implements Item {
         boolean same = false;
         // Both objects were acquired through Session objects that were created by the same Repository object.
         // Both objects were acquired through Session objects bound to the same repository workspace.
-        if (Objects.equals(getSession().getRepository(), otherItem.getSession().getRepository()) &&
-                Objects.equals(getSession().getWorkspace().getName(), otherItem.getSession().getWorkspace().getName())) {
+        if (Objects.equals(getSession().getRepository(), otherItem.getSession().getRepository())
+                && Objects.equals(
+                        getSession().getWorkspace().getName(),
+                        otherItem.getSession().getWorkspace().getName())) {
             // The objects are either both Node objects or both Property objects.
             if (isNode() && otherItem.isNode()) {
                 // they are Node objects, they must have the same identifier.
-                if (Objects.equals(((Node)this).getIdentifier(), ((Node)otherItem).getIdentifier())) {
+                if (Objects.equals(((Node) this).getIdentifier(), ((Node) otherItem).getIdentifier())) {
                     same = true;
                 }
-            } else if (!isNode() && !otherItem.isNode() &&
+            } else if (!isNode()
+                    && !otherItem.isNode()
+                    &&
                     // Property objects must have identical names and isSame is true of their parent nodes.
-                    Objects.equals(getName(), otherItem.getName()) &&
-                    getParent().isSame(otherItem.getParent())) {
+                    Objects.equals(getName(), otherItem.getName())
+                    && getParent().isSame(otherItem.getParent())) {
                 same = true;
             }
         }
@@ -140,5 +144,4 @@ abstract class AbstractItem implements Item {
     public void save() throws RepositoryException {
         throw new UnsupportedOperationException();
     }
-
 }

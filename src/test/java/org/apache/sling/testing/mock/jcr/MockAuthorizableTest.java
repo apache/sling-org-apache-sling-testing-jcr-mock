@@ -1,37 +1,33 @@
 /*
- * Licensed to the Apache Software Foundation (ASF) under one or more
- * contributor license agreements.  See the NOTICE file distributed with
- * this work for additional information regarding copyright ownership.
- * The ASF licenses this file to You under the Apache License, Version 2.0
- * (the "License"); you may not use this file except in compliance with
- * the License.  You may obtain a copy of the License at
+ * Licensed to the Apache Software Foundation (ASF) under one
+ * or more contributor license agreements.  See the NOTICE file
+ * distributed with this work for additional information
+ * regarding copyright ownership.  The ASF licenses this file
+ * to you under the Apache License, Version 2.0 (the
+ * "License"); you may not use this file except in compliance
+ * with the License.  You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied.  See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
 package org.apache.sling.testing.mock.jcr;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
-import java.security.Principal;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Set;
 
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.UnsupportedRepositoryOperationException;
 import javax.jcr.Value;
 import javax.jcr.ValueFactory;
+
+import java.security.Principal;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
 
 import org.apache.jackrabbit.api.security.user.Authorizable;
 import org.apache.jackrabbit.api.security.user.Group;
@@ -41,6 +37,12 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.Before;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  *
@@ -212,9 +214,7 @@ public abstract class MockAuthorizableTest<T extends Authorizable> {
      */
     @Test
     public void testSetPropertyStringValueArray() throws RepositoryException {
-        authorizable.setProperty("relPath", new Value [] {
-                vf.createValue("value1"),
-                vf.createValue("value2")});
+        authorizable.setProperty("relPath", new Value[] {vf.createValue("value1"), vf.createValue("value2")});
         Value[] property = authorizable.getProperty("relPath");
         assertNotNull(property);
         assertEquals(2, property.length);
@@ -222,18 +222,14 @@ public abstract class MockAuthorizableTest<T extends Authorizable> {
         assertEquals("value2", property[1].getString());
 
         // nested prop
-        authorizable.setProperty("relPath2/prop2", new Value [] {
-                vf.createValue("value2"),
-                vf.createValue("value3") });
+        authorizable.setProperty("relPath2/prop2", new Value[] {vf.createValue("value2"), vf.createValue("value3")});
         property = authorizable.getProperty("relPath2/prop2");
         assertNotNull(property);
         assertEquals(2, property.length);
         assertEquals("value2", property[0].getString());
 
         // second nested prop where intermediate subnode already exists
-        authorizable.setProperty("relPath2/prop3", new Value [] {
-                vf.createValue("value3"),
-                vf.createValue("value4")});
+        authorizable.setProperty("relPath2/prop3", new Value[] {vf.createValue("value3"), vf.createValue("value4")});
         property = authorizable.getProperty("relPath2/prop3");
         assertNotNull(property);
         assertEquals(2, property.length);
@@ -277,5 +273,4 @@ public abstract class MockAuthorizableTest<T extends Authorizable> {
     public void testToString() {
         assertNotNull(authorizable.toString());
     }
-
 }

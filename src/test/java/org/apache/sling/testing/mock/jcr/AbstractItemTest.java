@@ -18,11 +18,6 @@
  */
 package org.apache.sling.testing.mock.jcr;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
-
 import javax.jcr.ItemNotFoundException;
 import javax.jcr.Node;
 import javax.jcr.Property;
@@ -31,6 +26,11 @@ import javax.jcr.Session;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 
 public abstract class AbstractItemTest {
 
@@ -71,14 +71,12 @@ public abstract class AbstractItemTest {
 
     @Test
     public void testGetAncestorNegative() throws RepositoryException {
-        assertThrows(ItemNotFoundException.class,
-                () -> this.node11.getAncestor(-1));
+        assertThrows(ItemNotFoundException.class, () -> this.node11.getAncestor(-1));
     }
 
     @Test
     public void testGetAncestorTooDeep() throws RepositoryException {
-        assertThrows(ItemNotFoundException.class,
-                () -> this.node11.getAncestor(3));
+        assertThrows(ItemNotFoundException.class, () -> this.node11.getAncestor(3));
     }
 
     @Test
@@ -100,7 +98,7 @@ public abstract class AbstractItemTest {
         assertFalse(this.node1.isNew());
 
         // not-new node can now be 'modified' after changes
-        ((MockNode)this.node1).itemData.setIsChanged(true);
+        ((MockNode) this.node1).itemData.setIsChanged(true);
         assertTrue(this.node1.isModified());
         assertFalse(this.node1.isNew());
     }
@@ -109,9 +107,9 @@ public abstract class AbstractItemTest {
     public void testIsSameForNodeComparedToProp() throws RepositoryException {
         assertFalse(this.node1.isSame(this.prop1));
     }
+
     @Test
     public void testIsSameForPropComparedToNode() throws RepositoryException {
         assertFalse(this.prop1.isSame(this.node1));
     }
-
 }
