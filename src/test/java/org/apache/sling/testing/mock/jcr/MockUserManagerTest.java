@@ -24,6 +24,7 @@ import javax.jcr.Session;
 import javax.jcr.SimpleCredentials;
 import javax.jcr.UnsupportedRepositoryOperationException;
 import javax.jcr.ValueFactory;
+import javax.jcr.nodetype.ConstraintViolationException;
 
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
@@ -199,7 +200,7 @@ public class MockUserManagerTest {
      */
     @Test
     public void testCreateGroupPrincipalString() throws AuthorizableExistsException, RepositoryException {
-        @NotNull Group group1 = userManager.createGroup(() -> "group1", "/home/groups/path1");
+        @NotNull Group group1 = userManager.createGroup(() -> "group1", "path1");
         assertNotNull(group1);
         assertEquals("/home/groups/path1/group1", group1.getPath());
     }
@@ -209,9 +210,24 @@ public class MockUserManagerTest {
      */
     @Test
     public void testCreateGroupStringPrincipalString() throws AuthorizableExistsException, RepositoryException {
-        @NotNull Group group1 = userManager.createGroup("group1", () -> "group1", "/home/groups/path1");
+        @NotNull Group group1 = userManager.createGroup("group1", () -> "group1", "path1");
         assertNotNull(group1);
         assertEquals("/home/groups/path1/group1", group1.getPath());
+    }
+
+    /**
+     * Parameterized helper to avoid duplication
+     *
+     * @param intermediatePath the intermediate path
+     * @param expectedPath the expected path
+     * @return the user that was created
+     */
+    protected @NotNull User createSystemUser1(@Nullable String intermediatePath, @NotNull String expectedPath)
+            throws RepositoryException {
+        @NotNull User user = userManager.createSystemUser("systemuser1", intermediatePath);
+        assertTrue(user.isSystemUser());
+        assertEquals(expectedPath, ResourceUtil.getParent(user.getPath()));
+        return user;
     }
 
     /**
@@ -219,16 +235,22 @@ public class MockUserManagerTest {
      */
     @Test
     public void testCreateSystemUser() throws RepositoryException {
-        @NotNull User user = userManager.createSystemUser("systemuser1", "/home/users/system/test");
-        assertTrue(user.isSystemUser());
-        assertEquals("/home/users/system/test", ResourceUtil.getParent(user.getPath()));
+        createSystemUser1("system", "/home/users/system");
+    }
+
+    @Test
+    public void testCreateSystemUserWithTwoSegmentIntermediatePath() throws RepositoryException {
+        createSystemUser1("system/test", "/home/users/system/test");
     }
 
     @Test
     public void testCreateSystemUserWithNullIntermediatePath() throws RepositoryException {
-        @NotNull User user = userManager.createSystemUser("systemuser1", null);
-        assertTrue(user.isSystemUser());
-        assertEquals("/home/users/system", ResourceUtil.getParent(user.getPath()));
+        createSystemUser1(null, "/home/users/system");
+    }
+
+    @Test
+    public void testCreateSystemUserWithInvalidIntermediatePath() throws RepositoryException {
+        assertThrows(ConstraintViolationException.class, () -> userManager.createSystemUser("systemuser1", "invalid"));
     }
 
     /**
@@ -247,7 +269,7 @@ public class MockUserManagerTest {
      */
     @Test
     public void testCreateUserStringStringPrincipalString() throws AuthorizableExistsException, RepositoryException {
-        @NotNull User user1 = userManager.createUser("user1", "pwd", () -> "user1", "/home/users/path1");
+        @NotNull User user1 = userManager.createUser("user1", "pwd", () -> "user1", "path1");
         assertNotNull(user1);
         assertEquals("/home/users/path1/user1", user1.getPath());
     }
@@ -309,7 +331,7 @@ public class MockUserManagerTest {
      */
     @Test
     public void testFindAuthorizablesStringString() throws RepositoryException {
-        @NotNull User user1 = userManager.createUser("user1", "pwd", () -> "user1", "/home/users/path1");
+        @NotNull User user1 = userManager.createUser("user1", "pwd", () -> "user1", "path1");
         user1.setProperty("prop1", vf.createValue("prop1Value"));
         user1.setProperty("sub1/prop2", vf.createValue("prop2Value"));
 
@@ -333,11 +355,11 @@ public class MockUserManagerTest {
      */
     @Test
     public void testFindAuthorizablesStringStringInt() throws RepositoryException {
-        @NotNull Group group1 = userManager.createGroup("group1", () -> "group1", "/home/groups/path1");
+        @NotNull Group group1 = userManager.createGroup("group1", () -> "group1", "path1");
         group1.setProperty("prop1", vf.createValue("prop1Value"));
         group1.setProperty("sub1/prop2", vf.createValue("prop2Value"));
 
-        @NotNull User user1 = userManager.createUser("user1", "pwd", () -> "user1", "/home/users/path1");
+        @NotNull User user1 = userManager.createUser("user1", "pwd", () -> "user1", "path1");
         user1.setProperty("prop1", vf.createValue("prop1Value"));
         user1.setProperty("sub1/prop2", vf.createValue("prop2Value"));
 
@@ -386,7 +408,7 @@ public class MockUserManagerTest {
      */
     @Test
     public void testGetAuthorizableString() throws AuthorizableExistsException, RepositoryException {
-        @NotNull User user1 = userManager.createUser("user1", "pwd", () -> "user1", "/home/users/path1");
+        @NotNull User user1 = userManager.createUser("user1", "pwd", () -> "user1", "path1");
         @Nullable Authorizable authorizable = userManager.getAuthorizable(user1.getID());
         assertEquals(user1, authorizable);
     }
@@ -396,7 +418,7 @@ public class MockUserManagerTest {
      */
     @Test
     public void testGetAuthorizablePrincipal() throws AuthorizableExistsException, RepositoryException {
-        @NotNull User user1 = userManager.createUser("user1", "pwd", () -> "user1", "/home/users/path1");
+        @NotNull User user1 = userManager.createUser("user1", "pwd", () -> "user1", "path1");
         @Nullable Authorizable authorizable = userManager.getAuthorizable(() -> "user1");
         assertEquals(user1, authorizable);
     }
@@ -406,7 +428,7 @@ public class MockUserManagerTest {
      */
     @Test
     public void testGetAuthorizableStringClassOfT() throws AuthorizableExistsException, RepositoryException {
-        @NotNull User user1 = userManager.createUser("user1", "pwd", () -> "user1", "/home/users/path1");
+        @NotNull User user1 = userManager.createUser("user1", "pwd", () -> "user1", "path1");
         @Nullable Authorizable authorizable = userManager.getAuthorizable("user1", User.class);
         assertEquals(user1, authorizable);
 
@@ -427,7 +449,7 @@ public class MockUserManagerTest {
      */
     @Test
     public void testGetAuthorizableByPath() throws AuthorizableExistsException, RepositoryException {
-        @NotNull User user1 = userManager.createUser("user1", "pwd", () -> "user1", "/home/users/path1");
+        @NotNull User user1 = userManager.createUser("user1", "pwd", () -> "user1", "path1");
         @Nullable Authorizable authorizable = userManager.getAuthorizableByPath(user1.getPath());
         assertEquals(user1, authorizable);
 
@@ -436,7 +458,7 @@ public class MockUserManagerTest {
 
     @Test
     public void testGetAuthorizableByPathCatchRepositoryException() throws Exception {
-        @NotNull User user1 = userManager.createUser("user1", "pwd", () -> "user1", "/home/users/path1");
+        @NotNull User user1 = userManager.createUser("user1", "pwd", () -> "user1", "path1");
         User mockAuthorizable = Mockito.spy(user1);
         // replace the original with our mocked copy
         userManager.authorizables.put(mockAuthorizable.getID(), mockAuthorizable);

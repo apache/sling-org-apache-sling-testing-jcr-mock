@@ -23,6 +23,7 @@ import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.Value;
+import javax.jcr.nodetype.ConstraintViolationException;
 
 import java.security.Principal;
 import java.util.HashMap;
@@ -202,7 +203,9 @@ public class MockUserManager implements UserManager {
             throw new AuthorizableExistsException("Group already exists");
         }
         String principalName = toPrincipalName(groupID, principal);
-        if (intermediatePath == null) {
+        if (intermediatePath != null) {
+            intermediatePath = "/home/groups/" + intermediatePath;
+        } else {
             intermediatePath = "/home/groups"; // NOSONAR
         }
 
@@ -318,8 +321,16 @@ public class MockUserManager implements UserManager {
         }
         String principalName = toPrincipalName(userID, principal);
         boolean isSystemUser = principal instanceof SystemUserPrincipal;
+
         String authorizableNodeType = isSystemUser ? UserConstants.NT_REP_SYSTEM_USER : UserConstants.NT_REP_USER;
-        if (intermediatePath == null) {
+        if (intermediatePath != null) {
+            if (isSystemUser && !(intermediatePath.equals("system") || intermediatePath.startsWith("system/"))) {
+                throw new ConstraintViolationException(
+                        "System users must be located in the 'system' subtree of the user root.");
+            }
+
+            intermediatePath = "/home/users/" + intermediatePath;
+        } else {
             if (isSystemUser) {
                 intermediatePath = "/home/users/system"; // NOSONAR
             } else {
