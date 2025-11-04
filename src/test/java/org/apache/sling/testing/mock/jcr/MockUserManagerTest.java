@@ -249,7 +249,7 @@ public class MockUserManagerTest {
     }
 
     @Test
-    public void testCreateSystemUserWithInvalidIntermediatePath() throws RepositoryException {
+    public void testCreateSystemUserWithInvalidIntermediatePath() {
         assertThrows(ConstraintViolationException.class, () -> userManager.createSystemUser("systemuser1", "invalid"));
     }
 
