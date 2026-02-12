@@ -45,7 +45,7 @@
         <project.build.outputTimestamp>2025-11-13T01:00:37Z</project.build.outputTimestamp>
         <sling.java.version>11</sling.java.version>
         <oak.version>1.68.0</oak.version>
-        <jackrabbit.version>2.22.0</jackrabbit.version>
+        <jackrabbit.version>2.22.2</jackrabbit.version>
     </properties>
 
     <dependencies>
