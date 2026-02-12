@@ -44,8 +44,8 @@
     <properties>
         <project.build.outputTimestamp>2025-11-13T01:00:37Z</project.build.outputTimestamp>
         <sling.java.version>11</sling.java.version>
-        <oak.version>1.22.15</oak.version>
-        <jackrabbit.version>2.20.9</jackrabbit.version>
+        <oak.version>1.68.0</oak.version>
+        <jackrabbit.version>2.22.2</jackrabbit.version>
     </properties>
 
     <dependencies>
@@ -89,10 +89,6 @@
             <exclusions>
                 <exclusion>
                     <groupId>org.osgi</groupId>
-                    <artifactId>org.osgi.annotation</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.osgi</groupId>
                     <artifactId>org.osgi.service.component.annotations</artifactId>
                 </exclusion>
                 <exclusion>
@@ -104,14 +100,6 @@
                     <artifactId>jcl-over-slf4j</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
-        <!-- Required by Oak internally (Oak switches to shaded Guava in 1.52, see OAK-7182)
-             Please do not use Guava in Mock or test code, it will be removed once possible -->
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>15.0</version>
-            <scope>compile</scope>
         </dependency>
 
         <dependency>
