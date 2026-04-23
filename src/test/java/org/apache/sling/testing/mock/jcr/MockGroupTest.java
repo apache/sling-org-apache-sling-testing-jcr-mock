@@ -166,6 +166,16 @@ public class MockGroupTest extends MockAuthorizableTest<Group> {
 
         authorizable.addMember(member1);
         assertTrue(authorizable.isMember(member2));
+
+        // member of subgroup
+        @NotNull Group member4 = userManager.createGroup("member4");
+        assertFalse(authorizable.isMember(member4));
+        member1.addMember(member4);
+        assertTrue(authorizable.isMember(member4));
+
+        // memberOf contains item that resolves to null authorizable
+        member1.remove();
+        assertFalse(authorizable.isMember(member4));
     }
 
     /**
