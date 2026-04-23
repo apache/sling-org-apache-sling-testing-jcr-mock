@@ -43,7 +43,7 @@ public final class MockQuery implements Query {
 
     private long limit;
     private long offset;
-    private Map<String, Value> variables = new HashMap<String, Value>();
+    private Map<String, Value> variables = new HashMap<>();
 
     MockQuery(MockQueryManager queryManager, String statement, String language) {
         this.queryManager = queryManager;

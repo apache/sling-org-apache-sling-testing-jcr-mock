@@ -200,7 +200,7 @@ class MockSession implements Session, JackrabbitSession {
         final ItemData parent = getItemData(absPath);
         final String descendantPrefix = parent.getPath() + "/";
 
-        final List<String> pathsToRemove = new ArrayList<String>();
+        final List<String> pathsToRemove = new ArrayList<>();
         pathsToRemove.add(parent.getPath());
         for (String itemPath : this.items.keySet()) {
             if (itemPath.startsWith(descendantPrefix)) {
@@ -215,7 +215,7 @@ class MockSession implements Session, JackrabbitSession {
     }
 
     RangeIterator listChildren(final String parentPath, final ItemFilter filter) throws RepositoryException {
-        List<Item> children = new ArrayList<Item>();
+        List<Item> children = new ArrayList<>();
 
         // remove trailing slash or make root path / empty string
         final String path = parentPath.replaceFirst("/$", "");

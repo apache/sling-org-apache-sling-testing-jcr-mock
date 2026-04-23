@@ -42,7 +42,7 @@ import org.apache.commons.lang3.ArrayUtils;
 class MockRepository implements Repository {
 
     // Use linked hashmap to ensure ordering when adding items is preserved.
-    private final Map<String, ItemData> items = new LinkedHashMap<String, ItemData>();
+    private final Map<String, ItemData> items = new LinkedHashMap<>();
 
     private final NamespaceRegistry namespaceRegistry = new MockNamespaceRegistry();
     private final ObservationManager observationManager = new MockObservationManager();
