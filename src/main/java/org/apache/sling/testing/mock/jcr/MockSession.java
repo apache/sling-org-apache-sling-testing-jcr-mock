@@ -44,7 +44,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.jackrabbit.api.JackrabbitSession;
 import org.apache.jackrabbit.api.security.principal.PrincipalManager;
 import org.apache.jackrabbit.api.security.user.UserManager;
@@ -127,7 +127,7 @@ class MockSession implements Session, JackrabbitSession {
     public Node getNodeByIdentifier(final String id) throws RepositoryException {
         checkLive();
         for (ItemData item : this.items.values()) {
-            if (item.isNode() && StringUtils.equals(item.getUuid(), id)) {
+            if (item.isNode() && Strings.CS.equals(item.getUuid(), id)) {
                 return new MockNode(item, this);
             }
         }

@@ -33,7 +33,7 @@ import java.io.Reader;
 import java.util.List;
 import java.util.Objects;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.jackrabbit.commons.cnd.CompactNodeTypeDefReader;
 import org.apache.jackrabbit.commons.cnd.ParseException;
 import org.apache.sling.testing.mock.jcr.MockNodeTypeManager.ResolveMode;
@@ -206,8 +206,8 @@ public final class MockJcr {
             @NotNull final List<Node> resultList,
             boolean simulateUnknownSize) {
         addQueryResultHandler(queryManager, query -> {
-            if (StringUtils.equals(query.getStatement(), statement)
-                    && StringUtils.equals(query.getLanguage(), language)) {
+            if (Strings.CS.equals(query.getStatement(), statement)
+                    && Strings.CS.equals(query.getLanguage(), language)) {
                 MockQueryResult mockQueryResult = new MockQueryResult(resultList);
                 mockQueryResult.setSimulateUnknownSize(simulateUnknownSize);
                 return mockQueryResult;
