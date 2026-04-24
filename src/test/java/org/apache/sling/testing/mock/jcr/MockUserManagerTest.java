@@ -22,7 +22,6 @@ import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.SimpleCredentials;
-import javax.jcr.UnsupportedRepositoryOperationException;
 import javax.jcr.ValueFactory;
 import javax.jcr.nodetype.ConstraintViolationException;
 
@@ -44,27 +43,27 @@ import org.apache.jackrabbit.oak.spi.security.user.util.PasswordUtil;
 import org.apache.jackrabbit.value.ValueFactoryImpl;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  *
  */
-public class MockUserManagerTest {
+class MockUserManagerTest {
     protected Session session;
     protected MockUserManager userManager;
     protected ValueFactory vf = ValueFactoryImpl.getInstance();
 
-    @Before
-    public void before() throws RepositoryException {
+    @BeforeEach
+    void before() {
         session = MockJcr.newSession();
         userManager = new MockUserManager(session);
     }
@@ -72,18 +71,17 @@ public class MockUserManagerTest {
     /**
      * Verify deprecated constructor now throws exception
      */
-    @SuppressWarnings("deprecation")
     @Deprecated
     @Test
-    public void testDeprecatedConstructor() {
-        assertThrows(UnsupportedOperationException.class, () -> new MockUserManager());
+    void testDeprecatedConstructor() {
+        assertThrows(UnsupportedOperationException.class, MockUserManager::new);
     }
 
     /**
      * Test method for {@link org.apache.sling.testing.mock.jcr.MockUserManager#removeAuthorizable(org.apache.jackrabbit.api.security.user.Authorizable)}.
      */
     @Test
-    public void testRemoveAuthorizable() throws AuthorizableExistsException, RepositoryException {
+    void testRemoveAuthorizable() throws RepositoryException {
         @NotNull Group group1 = userManager.createGroup("group1");
         @NotNull User user1 = userManager.createUser("user1", "pwd");
         assertTrue(userManager.removeAuthorizable(user1));
@@ -93,7 +91,7 @@ public class MockUserManagerTest {
     }
 
     @Test
-    public void testLoadAlreadyExistingAuthorizables()
+    void testLoadAlreadyExistingAuthorizables()
             throws RepositoryException, NoSuchAlgorithmException, UnsupportedEncodingException {
         Node homeNode = session.getRootNode().addNode("home", UserConstants.NT_REP_AUTHORIZABLE_FOLDER);
         Node usersNode = homeNode.addNode("users", UserConstants.NT_REP_AUTHORIZABLE_FOLDER);
@@ -138,7 +136,7 @@ public class MockUserManagerTest {
      * Test method for {@link org.apache.sling.testing.mock.jcr.MockUserManager#all(int)}.
      */
     @Test
-    public void testAll() throws AuthorizableExistsException, RepositoryException {
+    void testAll() throws RepositoryException {
         @NotNull Group group1 = userManager.createGroup("group1");
         @NotNull User user1 = userManager.createUser("user1", "pwd");
         Set<Authorizable> allAuthorizables = userManager.all(UserManager.SEARCH_TYPE_AUTHORIZABLE);
@@ -162,7 +160,7 @@ public class MockUserManagerTest {
      * Test method for {@link org.apache.sling.testing.mock.jcr.MockUserManager#isAutoSave()}.
      */
     @Test
-    public void testIsAutoSave() {
+    void testIsAutoSave() {
         assertFalse(userManager.isAutoSave());
     }
 
@@ -170,7 +168,7 @@ public class MockUserManagerTest {
      * Test method for {@link org.apache.sling.testing.mock.jcr.MockUserManager#autoSave(boolean)}.
      */
     @Test
-    public void testAutoSave() throws UnsupportedRepositoryOperationException, RepositoryException {
+    void testAutoSave() throws RepositoryException {
         userManager.autoSave(true);
         assertTrue(userManager.isAutoSave());
     }
@@ -179,7 +177,7 @@ public class MockUserManagerTest {
      * Test method for {@link org.apache.sling.testing.mock.jcr.MockUserManager#createGroup(java.lang.String)}.
      */
     @Test
-    public void testCreateGroupString() throws AuthorizableExistsException, RepositoryException {
+    void testCreateGroupString() throws RepositoryException {
         @NotNull Group group1 = userManager.createGroup("group1");
         assertNotNull(group1);
 
@@ -190,7 +188,7 @@ public class MockUserManagerTest {
      * Test method for {@link org.apache.sling.testing.mock.jcr.MockUserManager#createGroup(java.security.Principal)}.
      */
     @Test
-    public void testCreateGroupPrincipal() throws AuthorizableExistsException, RepositoryException {
+    void testCreateGroupPrincipal() throws RepositoryException {
         @NotNull Group group1 = userManager.createGroup(() -> "group1");
         assertNotNull(group1);
     }
@@ -199,7 +197,7 @@ public class MockUserManagerTest {
      * Test method for {@link org.apache.sling.testing.mock.jcr.MockUserManager#createGroup(java.security.Principal, java.lang.String)}.
      */
     @Test
-    public void testCreateGroupPrincipalString() throws AuthorizableExistsException, RepositoryException {
+    void testCreateGroupPrincipalString() throws RepositoryException {
         @NotNull Group group1 = userManager.createGroup(() -> "group1", "path1");
         assertNotNull(group1);
         assertEquals("/home/groups/path1/group1", group1.getPath());
@@ -209,7 +207,7 @@ public class MockUserManagerTest {
      * Test method for {@link org.apache.sling.testing.mock.jcr.MockUserManager#createGroup(java.lang.String, java.security.Principal, java.lang.String)}.
      */
     @Test
-    public void testCreateGroupStringPrincipalString() throws AuthorizableExistsException, RepositoryException {
+    void testCreateGroupStringPrincipalString() throws RepositoryException {
         @NotNull Group group1 = userManager.createGroup("group1", () -> "group1", "path1");
         assertNotNull(group1);
         assertEquals("/home/groups/path1/group1", group1.getPath());
@@ -234,22 +232,22 @@ public class MockUserManagerTest {
      * Test method for {@link org.apache.sling.testing.mock.jcr.MockUserManager#createSystemUser(java.lang.String, java.lang.String)}.
      */
     @Test
-    public void testCreateSystemUser() throws RepositoryException {
+    void testCreateSystemUser() throws RepositoryException {
         createSystemUser1("system", "/home/users/system");
     }
 
     @Test
-    public void testCreateSystemUserWithTwoSegmentIntermediatePath() throws RepositoryException {
+    void testCreateSystemUserWithTwoSegmentIntermediatePath() throws RepositoryException {
         createSystemUser1("system/test", "/home/users/system/test");
     }
 
     @Test
-    public void testCreateSystemUserWithNullIntermediatePath() throws RepositoryException {
+    void testCreateSystemUserWithNullIntermediatePath() throws RepositoryException {
         createSystemUser1(null, "/home/users/system");
     }
 
     @Test
-    public void testCreateSystemUserWithInvalidIntermediatePath() {
+    void testCreateSystemUserWithInvalidIntermediatePath() {
         assertThrows(ConstraintViolationException.class, () -> userManager.createSystemUser("systemuser1", "invalid"));
     }
 
@@ -257,7 +255,7 @@ public class MockUserManagerTest {
      * Test method for {@link org.apache.sling.testing.mock.jcr.MockUserManager#createUser(java.lang.String, java.lang.String)}.
      */
     @Test
-    public void testCreateUserStringString() throws AuthorizableExistsException, RepositoryException {
+    void testCreateUserStringString() throws RepositoryException {
         @NotNull User user1 = userManager.createUser("user1", "pwd");
         assertNotNull(user1);
 
@@ -268,15 +266,14 @@ public class MockUserManagerTest {
      * Test method for {@link org.apache.sling.testing.mock.jcr.MockUserManager#createUser(java.lang.String, java.lang.String, java.security.Principal, java.lang.String)}.
      */
     @Test
-    public void testCreateUserStringStringPrincipalString() throws AuthorizableExistsException, RepositoryException {
+    void testCreateUserStringStringPrincipalString() throws RepositoryException {
         @NotNull User user1 = userManager.createUser("user1", "pwd", () -> "user1", "path1");
         assertNotNull(user1);
         assertEquals("/home/users/path1/user1", user1.getPath());
     }
 
     @Test
-    public void testCreateUserStringStringPrincipalStringWithNullIntermediatePath()
-            throws AuthorizableExistsException, RepositoryException {
+    void testCreateUserStringStringPrincipalStringWithNullIntermediatePath() throws RepositoryException {
         @NotNull User user1 = userManager.createUser("user1", "pwd", () -> "user1", null);
         assertNotNull(user1);
         assertEquals("/home/users", ResourceUtil.getParent(user1.getPath()));
@@ -288,7 +285,7 @@ public class MockUserManagerTest {
     @SuppressWarnings("removal")
     @Deprecated
     @Test
-    public void testEnsureAuthorizablePathExistsStringStringBoolean() throws RepositoryException {
+    void testEnsureAuthorizablePathExistsStringStringBoolean() throws RepositoryException {
         // intermedate path supplied
         Node user1node = userManager.ensureAuthorizablePathExists("/home/users/path1", "user1", false);
         assertNotNull(user1node);
@@ -308,7 +305,7 @@ public class MockUserManagerTest {
      * Test method for {@link org.apache.sling.testing.mock.jcr.MockUserManager#ensureAuthorizablePathExists(java.lang.String, java.lang.String, java.lang.String)}.
      */
     @Test
-    public void testEnsureAuthorizablePathExistsStringStringString() throws RepositoryException {
+    void testEnsureAuthorizablePathExistsStringStringString() throws RepositoryException {
         Node user1node =
                 userManager.ensureAuthorizablePathExists("/home/users/path1", "user1", UserConstants.NT_REP_USER);
         assertNotNull(user1node);
@@ -322,7 +319,7 @@ public class MockUserManagerTest {
      * Test method for {@link org.apache.sling.testing.mock.jcr.MockUserManager#findAuthorizables(org.apache.jackrabbit.api.security.user.Query)}.
      */
     @Test
-    public void testFindAuthorizablesQuery() throws RepositoryException {
+    void testFindAuthorizablesQuery() {
         Query query = Mockito.mock(Query.class);
         assertThrows(UnsupportedOperationException.class, () -> userManager.findAuthorizables(query));
     }
@@ -331,7 +328,7 @@ public class MockUserManagerTest {
      * Test method for {@link org.apache.sling.testing.mock.jcr.MockUserManager#findAuthorizables(java.lang.String, java.lang.String)}.
      */
     @Test
-    public void testFindAuthorizablesStringString() throws RepositoryException {
+    void testFindAuthorizablesStringString() throws RepositoryException {
         @NotNull User user1 = userManager.createUser("user1", "pwd", () -> "user1", "path1");
         user1.setProperty("prop1", vf.createValue("prop1Value"));
         user1.setProperty("sub1/prop2", vf.createValue("prop2Value"));
@@ -355,7 +352,7 @@ public class MockUserManagerTest {
      * Test method for {@link org.apache.sling.testing.mock.jcr.MockUserManager#findAuthorizables(java.lang.String, java.lang.String, int)}.
      */
     @Test
-    public void testFindAuthorizablesStringStringInt() throws RepositoryException {
+    void testFindAuthorizablesStringStringInt() throws RepositoryException {
         @NotNull Group group1 = userManager.createGroup("group1", () -> "group1", "path1");
         group1.setProperty("prop1", vf.createValue("prop1Value"));
         group1.setProperty("sub1/prop2", vf.createValue("prop2Value"));
@@ -408,7 +405,7 @@ public class MockUserManagerTest {
      * Test method for {@link org.apache.sling.testing.mock.jcr.MockUserManager#getAuthorizable(java.lang.String)}.
      */
     @Test
-    public void testGetAuthorizableString() throws AuthorizableExistsException, RepositoryException {
+    void testGetAuthorizableString() throws RepositoryException {
         @NotNull User user1 = userManager.createUser("user1", "pwd", () -> "user1", "path1");
         @Nullable Authorizable authorizable = userManager.getAuthorizable(user1.getID());
         assertEquals(user1, authorizable);
@@ -418,7 +415,7 @@ public class MockUserManagerTest {
      * Test method for {@link org.apache.sling.testing.mock.jcr.MockUserManager#getAuthorizable(java.security.Principal)}.
      */
     @Test
-    public void testGetAuthorizablePrincipal() throws AuthorizableExistsException, RepositoryException {
+    void testGetAuthorizablePrincipal() throws RepositoryException {
         @NotNull User user1 = userManager.createUser("user1", "pwd", () -> "user1", "path1");
         @Nullable Authorizable authorizable = userManager.getAuthorizable(() -> "user1");
         assertEquals(user1, authorizable);
@@ -428,7 +425,7 @@ public class MockUserManagerTest {
      * Test method for {@link org.apache.sling.testing.mock.jcr.MockUserManager#getAuthorizable(java.lang.String, java.lang.Class)}.
      */
     @Test
-    public void testGetAuthorizableStringClassOfT() throws AuthorizableExistsException, RepositoryException {
+    void testGetAuthorizableStringClassOfT() throws RepositoryException {
         @NotNull User user1 = userManager.createUser("user1", "pwd", () -> "user1", "path1");
         @Nullable Authorizable authorizable = userManager.getAuthorizable("user1", User.class);
         assertEquals(user1, authorizable);
@@ -439,8 +436,7 @@ public class MockUserManagerTest {
      * Test to verify the fix for SLING-12166
      */
     @Test
-    public void testGetAuthorizableStringClassOfTWhenItDoesNotExist()
-            throws AuthorizableExistsException, RepositoryException {
+    void testGetAuthorizableStringClassOfTWhenItDoesNotExist() throws RepositoryException {
         @Nullable Authorizable authorizable = userManager.getAuthorizable("user1", User.class);
         assertNull(authorizable);
     }
@@ -449,7 +445,7 @@ public class MockUserManagerTest {
      * Test method for {@link org.apache.sling.testing.mock.jcr.MockUserManager#getAuthorizableByPath(java.lang.String)}.
      */
     @Test
-    public void testGetAuthorizableByPath() throws AuthorizableExistsException, RepositoryException {
+    void testGetAuthorizableByPath() throws RepositoryException {
         @NotNull User user1 = userManager.createUser("user1", "pwd", () -> "user1", "path1");
         @Nullable Authorizable authorizable = userManager.getAuthorizableByPath(user1.getPath());
         assertEquals(user1, authorizable);
@@ -458,7 +454,7 @@ public class MockUserManagerTest {
     }
 
     @Test
-    public void testGetAuthorizableByPathCatchRepositoryException() throws Exception {
+    void testGetAuthorizableByPathCatchRepositoryException() throws Exception {
         @NotNull User user1 = userManager.createUser("user1", "pwd", () -> "user1", "path1");
         User mockAuthorizable = Mockito.spy(user1);
         // replace the original with our mocked copy

@@ -22,35 +22,35 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Workspace;
 import javax.jcr.observation.ObservationManager;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
-public class MockWorkspaceTest {
+class MockWorkspaceTest {
 
     private Workspace underTest;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         underTest = MockJcr.newSession().getWorkspace();
     }
 
     @Test
-    public void testName() {
+    void testName() {
         assertEquals(MockJcr.DEFAULT_WORKSPACE, underTest.getName());
     }
 
     @Test
-    public void testNameSpaceRegistry() throws RepositoryException {
+    void testNameSpaceRegistry() throws RepositoryException {
         assertNotNull(underTest.getNamespaceRegistry());
     }
 
     @Test
-    public void testObservationManager() throws RepositoryException {
+    void testObservationManager() throws RepositoryException {
         // just make sure observation manager methods can be called, although they do nothing
         ObservationManager mgr = underTest.getObservationManager();
         mgr.addEventListener(null, 0, null, false, null, null, false);
@@ -62,7 +62,7 @@ public class MockWorkspaceTest {
     }
 
     @Test
-    public void testNodeTypeManager() throws RepositoryException {
+    void testNodeTypeManager() throws RepositoryException {
         assertNotNull(underTest.getNodeTypeManager());
     }
 }

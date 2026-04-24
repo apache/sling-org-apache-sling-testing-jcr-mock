@@ -34,28 +34,28 @@ import java.io.Reader;
 
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.jackrabbit.commons.cnd.ParseException;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  * Tests the MockNodeTypeManager when in the ONLY_REGISTERED mode
  *
  */
-public class MockNodeTypeManagerTest {
+class MockNodeTypeManagerTest {
 
     private static final String NT_INVALID = "nt:invalid";
     protected Session session;
     protected NodeTypeManager nodeTypeManager;
 
-    @Before
-    public void setUp() throws RepositoryException, ParseException, IOException {
+    @BeforeEach
+    void setUp() throws RepositoryException, ParseException, IOException {
         this.session = MockJcr.newSession();
         try (Reader reader = new InputStreamReader(getClass().getResourceAsStream("test_nodetypes.cnd"))) {
             MockJcr.loadNodeTypeDefs(this.session, reader);
@@ -67,7 +67,7 @@ public class MockNodeTypeManagerTest {
      * Test method for {@link org.apache.sling.testing.mock.jcr.MockNodeTypeManager#getNodeType(java.lang.String)}.
      */
     @Test
-    public void testGetNodeType() throws RepositoryException {
+    void testGetNodeType() throws RepositoryException {
         NodeType nodeType = nodeTypeManager.getNodeType(JcrConstants.NT_FOLDER);
         assertNotNull(nodeType);
 
@@ -78,7 +78,7 @@ public class MockNodeTypeManagerTest {
      * Test method for {@link org.apache.sling.testing.mock.jcr.MockNodeTypeManager#hasNodeType(java.lang.String)}.
      */
     @Test
-    public void testHasNodeType() throws RepositoryException {
+    void testHasNodeType() throws RepositoryException {
         assertTrue(nodeTypeManager.hasNodeType(JcrConstants.NT_FOLDER));
     }
 
@@ -86,7 +86,7 @@ public class MockNodeTypeManagerTest {
      * Test method for {@link org.apache.sling.testing.mock.jcr.MockNodeTypeManager#getAllNodeTypes()}.
      */
     @Test
-    public void testGetAllNodeTypes() throws RepositoryException {
+    void testGetAllNodeTypes() throws RepositoryException {
         NodeTypeIterator allNodeTypes = nodeTypeManager.getAllNodeTypes();
         assertTrue(allNodeTypes.hasNext());
     }
@@ -95,7 +95,7 @@ public class MockNodeTypeManagerTest {
      * Test method for {@link org.apache.sling.testing.mock.jcr.MockNodeTypeManager#getPrimaryNodeTypes()}.
      */
     @Test
-    public void testGetPrimaryNodeTypes() throws RepositoryException {
+    void testGetPrimaryNodeTypes() throws RepositoryException {
         NodeTypeIterator primaryNodeTypes = nodeTypeManager.getPrimaryNodeTypes();
         assertTrue(primaryNodeTypes.hasNext());
     }
@@ -104,7 +104,7 @@ public class MockNodeTypeManagerTest {
      * Test method for {@link org.apache.sling.testing.mock.jcr.MockNodeTypeManager#getMixinNodeTypes()}.
      */
     @Test
-    public void testGetMixinNodeTypes() throws RepositoryException {
+    void testGetMixinNodeTypes() throws RepositoryException {
         NodeTypeIterator mixinNodeTypes = nodeTypeManager.getMixinNodeTypes();
         assertTrue(mixinNodeTypes.hasNext());
     }
@@ -113,7 +113,7 @@ public class MockNodeTypeManagerTest {
      * Test method for {@link org.apache.sling.testing.mock.jcr.MockNodeTypeManager#createNodeTypeTemplate()}.
      */
     @Test
-    public void testCreateNodeTypeTemplate() throws RepositoryException {
+    void testCreateNodeTypeTemplate() throws RepositoryException {
         assertNotNull(nodeTypeManager.createNodeTypeTemplate());
     }
 
@@ -121,7 +121,7 @@ public class MockNodeTypeManagerTest {
      * Test method for {@link org.apache.sling.testing.mock.jcr.MockNodeTypeManager#createNodeTypeTemplate(javax.jcr.nodetype.NodeTypeDefinition)}.
      */
     @Test
-    public void testCreateNodeTypeTemplateNodeTypeDefinition() throws RepositoryException {
+    void testCreateNodeTypeTemplateNodeTypeDefinition() throws RepositoryException {
         NodeTypeDefinition ntd = Mockito.mock(NodeTypeDefinition.class);
         Mockito.when(ntd.getName()).thenReturn("nt:fake");
         assertNotNull(nodeTypeManager.createNodeTypeTemplate(ntd));
@@ -141,7 +141,7 @@ public class MockNodeTypeManagerTest {
      * Test method for {@link org.apache.sling.testing.mock.jcr.MockNodeTypeManager#createNodeDefinitionTemplate()}.
      */
     @Test
-    public void testCreateNodeDefinitionTemplate() throws RepositoryException {
+    void testCreateNodeDefinitionTemplate() throws RepositoryException {
         assertNotNull(nodeTypeManager.createNodeDefinitionTemplate());
     }
 
@@ -149,7 +149,7 @@ public class MockNodeTypeManagerTest {
      * Test method for {@link org.apache.sling.testing.mock.jcr.MockNodeTypeManager#createPropertyDefinitionTemplate()}.
      */
     @Test
-    public void testCreatePropertyDefinitionTemplate() throws RepositoryException {
+    void testCreatePropertyDefinitionTemplate() throws RepositoryException {
         assertNotNull(nodeTypeManager.createPropertyDefinitionTemplate());
     }
 
@@ -157,7 +157,7 @@ public class MockNodeTypeManagerTest {
      * Test method for {@link org.apache.sling.testing.mock.jcr.MockNodeTypeManager#registerNodeType(javax.jcr.nodetype.NodeTypeDefinition, boolean)}.
      */
     @Test
-    public void testRegisterNodeType() throws RepositoryException {
+    void testRegisterNodeType() throws RepositoryException {
         MockNodeTypeTemplate testDef = new MockNodeTypeTemplate();
         testDef.setName(JcrConstants.NT_FOLDER);
 
@@ -181,7 +181,7 @@ public class MockNodeTypeManagerTest {
      * Test method for {@link org.apache.sling.testing.mock.jcr.MockNodeTypeManager#registerNodeTypes(javax.jcr.nodetype.NodeTypeDefinition[], boolean)}.
      */
     @Test
-    public void testRegisterNodeTypes() throws RepositoryException {
+    void testRegisterNodeTypes() throws RepositoryException {
         MockNodeTypeTemplate testDef1 = new MockNodeTypeTemplate();
         testDef1.setName(JcrConstants.NT_FOLDER);
         MockNodeTypeTemplate testDef2 = new MockNodeTypeTemplate();
@@ -202,7 +202,7 @@ public class MockNodeTypeManagerTest {
      * Test method for {@link org.apache.sling.testing.mock.jcr.MockNodeTypeManager#unregisterNodeType(java.lang.String)}.
      */
     @Test
-    public void testUnregisterNodeType() throws RepositoryException {
+    void testUnregisterNodeType() throws RepositoryException {
         assertThrows(NoSuchNodeTypeException.class, () -> nodeTypeManager.unregisterNodeType(NT_INVALID));
 
         nodeTypeManager.unregisterNodeType(JcrConstants.NT_FOLDER);
@@ -213,7 +213,7 @@ public class MockNodeTypeManagerTest {
      * Test method for {@link org.apache.sling.testing.mock.jcr.MockNodeTypeManager#unregisterNodeTypes(java.lang.String[])}.
      */
     @Test
-    public void testUnregisterNodeTypes() throws RepositoryException {
+    void testUnregisterNodeTypes() throws RepositoryException {
         assertThrows(
                 NoSuchNodeTypeException.class, () -> nodeTypeManager.unregisterNodeTypes(new String[] {NT_INVALID}));
 

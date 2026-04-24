@@ -20,7 +20,6 @@ package org.apache.sling.testing.mock.jcr;
 
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import javax.jcr.UnsupportedRepositoryOperationException;
 import javax.jcr.Value;
 import javax.jcr.ValueFactory;
 
@@ -35,14 +34,14 @@ import org.apache.jackrabbit.api.security.user.UserManager;
 import org.apache.jackrabbit.value.ValueFactoryImpl;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  *
@@ -53,7 +52,7 @@ public abstract class MockAuthorizableTest<T extends Authorizable> {
     protected T authorizable;
     protected ValueFactory vf = ValueFactoryImpl.getInstance();
 
-    @Before
+    @BeforeEach
     public void before() throws RepositoryException {
         session = MockJcr.newSession();
         userManager = new MockUserManager(session);
@@ -267,7 +266,7 @@ public abstract class MockAuthorizableTest<T extends Authorizable> {
     /**
      * Test method for {@link org.apache.sling.testing.mock.jcr.MockAuthorizable#getPath()}.
      */
-    public abstract void testGetPath() throws UnsupportedRepositoryOperationException, RepositoryException;
+    public abstract void testGetPath() throws RepositoryException;
 
     @Test
     public void testToString() {

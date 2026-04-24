@@ -28,20 +28,19 @@ import java.util.Set;
 import ch.qos.logback.classic.Level;
 import org.apache.jackrabbit.api.security.principal.PrincipalIterator;
 import org.apache.jackrabbit.api.security.principal.PrincipalManager;
-import org.apache.jackrabbit.api.security.user.AuthorizableExistsException;
 import org.apache.jackrabbit.api.security.user.Group;
 import org.apache.jackrabbit.api.security.user.User;
 import org.apache.jackrabbit.api.security.user.UserManager;
 import org.jetbrains.annotations.NotNull;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -49,13 +48,13 @@ import static org.mockito.ArgumentMatchers.anyString;
 /**
  *
  */
-public class MockPrincipalManagerTest {
+class MockPrincipalManagerTest {
     protected Session session;
     protected UserManager userManager;
     protected MockPrincipalManager principalManager;
 
-    @Before
-    public void before() throws RepositoryException {
+    @BeforeEach
+    void before() {
         session = MockJcr.newSession();
         userManager = new MockUserManager(session);
         principalManager = new MockPrincipalManager((MockUserManager) userManager);
@@ -65,7 +64,7 @@ public class MockPrincipalManagerTest {
      * Test method for {@link org.apache.sling.testing.mock.jcr.MockPrincipalManager#findPrincipals(java.lang.String)}.
      */
     @Test
-    public void testFindPrincipalsString() throws AuthorizableExistsException, RepositoryException {
+    void testFindPrincipalsString() throws RepositoryException {
         @NotNull User user1 = userManager.createUser("user1", "pwd", () -> "user1", "/home/users/path1");
         @NotNull Group group1 = userManager.createGroup("group1", () -> "group1", "/home/groups/path1");
 
@@ -85,7 +84,7 @@ public class MockPrincipalManagerTest {
      * Test method for {@link org.apache.sling.testing.mock.jcr.MockPrincipalManager#findPrincipals(java.lang.String, int)}.
      */
     @Test
-    public void testFindPrincipalsStringInt() throws AuthorizableExistsException, RepositoryException {
+    void testFindPrincipalsStringInt() throws RepositoryException {
         @NotNull User user1 = userManager.createUser("user1", "pwd", () -> "user1", "/home/users/path1");
         @NotNull Group group1 = userManager.createGroup("group1", () -> "group1", "/home/groups/path1");
 
@@ -103,7 +102,7 @@ public class MockPrincipalManagerTest {
     }
 
     @Test
-    public void testFindPrincipalsStringIntCatchRepositoryException() throws Exception {
+    void testFindPrincipalsStringIntCatchRepositoryException() throws Exception {
         MockUserManager mockUserManager = Mockito.spy((MockUserManager) userManager);
         Mockito.doThrow(RepositoryException.class)
                 .when(mockUserManager)
@@ -144,7 +143,7 @@ public class MockPrincipalManagerTest {
      * Test method for {@link org.apache.sling.testing.mock.jcr.MockPrincipalManager#getEveryone()}.
      */
     @Test
-    public void testGetEveryone() {
+    void testGetEveryone() {
         @NotNull Principal everyone = principalManager.getEveryone();
         assertNotNull(everyone);
         assertEquals("everyone", everyone.getName());
@@ -155,7 +154,7 @@ public class MockPrincipalManagerTest {
      */
     @SuppressWarnings("unchecked")
     @Test
-    public void testGetGroupMembership() throws AuthorizableExistsException, RepositoryException {
+    void testGetGroupMembership() throws RepositoryException {
         @NotNull User user1 = userManager.createUser("user1", "pwd");
         Principal principal = principalManager.getPrincipal("user1");
         PrincipalIterator groupMembership = principalManager.getGroupMembership(principal);
@@ -180,7 +179,7 @@ public class MockPrincipalManagerTest {
     }
 
     @Test
-    public void testGetGroupMembershipCatchRepositoryException() throws Exception {
+    void testGetGroupMembershipCatchRepositoryException() throws Exception {
         MockUserManager mockUserManager = Mockito.spy((MockUserManager) userManager);
         Mockito.doThrow(RepositoryException.class).when(mockUserManager).getAuthorizable(any(Principal.class));
         // replace the field with our mocked variant
@@ -216,7 +215,7 @@ public class MockPrincipalManagerTest {
      * Test method for {@link org.apache.sling.testing.mock.jcr.MockPrincipalManager#getPrincipal(java.lang.String)}.
      */
     @Test
-    public void testGetPrincipal() throws AuthorizableExistsException, RepositoryException {
+    void testGetPrincipal() throws RepositoryException {
         // no
         Principal principal = principalManager.getPrincipal("user1");
         assertNull(principal);
@@ -229,7 +228,7 @@ public class MockPrincipalManagerTest {
     }
 
     @Test
-    public void testGetPrincipalCatchRepositoryException() throws Exception {
+    void testGetPrincipalCatchRepositoryException() throws Exception {
         MockUserManager mockUserManager = Mockito.spy((MockUserManager) userManager);
         Mockito.doThrow(RepositoryException.class).when(mockUserManager).getAuthorizable(anyString());
         // replace the field with our mocked variant
@@ -265,7 +264,7 @@ public class MockPrincipalManagerTest {
      */
     @SuppressWarnings("unchecked")
     @Test
-    public void testGetPrincipals() throws AuthorizableExistsException, RepositoryException {
+    void testGetPrincipals() throws RepositoryException {
         // none
         PrincipalIterator principals = principalManager.getPrincipals(PrincipalManager.SEARCH_TYPE_ALL);
         assertFalse(principals.hasNext());
@@ -295,7 +294,7 @@ public class MockPrincipalManagerTest {
     }
 
     @Test
-    public void testGetPrincipalsCatchRepositoryException() throws Exception {
+    void testGetPrincipalsCatchRepositoryException() throws Exception {
         MockUserManager mockUserManager = Mockito.spy((MockUserManager) userManager);
         Mockito.doThrow(RepositoryException.class).when(mockUserManager).all(anyInt());
         // replace the field with our mocked variant
@@ -332,7 +331,7 @@ public class MockPrincipalManagerTest {
      * Test method for {@link org.apache.sling.testing.mock.jcr.MockPrincipalManager#hasPrincipal(java.lang.String)}.
      */
     @Test
-    public void testHasPrincipal() throws AuthorizableExistsException, RepositoryException {
+    void testHasPrincipal() throws RepositoryException {
         // no
         assertFalse(principalManager.hasPrincipal("user1"));
 
@@ -342,7 +341,7 @@ public class MockPrincipalManagerTest {
     }
 
     @Test
-    public void testHasPrincipalCatchRepositoryException() throws Exception {
+    void testHasPrincipalCatchRepositoryException() throws Exception {
         MockUserManager mockUserManager = Mockito.spy((MockUserManager) userManager);
         Mockito.doThrow(RepositoryException.class).when(mockUserManager).getAuthorizable(anyString());
         // replace the field with our mocked variant

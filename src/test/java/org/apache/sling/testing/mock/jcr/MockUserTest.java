@@ -22,7 +22,6 @@ import javax.jcr.Credentials;
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
 import javax.jcr.SimpleCredentials;
-import javax.jcr.UnsupportedRepositoryOperationException;
 
 import java.io.UnsupportedEncodingException;
 import java.security.NoSuchAlgorithmException;
@@ -33,20 +32,20 @@ import org.apache.jackrabbit.oak.spi.security.user.UserConstants;
 import org.apache.jackrabbit.oak.spi.security.user.UserIdCredentials;
 import org.apache.jackrabbit.oak.spi.security.user.util.PasswordUtil;
 import org.jetbrains.annotations.NotNull;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  *
  */
-public class MockUserTest extends MockAuthorizableTest<User> {
+class MockUserTest extends MockAuthorizableTest<User> {
 
     @Override
     protected User createAuthorizable() throws RepositoryException {
@@ -69,13 +68,13 @@ public class MockUserTest extends MockAuthorizableTest<User> {
      * Test method for {@link org.apache.sling.testing.mock.jcr.MockUser#isAdmin()}.
      */
     @Test
-    public void testIsAdmin() throws RepositoryException {
+    void testIsAdmin() throws RepositoryException {
         assertFalse(authorizable.isAdmin());
         assertTrue(userManager.createUser("admin", "admin").isAdmin());
     }
 
     @Test
-    public void testIsAdminCatchRepositoryException() throws Exception {
+    void testIsAdminCatchRepositoryException() throws Exception {
         User mockAuthorizable = Mockito.spy(authorizable);
         Mockito.doThrow(RepositoryException.class).when(mockAuthorizable).getID();
 
@@ -108,7 +107,7 @@ public class MockUserTest extends MockAuthorizableTest<User> {
      * Test method for {@link org.apache.sling.testing.mock.jcr.MockUser#isSystemUser()}.
      */
     @Test
-    public void testIsSystemUser() {
+    void testIsSystemUser() {
         assertFalse(authorizable.isSystemUser());
     }
 
@@ -116,14 +115,14 @@ public class MockUserTest extends MockAuthorizableTest<User> {
      * Test method for {@link org.apache.sling.testing.mock.jcr.MockUser#getCredentials()}.
      */
     @Test
-    public void testGetCredentials() throws RepositoryException {
+    void testGetCredentials() throws RepositoryException {
         @NotNull Credentials credentials = authorizable.getCredentials();
         assertTrue(credentials instanceof SimpleCredentials);
         assertEquals(authorizable.getID(), ((SimpleCredentials) credentials).getUserID());
     }
 
     @Test
-    public void testGetCredentialsWithNullPassword() throws RepositoryException {
+    void testGetCredentialsWithNullPassword() throws RepositoryException {
         // create a user with no password
         authorizable = userManager.createUser("user2", null);
 
@@ -136,7 +135,7 @@ public class MockUserTest extends MockAuthorizableTest<User> {
      * Test method for {@link org.apache.sling.testing.mock.jcr.MockUser#getImpersonation()}.
      */
     @Test
-    public void testGetImpersonation() {
+    void testGetImpersonation() {
         assertThrows(UnsupportedOperationException.class, () -> authorizable.getImpersonation());
     }
 
@@ -144,7 +143,7 @@ public class MockUserTest extends MockAuthorizableTest<User> {
      * Test method for {@link org.apache.sling.testing.mock.jcr.MockUser#changePassword(java.lang.String)}.
      */
     @Test
-    public void testChangePasswordString() throws RepositoryException {
+    void testChangePasswordString() throws RepositoryException {
         authorizable.changePassword("changed");
         assertPassword("changed".toCharArray());
 
@@ -152,14 +151,14 @@ public class MockUserTest extends MockAuthorizableTest<User> {
     }
 
     @Test
-    public void testChangePasswordStringFromNull() throws RepositoryException {
+    void testChangePasswordStringFromNull() throws RepositoryException {
         // start with a null password - for code coverage
         authorizable = userManager.createUser("testuser2", null);
         assertThrows(RepositoryException.class, () -> authorizable.changePassword("changed", "oldPwd"));
     }
 
     @Test
-    public void testChangePasswordStringWithCaughtNoSuchAlgorithmException() throws RepositoryException {
+    void testChangePasswordStringWithCaughtNoSuchAlgorithmException() {
         try (MockedStatic<PasswordUtil> passwordUtilMock = Mockito.mockStatic(PasswordUtil.class); ) {
             passwordUtilMock
                     .when(() -> PasswordUtil.buildPasswordHash("changed"))
@@ -169,7 +168,7 @@ public class MockUserTest extends MockAuthorizableTest<User> {
     }
 
     @Test
-    public void testChangePasswordStringWithCaughtUnsupportedEncodingExceptionException() throws RepositoryException {
+    void testChangePasswordStringWithCaughtUnsupportedEncodingExceptionException() {
         try (MockedStatic<PasswordUtil> passwordUtilMock = Mockito.mockStatic(PasswordUtil.class); ) {
             passwordUtilMock
                     .when(() -> PasswordUtil.buildPasswordHash("changed"))
@@ -187,7 +186,7 @@ public class MockUserTest extends MockAuthorizableTest<User> {
      * Test method for {@link org.apache.sling.testing.mock.jcr.MockUser#changePassword(java.lang.String, java.lang.String)}.
      */
     @Test
-    public void testChangePasswordStringString() throws RepositoryException {
+    void testChangePasswordStringString() throws RepositoryException {
         authorizable.changePassword("changed", "pwd");
         assertPassword("changed".toCharArray());
 
@@ -198,7 +197,7 @@ public class MockUserTest extends MockAuthorizableTest<User> {
      * Test method for {@link org.apache.sling.testing.mock.jcr.MockUser#disable(java.lang.String)}.
      */
     @Test
-    public void testDisable() throws RepositoryException {
+    void testDisable() throws RepositoryException {
         authorizable.disable("Expired");
         assertTrue(authorizable.isDisabled());
         assertEquals("Expired", authorizable.getDisabledReason());
@@ -217,7 +216,7 @@ public class MockUserTest extends MockAuthorizableTest<User> {
      * Test method for {@link org.apache.sling.testing.mock.jcr.MockUser#isDisabled()}.
      */
     @Test
-    public void testIsDisabled() throws RepositoryException {
+    void testIsDisabled() throws RepositoryException {
         assertFalse(authorizable.isDisabled());
         authorizable.disable("Obsolete");
         assertTrue(authorizable.isDisabled());
@@ -227,7 +226,7 @@ public class MockUserTest extends MockAuthorizableTest<User> {
      * Test method for {@link org.apache.sling.testing.mock.jcr.MockUser#getDisabledReason()}.
      */
     @Test
-    public void testGetDisabledReason() throws RepositoryException {
+    void testGetDisabledReason() throws RepositoryException {
         assertNull(authorizable.getDisabledReason());
         authorizable.disable("Obsolete");
         assertEquals("Obsolete", authorizable.getDisabledReason());
@@ -235,7 +234,7 @@ public class MockUserTest extends MockAuthorizableTest<User> {
 
     @Test
     @Override
-    public void testGetPath() throws UnsupportedRepositoryOperationException, RepositoryException {
+    public void testGetPath() throws RepositoryException {
         assertEquals("/home/users/user1", authorizable.getPath());
         assertTrue(session.nodeExists(authorizable.getPath()));
         Node node = session.getNode(authorizable.getPath());
