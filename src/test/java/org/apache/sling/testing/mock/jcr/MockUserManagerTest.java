@@ -285,6 +285,7 @@ public class MockUserManagerTest {
     /**
      * Test method for {@link org.apache.sling.testing.mock.jcr.MockUserManager#ensureAuthorizablePathExists(java.lang.String, java.lang.String, boolean)}.
      */
+    @SuppressWarnings("removal")
     @Deprecated
     @Test
     public void testEnsureAuthorizablePathExistsStringStringBoolean() throws RepositoryException {

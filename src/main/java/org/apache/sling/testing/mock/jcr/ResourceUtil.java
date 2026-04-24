@@ -32,7 +32,7 @@ class ResourceUtil {
     public static String normalize(String path) {
 
         // don't care for empty paths
-        if (path.length() == 0) {
+        if (path.isEmpty()) {
             return path;
         }
 

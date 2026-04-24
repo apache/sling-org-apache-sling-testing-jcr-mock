@@ -35,7 +35,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.jackrabbit.commons.iterator.NodeTypeIteratorAdapter;
 import org.apache.sling.testing.mock.jcr.MockNodeTypeManager.ResolveMode;
@@ -88,7 +88,7 @@ class MockNodeType implements NodeType {
             return ntd.hasOrderableChildNodes();
         }
         // support only well-known built-in node type
-        return StringUtils.equals(getName(), JcrConstants.NT_UNSTRUCTURED);
+        return Strings.CS.equals(getName(), JcrConstants.NT_UNSTRUCTURED);
     }
 
     // --- unsupported operations ---

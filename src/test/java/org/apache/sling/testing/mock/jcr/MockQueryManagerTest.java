@@ -30,7 +30,7 @@ import javax.jcr.query.Row;
 import java.util.List;
 
 import org.apache.commons.collections4.IteratorUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -169,7 +169,7 @@ public class MockQueryManagerTest {
         MockJcr.addQueryResultHandler(queryManager, new MockQueryResultHandler() {
             @Override
             public MockQueryResult executeQuery(MockQuery query) {
-                if (StringUtils.equals(query.getStatement(), "query1")) {
+                if (Strings.CS.equals(query.getStatement(), "query1")) {
                     return new MockQueryResult(sampleNodes);
                 }
                 return null;
@@ -185,7 +185,7 @@ public class MockQueryManagerTest {
         MockJcr.addQueryResultHandler(queryManager, new MockQueryResultHandler() {
             @Override
             public MockQueryResult executeQuery(MockQuery query) {
-                if (StringUtils.equals(query.getStatement(), "query1")) {
+                if (Strings.CS.equals(query.getStatement(), "query1")) {
                     MockQueryResult mockQueryResult = new MockQueryResult(sampleNodes);
                     mockQueryResult.setSimulateUnknownSize(true);
                     return mockQueryResult;
@@ -205,7 +205,7 @@ public class MockQueryManagerTest {
         MockJcr.addQueryResultHandler(session, new MockQueryResultHandler() {
             @Override
             public MockQueryResult executeQuery(MockQuery query) {
-                if (StringUtils.equals(query.getStatement(), "query2")) {
+                if (Strings.CS.equals(query.getStatement(), "query2")) {
                     return new MockQueryResult(sampleNodes2);
                 }
                 return null;
@@ -215,7 +215,7 @@ public class MockQueryManagerTest {
         MockJcr.addQueryResultHandler(session, new MockQueryResultHandler() {
             @Override
             public MockQueryResult executeQuery(MockQuery query) {
-                if (StringUtils.equals(query.getStatement(), "query1")) {
+                if (Strings.CS.equals(query.getStatement(), "query1")) {
                     return new MockQueryResult(sampleNodes);
                 }
                 return null;

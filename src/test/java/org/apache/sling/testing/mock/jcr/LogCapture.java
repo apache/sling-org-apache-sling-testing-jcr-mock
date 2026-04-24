@@ -42,7 +42,7 @@ public class LogCapture extends ListAppender<ILoggingEvent> implements AutoClose
     public LogCapture(String loggerName, boolean verboseFailure) {
         this.verboseFailure = verboseFailure;
         logger = (Logger) LoggerFactory.getLogger(loggerName);
-        logger.setLevel(Level.ALL);
+        logger.setLevel(Level.TRACE);
         setContext((LoggerContext) LoggerFactory.getILoggerFactory());
         logger.addAppender(this);
         start();

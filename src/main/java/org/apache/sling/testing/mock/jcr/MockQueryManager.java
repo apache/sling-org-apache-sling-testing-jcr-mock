@@ -39,7 +39,7 @@ import org.apache.commons.lang3.StringUtils;
  */
 class MockQueryManager implements QueryManager {
 
-    private List<MockQueryResultHandler> resultHandlers = new ArrayList<MockQueryResultHandler>();
+    private List<MockQueryResultHandler> resultHandlers = new ArrayList<>();
 
     @SuppressWarnings("deprecation")
     private static final List<String> SUPPORTED_QUERY_LANGUAGES =

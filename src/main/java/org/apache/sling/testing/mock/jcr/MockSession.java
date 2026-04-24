@@ -44,7 +44,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.regex.Pattern;
 
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.jackrabbit.api.JackrabbitSession;
 import org.apache.jackrabbit.api.security.principal.PrincipalManager;
 import org.apache.jackrabbit.api.security.user.UserManager;
@@ -127,7 +127,7 @@ class MockSession implements Session, JackrabbitSession {
     public Node getNodeByIdentifier(final String id) throws RepositoryException {
         checkLive();
         for (ItemData item : this.items.values()) {
-            if (item.isNode() && StringUtils.equals(item.getUuid(), id)) {
+            if (item.isNode() && Strings.CS.equals(item.getUuid(), id)) {
                 return new MockNode(item, this);
             }
         }
@@ -200,7 +200,7 @@ class MockSession implements Session, JackrabbitSession {
         final ItemData parent = getItemData(absPath);
         final String descendantPrefix = parent.getPath() + "/";
 
-        final List<String> pathsToRemove = new ArrayList<String>();
+        final List<String> pathsToRemove = new ArrayList<>();
         pathsToRemove.add(parent.getPath());
         for (String itemPath : this.items.keySet()) {
             if (itemPath.startsWith(descendantPrefix)) {
@@ -215,7 +215,7 @@ class MockSession implements Session, JackrabbitSession {
     }
 
     RangeIterator listChildren(final String parentPath, final ItemFilter filter) throws RepositoryException {
-        List<Item> children = new ArrayList<Item>();
+        List<Item> children = new ArrayList<>();
 
         // remove trailing slash or make root path / empty string
         final String path = parentPath.replaceFirst("/$", "");

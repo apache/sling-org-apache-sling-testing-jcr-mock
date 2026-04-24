@@ -27,6 +27,7 @@ import javax.jcr.Session;
 import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 
 /**
  * Mock {@link Item} implementation.
@@ -82,7 +83,7 @@ abstract class AbstractItem implements Item {
     protected String makeAbsolutePath(final String relativePath) throws RepositoryException {
         String absolutePath = relativePath;
         // ensure the path is absolute and normalized
-        if (!StringUtils.startsWith(absolutePath, "/")) {
+        if (!Strings.CS.startsWith(absolutePath, "/")) {
             absolutePath = getPath() + "/" + absolutePath; // NOPMD NOSONAR
         }
         return ResourceUtil.normalize(absolutePath);
@@ -99,7 +100,7 @@ abstract class AbstractItem implements Item {
 
     @Override
     public int getDepth() throws RepositoryException {
-        if (StringUtils.equals("/", getPath())) {
+        if (Strings.CS.equals("/", getPath())) {
             return 0;
         } else {
             return StringUtils.countMatches(getPath(), "/");

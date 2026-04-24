@@ -48,6 +48,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.Strings;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.jackrabbit.commons.ItemNameMatcher;
 import org.apache.jackrabbit.commons.iterator.NodeIteratorAdapter;
@@ -112,7 +113,7 @@ class MockNode extends AbstractItem implements Node {
         }
 
         // special handling for some node types
-        if (StringUtils.equals(primaryNodeTypeName, JcrConstants.NT_FILE)) {
+        if (Strings.CS.equals(primaryNodeTypeName, JcrConstants.NT_FILE)) {
             node.setProperty(JcrConstants.JCR_CREATED, Calendar.getInstance());
             node.setProperty(JCR_CREATEDBY, getMockedSession().getUserID());
         }

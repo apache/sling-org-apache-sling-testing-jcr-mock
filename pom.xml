@@ -44,8 +44,6 @@
     <properties>
         <project.build.outputTimestamp>2026-02-12T13:50:15Z</project.build.outputTimestamp>
         <sling.java.version>11</sling.java.version>
-        <oak.version>1.68.0</oak.version>
-        <jackrabbit.version>2.22.2</jackrabbit.version>
     </properties>
 
     <dependencies>
@@ -70,13 +68,11 @@
         <dependency>
             <groupId>org.apache.jackrabbit</groupId>
             <artifactId>jackrabbit-jcr-commons</artifactId>
-            <version>${jackrabbit.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.jackrabbit</groupId>
             <artifactId>oak-jackrabbit-api</artifactId>
-            <version>${oak.version}</version>
             <scope>compile</scope>
         </dependency>
         <!-- Depend on oak-jcr to simplify Maven dependency management in downstream unit test contexts.
