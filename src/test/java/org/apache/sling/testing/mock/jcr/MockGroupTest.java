@@ -20,28 +20,26 @@ package org.apache.sling.testing.mock.jcr;
 
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
-import javax.jcr.UnsupportedRepositoryOperationException;
 
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
 import org.apache.jackrabbit.api.security.user.Authorizable;
-import org.apache.jackrabbit.api.security.user.AuthorizableExistsException;
 import org.apache.jackrabbit.api.security.user.Group;
 import org.apache.jackrabbit.api.security.user.User;
 import org.apache.jackrabbit.oak.spi.security.user.UserConstants;
 import org.jetbrains.annotations.NotNull;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  *
  */
-public class MockGroupTest extends MockAuthorizableTest<Group> {
+class MockGroupTest extends MockAuthorizableTest<Group> {
 
     @Override
     protected Group createAuthorizable() throws RepositoryException {
@@ -61,7 +59,7 @@ public class MockGroupTest extends MockAuthorizableTest<Group> {
     }
 
     @Test
-    public void testGetMemberOfWithNestedGroups() throws RepositoryException {
+    void testGetMemberOfWithNestedGroups() throws RepositoryException {
         @NotNull Group member1 = userManager.createGroup("member1");
         @NotNull Group submember1 = userManager.createGroup("submember1");
         member1.addMember(submember1);
@@ -82,7 +80,7 @@ public class MockGroupTest extends MockAuthorizableTest<Group> {
      * Test method for {@link org.apache.sling.testing.mock.jcr.MockGroup#getDeclaredMembers()}.
      */
     @Test
-    public void testGetDeclaredMembers() throws AuthorizableExistsException, RepositoryException {
+    void testGetDeclaredMembers() throws RepositoryException {
         @NotNull Group member1 = userManager.createGroup("member1");
         @NotNull User member2 = userManager.createUser("member2", "pwd");
         member1.addMember(member2);
@@ -100,7 +98,7 @@ public class MockGroupTest extends MockAuthorizableTest<Group> {
      * Test method for {@link org.apache.sling.testing.mock.jcr.MockGroup#getMembers()}.
      */
     @Test
-    public void testGetMembers() throws RepositoryException {
+    void testGetMembers() throws RepositoryException {
         @NotNull Group member1 = userManager.createGroup("member1");
         @NotNull User member2 = userManager.createUser("member2", "pwd");
         member1.addMember(member2);
@@ -115,7 +113,7 @@ public class MockGroupTest extends MockAuthorizableTest<Group> {
     }
 
     @Test
-    public void testGetMembersWithNestedGroups() throws RepositoryException {
+    void testGetMembersWithNestedGroups() throws RepositoryException {
         @NotNull Group member1 = userManager.createGroup("member1");
         @NotNull Group submember1 = userManager.createGroup("submember1");
         member1.addMember(submember1);
@@ -137,7 +135,7 @@ public class MockGroupTest extends MockAuthorizableTest<Group> {
      * Test method for {@link org.apache.sling.testing.mock.jcr.MockGroup#isDeclaredMember(org.apache.jackrabbit.api.security.user.Authorizable)}.
      */
     @Test
-    public void testIsDeclaredMember() throws AuthorizableExistsException, RepositoryException {
+    void testIsDeclaredMember() throws RepositoryException {
         @NotNull Group member1 = userManager.createGroup("member1");
         @NotNull User member2 = userManager.createUser("member2", "pwd");
         member1.addMember(member2);
@@ -154,7 +152,7 @@ public class MockGroupTest extends MockAuthorizableTest<Group> {
      * Test method for {@link org.apache.sling.testing.mock.jcr.MockGroup#isMember(org.apache.jackrabbit.api.security.user.Authorizable)}.
      */
     @Test
-    public void testIsMember() throws AuthorizableExistsException, RepositoryException {
+    void testIsMember() throws RepositoryException {
         @NotNull Group member1 = userManager.createGroup("member1");
         @NotNull User member2 = userManager.createUser("member2", "pwd");
         @NotNull User member3 = userManager.createUser("member3", "pwd");
@@ -182,7 +180,7 @@ public class MockGroupTest extends MockAuthorizableTest<Group> {
      * Test method for {@link org.apache.sling.testing.mock.jcr.MockGroup#addMember(org.apache.jackrabbit.api.security.user.Authorizable)}.
      */
     @Test
-    public void testAddMember() throws AuthorizableExistsException, RepositoryException {
+    void testAddMember() throws RepositoryException {
         @NotNull Group member1 = userManager.createGroup("member1");
         @NotNull User member2 = userManager.createUser("member2", "pwd");
         assertTrue(authorizable.addMember(member1));
@@ -202,7 +200,7 @@ public class MockGroupTest extends MockAuthorizableTest<Group> {
      * Test method for {@link org.apache.sling.testing.mock.jcr.MockGroup#addMembers(java.lang.String[])}.
      */
     @Test
-    public void testAddMembers() throws AuthorizableExistsException, RepositoryException {
+    void testAddMembers() throws RepositoryException {
         @NotNull Group member1 = userManager.createGroup("member1");
         @NotNull User member2 = userManager.createUser("member2", "pwd");
         @NotNull
@@ -221,7 +219,7 @@ public class MockGroupTest extends MockAuthorizableTest<Group> {
      * Test method for {@link org.apache.sling.testing.mock.jcr.MockGroup#removeMember(org.apache.jackrabbit.api.security.user.Authorizable)}.
      */
     @Test
-    public void testRemoveMember() throws AuthorizableExistsException, RepositoryException {
+    void testRemoveMember() throws RepositoryException {
         @NotNull Group member1 = userManager.createGroup("member1");
         @NotNull User member2 = userManager.createUser("member2", "pwd");
         authorizable.addMember(member1);
@@ -240,7 +238,7 @@ public class MockGroupTest extends MockAuthorizableTest<Group> {
      * Test method for {@link org.apache.sling.testing.mock.jcr.MockGroup#removeMembers(java.lang.String[])}.
      */
     @Test
-    public void testRemoveMembers() throws AuthorizableExistsException, RepositoryException {
+    void testRemoveMembers() throws RepositoryException {
         @NotNull Group member1 = userManager.createGroup("member1");
         @NotNull User member2 = userManager.createUser("member2", "pwd");
         authorizable.addMember(member1);
@@ -254,7 +252,7 @@ public class MockGroupTest extends MockAuthorizableTest<Group> {
 
     @Test
     @Override
-    public void testGetPath() throws UnsupportedRepositoryOperationException, RepositoryException {
+    public void testGetPath() throws RepositoryException {
         assertEquals("/home/groups/group1", authorizable.getPath());
         assertTrue(session.nodeExists(authorizable.getPath()));
         Node node = session.getNode(authorizable.getPath());

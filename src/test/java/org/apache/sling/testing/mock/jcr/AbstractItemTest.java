@@ -24,13 +24,13 @@ import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public abstract class AbstractItemTest {
 
@@ -40,7 +40,7 @@ public abstract class AbstractItemTest {
     protected Property prop1;
     protected Node node11;
 
-    @Before
+    @BeforeEach
     public void setUp() throws RepositoryException {
         this.session = MockJcr.newSession();
         this.rootNode = this.session.getRootNode();
@@ -70,12 +70,12 @@ public abstract class AbstractItemTest {
     }
 
     @Test
-    public void testGetAncestorNegative() throws RepositoryException {
+    public void testGetAncestorNegative() {
         assertThrows(ItemNotFoundException.class, () -> this.node11.getAncestor(-1));
     }
 
     @Test
-    public void testGetAncestorTooDeep() throws RepositoryException {
+    public void testGetAncestorTooDeep() {
         assertThrows(ItemNotFoundException.class, () -> this.node11.getAncestor(3));
     }
 

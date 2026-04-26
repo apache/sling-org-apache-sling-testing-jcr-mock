@@ -18,7 +18,6 @@
  */
 package org.apache.sling.testing.mock.jcr;
 
-import javax.jcr.AccessDeniedException;
 import javax.jcr.ItemExistsException;
 import javax.jcr.ItemNotFoundException;
 import javax.jcr.NamespaceRegistry;
@@ -28,28 +27,27 @@ import javax.jcr.PathNotFoundException;
 import javax.jcr.Property;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
-import javax.jcr.UnsupportedRepositoryOperationException;
 import javax.jcr.security.AccessControlManager;
 
 import java.util.Set;
 
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.jackrabbit.api.JackrabbitSession;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class MockSessionTest {
+class MockSessionTest {
 
     @Test
-    public void testEmptySession() throws RepositoryException {
+    void testEmptySession() throws RepositoryException {
         Session session = MockJcr.newSession();
 
         Node rootNode = session.getRootNode();
@@ -59,7 +57,7 @@ public class MockSessionTest {
     }
 
     @Test
-    public void testRootGetNodes() throws RepositoryException {
+    void testRootGetNodes() throws RepositoryException {
         Session s = MockJcr.newSession();
         Node root = s.getRootNode();
         root.addNode("node1");
@@ -75,7 +73,7 @@ public class MockSessionTest {
     }
 
     @Test
-    public void testNodePropertyCreateRead() throws RepositoryException {
+    void testNodePropertyCreateRead() throws RepositoryException {
         Session session = MockJcr.newSession();
 
         Node rootNode = session.getNode("/");
@@ -131,7 +129,7 @@ public class MockSessionTest {
     }
 
     @Test
-    public void testNodeRemove() throws RepositoryException {
+    void testNodeRemove() throws RepositoryException {
         Session session = MockJcr.newSession();
 
         Node rootNode = session.getRootNode();
@@ -143,7 +141,7 @@ public class MockSessionTest {
     }
 
     @Test
-    public void testNodesWithSpecialNames() throws RepositoryException {
+    void testNodesWithSpecialNames() throws RepositoryException {
         Session session = MockJcr.newSession();
 
         Node rootNode = session.getRootNode();
@@ -166,7 +164,7 @@ public class MockSessionTest {
     }
 
     @Test
-    public void testItemsExists() throws RepositoryException {
+    void testItemsExists() throws RepositoryException {
         Session session = MockJcr.newSession();
 
         assertFalse(session.nodeExists("/node1"));
@@ -174,36 +172,36 @@ public class MockSessionTest {
         assertFalse(session.propertyExists("/node1/prop1"));
     }
 
-    @Test(expected = PathNotFoundException.class)
-    public void testNodeNotFoundException() throws RepositoryException {
+    @Test
+    void testNodeNotFoundException() {
         Session session = MockJcr.newSession();
 
-        session.getNode("/node1");
-    }
-
-    @Test(expected = PathNotFoundException.class)
-    public void testPropertyNotFoundException() throws RepositoryException {
-        Session session = MockJcr.newSession();
-
-        session.getProperty("/node1/prop1");
-    }
-
-    @Test(expected = PathNotFoundException.class)
-    public void testItemNotFoundException() throws RepositoryException {
-        Session session = MockJcr.newSession();
-
-        session.getItem("/node2");
-    }
-
-    @Test(expected = ItemNotFoundException.class)
-    public void testIdentifierFoundException() throws RepositoryException {
-        Session session = MockJcr.newSession();
-
-        session.getNodeByIdentifier("unknown");
+        assertThrows(PathNotFoundException.class, () -> session.getNode("/node1"));
     }
 
     @Test
-    public void testNamespaces() throws RepositoryException {
+    void testPropertyNotFoundException() {
+        Session session = MockJcr.newSession();
+
+        assertThrows(PathNotFoundException.class, () -> session.getProperty("/node1/prop1"));
+    }
+
+    @Test
+    void testItemNotFoundException() {
+        Session session = MockJcr.newSession();
+
+        assertThrows(PathNotFoundException.class, () -> session.getItem("/node2"));
+    }
+
+    @Test
+    void testIdentifierFoundException() {
+        Session session = MockJcr.newSession();
+
+        assertThrows(ItemNotFoundException.class, () -> session.getNodeByIdentifier("unknown"));
+    }
+
+    @Test
+    void testNamespaces() throws RepositoryException {
         Session session = MockJcr.newSession();
 
         // test initial namespaces
@@ -235,21 +233,21 @@ public class MockSessionTest {
     }
 
     @Test
-    public void testUserId() {
+    void testUserId() {
         Session session = MockJcr.newSession();
 
         assertEquals(MockJcr.DEFAULT_USER_ID, session.getUserID());
     }
 
     @Test
-    public void testWithCustomUserWorkspace() {
+    void testWithCustomUserWorkspace() {
         Session mySession = MockJcr.newSession("myUser", "myWorkspace");
         assertEquals("myUser", mySession.getUserID());
         assertEquals("myWorkspace", mySession.getWorkspace().getName());
     }
 
     @Test
-    public void testSaveRefresh() throws RepositoryException {
+    void testSaveRefresh() throws RepositoryException {
         Session session = MockJcr.newSession();
 
         // methods can be called without any effect
@@ -259,7 +257,7 @@ public class MockSessionTest {
     }
 
     @Test
-    public void testHasPendingChanges() throws RepositoryException {
+    void testHasPendingChanges() throws RepositoryException {
         Session session = MockJcr.newSession();
 
         Node foo = session.getRootNode().addNode("foo");
@@ -281,39 +279,39 @@ public class MockSessionTest {
     }
 
     @Test
-    public void testGetRepository() {
+    void testGetRepository() {
         Session session = MockJcr.newSession();
 
         assertNotNull(session.getRepository());
     }
 
     @Test
-    public void testCheckPermission() throws RepositoryException {
+    void testCheckPermission() throws RepositoryException {
         Session session = MockJcr.newSession();
 
         session.checkPermission("/any/path", "anyActions");
     }
 
     @Test
-    public void testPathsAreNormalized() throws RepositoryException {
+    void testPathsAreNormalized() throws RepositoryException {
         Session session = MockJcr.newSession();
         // 3.4.6 Passing Paths
         // When a JCR path is passed as an argument to a JCR method it may be normalized
         // or non-normalized and in standard or non-standard form.
 
         session.getRootNode().addNode("foo");
-        assertTrue("Requesting node /foo/ should succeed", session.nodeExists("/foo/"));
-        assertTrue("Requesting item /foo/ should succeed", session.itemExists("/foo/"));
+        assertTrue(session.nodeExists("/foo/"), "Requesting node /foo/ should succeed");
+        assertTrue(session.itemExists("/foo/"), "Requesting item /foo/ should succeed");
 
         session.getRootNode().addNode("bar/");
-        assertTrue("Creating /bar/ should succeed", session.nodeExists("/bar"));
+        assertTrue(session.nodeExists("/bar"), "Creating /bar/ should succeed");
 
         session.removeItem("/foo/");
-        assertFalse("Removing /foo/ should succeed", session.nodeExists("/foo"));
+        assertFalse(session.nodeExists("/foo"), "Removing /foo/ should succeed");
     }
 
     @Test
-    public void testNewState() throws RepositoryException {
+    void testNewState() throws RepositoryException {
         Session session = MockJcr.newSession();
 
         Node node = session.getRootNode().addNode("foo");
@@ -327,7 +325,7 @@ public class MockSessionTest {
     }
 
     @Test
-    public void testLogout() throws Exception {
+    void testLogout() {
         Session session = MockJcr.newSession();
 
         assertTrue(session.isLive());
@@ -336,21 +334,21 @@ public class MockSessionTest {
     }
 
     @Test
-    public void testMoveWhenSrcAbsPathIsNull() throws Exception {
+    void testMoveWhenSrcAbsPathIsNull() {
         Session session = MockJcr.newSession();
 
         assertThrows(NullPointerException.class, () -> session.move(null, "/node1/child2"));
     }
 
     @Test
-    public void testMoveWhenDestAbsPathIsNull() throws Exception {
+    void testMoveWhenDestAbsPathIsNull() {
         Session session = MockJcr.newSession();
 
         assertThrows(NullPointerException.class, () -> session.move("/node1/child1", null));
     }
 
     @Test
-    public void testMoveWhenSrcAbsPathDoesNotExist() throws Exception {
+    void testMoveWhenSrcAbsPathDoesNotExist() throws Exception {
         Session session = MockJcr.newSession();
         session.getRootNode().addNode("node1");
 
@@ -358,7 +356,7 @@ public class MockSessionTest {
     }
 
     @Test
-    public void testMoveWhenDestAbsPathAlreadyExists() throws Exception {
+    void testMoveWhenDestAbsPathAlreadyExists() throws Exception {
         Session session = MockJcr.newSession();
         Node node1 = session.getRootNode().addNode("node1");
         node1.addNode("child1");
@@ -368,7 +366,7 @@ public class MockSessionTest {
     }
 
     @Test
-    public void testMoveWhenDestAbsPathHasIndexInName() throws Exception {
+    void testMoveWhenDestAbsPathHasIndexInName() throws Exception {
         Session session = MockJcr.newSession();
         Node node1 = session.getRootNode().addNode("node1");
         node1.addNode("child1");
@@ -377,7 +375,7 @@ public class MockSessionTest {
     }
 
     @Test
-    public void testMoveWhenDestParentDoesNotExist() throws Exception {
+    void testMoveWhenDestParentDoesNotExist() throws Exception {
         Session session = MockJcr.newSession();
         Node node1 = session.getRootNode().addNode("node1");
         node1.addNode("child1");
@@ -386,7 +384,7 @@ public class MockSessionTest {
     }
 
     @Test
-    public void testMoveWhenSrcAbsPathIsNotNode() throws Exception {
+    void testMoveWhenSrcAbsPathIsNotNode() throws Exception {
         Session session = MockJcr.newSession();
         Node node1 = session.getRootNode().addNode("node1");
         node1.setProperty("child1", "value1");
@@ -395,7 +393,7 @@ public class MockSessionTest {
     }
 
     @Test
-    public void testMove() throws Exception {
+    void testMove() throws Exception {
         Session session = MockJcr.newSession();
         Node node1 = session.getRootNode().addNode("node1");
         Node child1 = node1.addNode("child1");
@@ -416,7 +414,7 @@ public class MockSessionTest {
     // --- jackrabbit session operations ---
 
     @Test
-    public void testGetItemOrNull() throws RepositoryException {
+    void testGetItemOrNull() throws RepositoryException {
         JackrabbitSession s = (JackrabbitSession) MockJcr.newSession();
         Node node1 = s.getRootNode().addNode("node1");
         Node child1 = node1.addNode("child1");
@@ -433,7 +431,7 @@ public class MockSessionTest {
     }
 
     @Test
-    public void testGetNodeOrNull() throws RepositoryException {
+    void testGetNodeOrNull() throws RepositoryException {
         JackrabbitSession s = (JackrabbitSession) MockJcr.newSession();
         Node node1 = s.getRootNode().addNode("node1");
         Node child1 = node1.addNode("child1");
@@ -444,7 +442,7 @@ public class MockSessionTest {
     }
 
     @Test
-    public void testGetPropertyOrNull() throws RepositoryException {
+    void testGetPropertyOrNull() throws RepositoryException {
         JackrabbitSession s = (JackrabbitSession) MockJcr.newSession();
         Node node1 = s.getRootNode().addNode("node1");
         Node child1 = node1.addNode("child1");
@@ -456,21 +454,19 @@ public class MockSessionTest {
     }
 
     @Test
-    public void testGetPrincipalManager()
-            throws AccessDeniedException, UnsupportedRepositoryOperationException, RepositoryException {
+    void testGetPrincipalManager() throws RepositoryException {
         JackrabbitSession s = (JackrabbitSession) MockJcr.newSession();
         assertNotNull(s.getPrincipalManager());
     }
 
     @Test
-    public void testGetUserManager()
-            throws AccessDeniedException, UnsupportedRepositoryOperationException, RepositoryException {
+    void testGetUserManager() throws RepositoryException {
         JackrabbitSession s = (JackrabbitSession) MockJcr.newSession();
         assertNotNull(s.getUserManager());
     }
 
     @Test
-    public void testHasPermission() throws RepositoryException {
+    void testHasPermission() {
         JackrabbitSession s = (JackrabbitSession) MockJcr.newSession();
         assertThrows(
                 UnsupportedOperationException.class,
@@ -479,9 +475,9 @@ public class MockSessionTest {
     }
 
     @Test
-    public void testSetAccessControlManager() throws RepositoryException {
+    void testSetAccessControlManager() throws RepositoryException {
         Session s = MockJcr.newSession();
-        assertThrows(UnsupportedOperationException.class, () -> s.getAccessControlManager());
+        assertThrows(UnsupportedOperationException.class, s::getAccessControlManager);
 
         AccessControlManager mockAccessControlManager = Mockito.mock(AccessControlManager.class);
         MockJcr.setAccessControlManager(s, mockAccessControlManager);

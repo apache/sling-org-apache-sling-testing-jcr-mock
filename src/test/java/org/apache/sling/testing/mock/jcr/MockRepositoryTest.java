@@ -25,29 +25,29 @@ import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.jcr.SimpleCredentials;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
-public class MockRepositoryTest {
+class MockRepositoryTest {
 
     private static final String USER_NAME = "user";
     private static final char[] PASSWORD = "pwd".toCharArray();
 
     private Repository repository;
 
-    @Before
-    public void setUp() {
+    @BeforeEach
+    void setUp() {
         repository = MockJcr.newRepository();
     }
 
     @Test
-    public void testLogin() throws RepositoryException {
+    void testLogin() throws RepositoryException {
         assertNotNull(repository.login());
         assertNotNull(repository.login(new SimpleCredentials(USER_NAME, PASSWORD)));
         assertNotNull(repository.login(MockJcr.DEFAULT_WORKSPACE));
@@ -55,7 +55,7 @@ public class MockRepositoryTest {
     }
 
     @Test
-    public void testDescriptor() {
+    void testDescriptor() {
         assertEquals(0, repository.getDescriptorKeys().length);
         assertNull(repository.getDescriptor("test"));
         assertNull(repository.getDescriptorValue("test"));
@@ -65,7 +65,7 @@ public class MockRepositoryTest {
     }
 
     @Test
-    public void testMultipleSessions() throws RepositoryException {
+    void testMultipleSessions() throws RepositoryException {
         Session session1 = repository.login();
         Session session2 = repository.login();
 

@@ -25,11 +25,11 @@ import java.io.IOException;
 
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.jackrabbit.commons.cnd.ParseException;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  *
@@ -58,7 +58,7 @@ public class MockNodeTypeAllModeTest extends AbstractMockNodeTypeTest {
     @Test
     public void testGetChildNodeDefinitions() throws RepositoryException {
         NodeType ntFolder = nodeTypeManager.getNodeType(JcrConstants.NT_FOLDER);
-        assertThrows(UnsupportedOperationException.class, () -> ntFolder.getChildNodeDefinitions());
+        assertThrows(UnsupportedOperationException.class, ntFolder::getChildNodeDefinitions);
     }
 
     /**
@@ -67,7 +67,7 @@ public class MockNodeTypeAllModeTest extends AbstractMockNodeTypeTest {
     @Test
     public void testGetDeclaredChildNodeDefinitions() throws RepositoryException {
         NodeType ntFolder = nodeTypeManager.getNodeType(JcrConstants.NT_FOLDER);
-        assertThrows(UnsupportedOperationException.class, () -> ntFolder.getDeclaredChildNodeDefinitions());
+        assertThrows(UnsupportedOperationException.class, ntFolder::getDeclaredChildNodeDefinitions);
     }
 
     /**
@@ -76,7 +76,7 @@ public class MockNodeTypeAllModeTest extends AbstractMockNodeTypeTest {
     @Test
     public void testGetDeclaredPropertyDefinitions() throws RepositoryException {
         NodeType ntBase = nodeTypeManager.getNodeType(JcrConstants.NT_BASE);
-        assertThrows(UnsupportedOperationException.class, () -> ntBase.getDeclaredPropertyDefinitions());
+        assertThrows(UnsupportedOperationException.class, ntBase::getDeclaredPropertyDefinitions);
     }
 
     /**
@@ -85,7 +85,7 @@ public class MockNodeTypeAllModeTest extends AbstractMockNodeTypeTest {
     @Test
     public void testGetDeclaredSupertypes() throws RepositoryException {
         NodeType ntFolder = nodeTypeManager.getNodeType(JcrConstants.NT_FOLDER);
-        assertThrows(UnsupportedOperationException.class, () -> ntFolder.getDeclaredSupertypes());
+        assertThrows(UnsupportedOperationException.class, ntFolder::getDeclaredSubtypes);
     }
 
     /**
@@ -94,7 +94,7 @@ public class MockNodeTypeAllModeTest extends AbstractMockNodeTypeTest {
     @Test
     public void testGetPrimaryItemName() throws RepositoryException {
         NodeType ntFolder = nodeTypeManager.getNodeType(JcrConstants.NT_FOLDER);
-        assertThrows(UnsupportedOperationException.class, () -> ntFolder.getPrimaryItemName());
+        assertThrows(UnsupportedOperationException.class, ntFolder::getPrimaryItemName);
     }
 
     /**
@@ -103,7 +103,7 @@ public class MockNodeTypeAllModeTest extends AbstractMockNodeTypeTest {
     @Test
     public void testGetPropertyDefinitions() throws RepositoryException {
         NodeType ntBase = nodeTypeManager.getNodeType(JcrConstants.NT_FOLDER);
-        assertThrows(UnsupportedOperationException.class, () -> ntBase.getPropertyDefinitions());
+        assertThrows(UnsupportedOperationException.class, ntBase::getPropertyDefinitions);
     }
 
     /**
@@ -112,7 +112,7 @@ public class MockNodeTypeAllModeTest extends AbstractMockNodeTypeTest {
     @Test
     public void testGetSupertypes() throws RepositoryException {
         NodeType ntFolder = nodeTypeManager.getNodeType(JcrConstants.NT_FOLDER);
-        assertThrows(UnsupportedOperationException.class, () -> ntFolder.getSupertypes());
+        assertThrows(UnsupportedOperationException.class, ntFolder::getSupertypes);
     }
 
     /**
@@ -121,7 +121,7 @@ public class MockNodeTypeAllModeTest extends AbstractMockNodeTypeTest {
     @Test
     public void testIsMixin() throws RepositoryException {
         NodeType ntFolder = nodeTypeManager.getNodeType(JcrConstants.NT_FOLDER);
-        assertThrows(UnsupportedOperationException.class, () -> ntFolder.isMixin());
+        assertThrows(UnsupportedOperationException.class, ntFolder::isMixin);
     }
 
     /**
@@ -130,7 +130,7 @@ public class MockNodeTypeAllModeTest extends AbstractMockNodeTypeTest {
     @Test
     public void testGetDeclaredSubtypes() throws RepositoryException {
         NodeType mixCreated = nodeTypeManager.getNodeType("mix:created");
-        assertThrows(UnsupportedOperationException.class, () -> mixCreated.getDeclaredSubtypes());
+        assertThrows(UnsupportedOperationException.class, mixCreated::getDeclaredSubtypes);
     }
 
     /**
@@ -139,7 +139,7 @@ public class MockNodeTypeAllModeTest extends AbstractMockNodeTypeTest {
     @Test
     public void testGetSubtypes() throws RepositoryException {
         NodeType mixCreated = nodeTypeManager.getNodeType("mix:created");
-        assertThrows(UnsupportedOperationException.class, () -> mixCreated.getSubtypes());
+        assertThrows(UnsupportedOperationException.class, mixCreated::getSubtypes);
     }
 
     /**
@@ -148,7 +148,7 @@ public class MockNodeTypeAllModeTest extends AbstractMockNodeTypeTest {
     @Test
     public void testGetDeclaredSupertypeNames() throws RepositoryException {
         NodeType ntFolder = nodeTypeManager.getNodeType(JcrConstants.NT_FOLDER);
-        assertThrows(UnsupportedOperationException.class, () -> ntFolder.getDeclaredSupertypeNames());
+        assertThrows(UnsupportedOperationException.class, ntFolder::getDeclaredSupertypeNames);
     }
 
     /**
@@ -157,7 +157,7 @@ public class MockNodeTypeAllModeTest extends AbstractMockNodeTypeTest {
     @Test
     public void testIsAbstract() throws RepositoryException {
         NodeType ntFolder = nodeTypeManager.getNodeType(JcrConstants.NT_FOLDER);
-        assertThrows(UnsupportedOperationException.class, () -> ntFolder.isAbstract());
+        assertThrows(UnsupportedOperationException.class, ntFolder::isAbstract);
     }
 
     /**
@@ -166,6 +166,6 @@ public class MockNodeTypeAllModeTest extends AbstractMockNodeTypeTest {
     @Test
     public void testIsQueryable() throws RepositoryException {
         NodeType ntFolder = nodeTypeManager.getNodeType(JcrConstants.NT_FOLDER);
-        assertThrows(UnsupportedOperationException.class, () -> ntFolder.isQueryable());
+        assertThrows(UnsupportedOperationException.class, ntFolder::isQueryable);
     }
 }

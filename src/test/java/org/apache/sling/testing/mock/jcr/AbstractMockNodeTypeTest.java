@@ -30,15 +30,15 @@ import java.io.IOException;
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.jackrabbit.commons.cnd.ParseException;
 import org.apache.jackrabbit.value.ValueFactoryImpl;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
  *
@@ -47,7 +47,7 @@ public abstract class AbstractMockNodeTypeTest {
     protected Session session;
     protected NodeTypeManager nodeTypeManager;
 
-    @Before
+    @BeforeEach
     public void setUp() throws RepositoryException, ParseException, IOException {
         this.session = MockJcr.newSession();
         loadNodeTypes();
@@ -134,7 +134,6 @@ public abstract class AbstractMockNodeTypeTest {
     /**
      * Test method for {@link org.apache.sling.testing.mock.jcr.MockNodeType#canRemoveItem(java.lang.String)}.
      */
-    @SuppressWarnings("deprecation")
     @Deprecated
     @Test
     public void testCanRemoveItem() throws RepositoryException {

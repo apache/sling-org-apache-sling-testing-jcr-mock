@@ -30,21 +30,21 @@ import java.io.Reader;
 
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.jackrabbit.commons.cnd.ParseException;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class MockNodeOnlyRegisteredTypesTest {
+class MockNodeOnlyRegisteredTypesTest {
     protected Session session;
     protected Node rootNode;
     protected Node node1;
 
-    @Before
-    public void setUp() throws RepositoryException, IOException, ParseException {
+    @BeforeEach
+    void setUp() throws RepositoryException, IOException, ParseException {
         this.session = MockJcr.newSession();
         // load the node types and switch the nodetypemanager to ONLY_REGISTERED mode
         try (Reader reader = new InputStreamReader(getClass().getResourceAsStream("test_nodetypes.cnd"))) {
@@ -56,7 +56,7 @@ public class MockNodeOnlyRegisteredTypesTest {
     }
 
     @Test
-    public void testAutocreatedItemsForPrimaryType() throws RepositoryException {
+    void testAutocreatedItemsForPrimaryType() throws RepositoryException {
         Node auto1 = this.node1.addNode("auto1", "nt:autocreatedChildAndProp");
         assertTrue(auto1.hasProperty("prop1"));
         assertTrue(auto1.hasProperty("prop2"));
@@ -64,7 +64,7 @@ public class MockNodeOnlyRegisteredTypesTest {
     }
 
     @Test
-    public void testAutocreatedItemsForMixin() throws RepositoryException {
+    void testAutocreatedItemsForMixin() throws RepositoryException {
         Node auto1 = this.node1.addNode("auto1");
         auto1.addMixin("mix:autocreatedChildAndProp");
         assertTrue(auto1.hasProperty("prop1"));
@@ -75,7 +75,7 @@ public class MockNodeOnlyRegisteredTypesTest {
     }
 
     @Test
-    public void testGetDefinition() throws RepositoryException {
+    void testGetDefinition() throws RepositoryException {
         Node def1 = this.node1.addNode("def1", JcrConstants.NT_FOLDER);
         NodeDefinition definition1 = def1.getDefinition();
         assertNotNull(definition1);

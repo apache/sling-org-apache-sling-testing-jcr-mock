@@ -18,16 +18,16 @@
  */
 package org.apache.sling.testing.mock.jcr;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
-public class ResourceUtilTest {
+class ResourceUtilTest {
 
     @Test
-    public void testResolveRelativeSegments() {
+    void testResolveRelativeSegments() {
 
         assertEquals("/", ResourceUtil.normalize("/"));
         assertEquals("/", ResourceUtil.normalize("///"));
@@ -108,7 +108,7 @@ public class ResourceUtilTest {
     }
 
     @Test
-    public void testResolveRelativeSegmentsRelative() {
+    void testResolveRelativeSegmentsRelative() {
         assertEquals("a/b", ResourceUtil.normalize("a/b"));
         assertEquals("a", ResourceUtil.normalize("a/b/.."));
 
@@ -125,7 +125,7 @@ public class ResourceUtilTest {
     }
 
     @Test
-    public void testGetParent() {
+    void testGetParent() {
         assertNull(ResourceUtil.getParent("/"));
         assertNull(ResourceUtil.getParent("/.."));
 
@@ -142,7 +142,7 @@ public class ResourceUtilTest {
     }
 
     @Test
-    public void testGetName() {
+    void testGetName() {
         assertEquals("", ResourceUtil.getName("/"));
         assertEquals("", ResourceUtil.getName("/a/.."));
 
@@ -161,7 +161,7 @@ public class ResourceUtilTest {
     }
 
     @Test
-    public void testGetParentLevel() throws Exception {
+    void testGetParentLevel() {
         boolean caughtNullPointerException = false;
         try {
             ResourceUtil.getParent(null, 4);

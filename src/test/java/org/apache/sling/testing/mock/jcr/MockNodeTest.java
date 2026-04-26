@@ -40,21 +40,20 @@ import java.util.Map;
 
 import org.apache.jackrabbit.JcrConstants;
 import org.apache.jackrabbit.commons.cnd.ParseException;
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class MockNodeTest extends AbstractItemTest {
 
     @Test
-    public void testGetNodes() throws RepositoryException {
+    void testGetNodes() throws RepositoryException {
         final Node node111 = this.node11.addNode("node111");
 
         NodeIterator nodes = this.node1.getNodes();
@@ -78,7 +77,7 @@ public class MockNodeTest extends AbstractItemTest {
     }
 
     @Test
-    public void testGetProperties() throws RepositoryException {
+    void testGetProperties() throws RepositoryException {
         PropertyIterator properties = this.node1.getProperties();
         Map<String, Property> props = propertiesToMap(properties);
         assertEquals(2, properties.getSize());
@@ -109,7 +108,7 @@ public class MockNodeTest extends AbstractItemTest {
     }
 
     @Test
-    public void testPrimaryType() throws RepositoryException {
+    void testPrimaryType() throws RepositoryException {
         assertEquals("nt:unstructured", this.node1.getPrimaryNodeType().getName());
         assertEquals(
                 "nt:unstructured", this.node1.getProperty("jcr:primaryType").getString());
@@ -124,42 +123,42 @@ public class MockNodeTest extends AbstractItemTest {
     }
 
     @Test
-    public void testSetPrimaryType() throws RepositoryException {
+    void testSetPrimaryType() throws RepositoryException {
         this.node1.setPrimaryType("nt:folder");
         assertEquals("nt:folder", this.node1.getPrimaryNodeType().getName());
     }
 
-    @Test(expected = NoSuchNodeTypeException.class)
-    public void testSetBlankPrimaryType() throws RepositoryException {
-        this.node1.setPrimaryType(" ");
+    @Test
+    void testSetBlankPrimaryType() {
+        assertThrows(NoSuchNodeTypeException.class, () -> this.node1.setPrimaryType(" "));
     }
 
     @Test
-    public void testIsNode() {
+    void testIsNode() {
         assertTrue(this.node1.isNode());
         assertFalse(this.prop1.isNode());
     }
 
     @Test
-    public void testHasNode() throws RepositoryException {
+    void testHasNode() throws RepositoryException {
         assertTrue(this.node1.hasNode("node11"));
         assertFalse(this.node1.hasNode("node25"));
     }
 
     @Test
-    public void testHasProperty() throws RepositoryException {
+    void testHasProperty() throws RepositoryException {
         assertTrue(this.node1.hasProperty("prop1"));
         assertFalse(this.node1.hasProperty("prop25"));
     }
 
     @SuppressWarnings("deprecation")
     @Test
-    public void testGetUUID() throws RepositoryException {
+    void testGetUUID() throws RepositoryException {
         assertEquals(this.node1.getIdentifier(), this.node1.getUUID());
     }
 
     @Test
-    public void testGetPrimaryItem() throws RepositoryException {
+    void testGetPrimaryItem() throws RepositoryException {
         Node dataParent = this.node1.addNode("dataParent");
         Property dataProperty = dataParent.setProperty(JcrConstants.JCR_DATA, "data");
         assertEquals(dataProperty, dataParent.getPrimaryItem());
@@ -169,20 +168,20 @@ public class MockNodeTest extends AbstractItemTest {
         assertEquals(contentNode, contentParent.getPrimaryItem());
     }
 
-    @Test(expected = ItemNotFoundException.class)
-    public void testGetPrimaryItemNotFound() throws RepositoryException {
-        this.node1.getPrimaryItem();
+    @Test
+    void testGetPrimaryItemNotFound() {
+        assertThrows(ItemNotFoundException.class, () -> this.node1.getPrimaryItem());
     }
 
     @Test
-    public void testNtFileNode() throws RepositoryException {
+    void testNtFileNode() throws RepositoryException {
         Node ntFile = this.session.getRootNode().addNode("testFile", JcrConstants.NT_FILE);
         assertNotNull(ntFile.getProperty(JcrConstants.JCR_CREATED).getDate());
         assertNotNull(ntFile.getProperty("jcr:createdBy").getString());
     }
 
     @Test
-    public void testGetMixinNodeTypes() throws Exception {
+    void testGetMixinNodeTypes() throws Exception {
         node1.addMixin("mix:referenceable");
         node1.addMixin("mix:taggable");
         assertEquals(2, node1.getMixinNodeTypes().length);
@@ -190,12 +189,12 @@ public class MockNodeTest extends AbstractItemTest {
     }
 
     @Test
-    public void testGetMixinNodeNoMixinTypes() throws RepositoryException {
+    void testGetMixinNodeNoMixinTypes() throws RepositoryException {
         assertEquals(0, node1.getMixinNodeTypes().length);
     }
 
     @Test
-    public void testIsModified() throws RepositoryException {
+    void testIsModified() throws RepositoryException {
         Node foo = this.session.getRootNode().addNode("foo");
         // according to "if this Item has been saved but has subsequently been modified through
         // the current session.
@@ -209,7 +208,7 @@ public class MockNodeTest extends AbstractItemTest {
     }
 
     @Test
-    public void testOrderBefore() throws RepositoryException {
+    void testOrderBefore() throws RepositoryException {
         Node foo = this.session.getRootNode().addNode("foo");
         this.session.save();
         foo.addNode("one");
@@ -217,15 +216,15 @@ public class MockNodeTest extends AbstractItemTest {
         foo.addNode("three");
         session.save();
         assertArrayEquals(
-                "Expected nodes order mismatch", new String[] {"one", "two", "three"}, getNodeNames(foo.getNodes()));
+                new String[] {"one", "two", "three"}, getNodeNames(foo.getNodes()), "Expected nodes order mismatch");
         foo.orderBefore("three", "two");
         session.save();
         assertArrayEquals(
-                "Expected nodes order mismatch", new String[] {"one", "three", "two"}, getNodeNames(foo.getNodes()));
+                new String[] {"one", "three", "two"}, getNodeNames(foo.getNodes()), "Expected nodes order mismatch");
         foo.orderBefore("one", null);
         session.save();
         assertArrayEquals(
-                "Expected nodes order mismatch", new String[] {"three", "two", "one"}, getNodeNames(foo.getNodes()));
+                new String[] {"three", "two", "one"}, getNodeNames(foo.getNodes()), "Expected nodes order mismatch");
     }
 
     /**
@@ -233,7 +232,7 @@ public class MockNodeTest extends AbstractItemTest {
      * have a common prefix.
      */
     @Test
-    public void testOrderBeforeWithCommonPrefix() throws RepositoryException {
+    void testOrderBeforeWithCommonPrefix() throws RepositoryException {
         Node foo = this.session.getRootNode().addNode("foo");
         this.session.save();
         foo.addNode("child100");
@@ -241,28 +240,28 @@ public class MockNodeTest extends AbstractItemTest {
         foo.addNode("child1");
         session.save();
         assertArrayEquals(
-                "Expected nodes order mismatch",
                 new String[] {"child100", "child10", "child1"},
-                getNodeNames(foo.getNodes()));
+                getNodeNames(foo.getNodes()),
+                "Expected nodes order mismatch");
         foo.orderBefore("child10", "child100");
         session.save();
         assertArrayEquals(
-                "Expected nodes order mismatch",
                 new String[] {"child10", "child100", "child1"},
-                getNodeNames(foo.getNodes()));
+                getNodeNames(foo.getNodes()),
+                "Expected nodes order mismatch");
         foo.orderBefore("child10", null);
         session.save();
         assertArrayEquals(
-                "Expected nodes order mismatch",
                 new String[] {"child100", "child1", "child10"},
-                getNodeNames(foo.getNodes()));
+                getNodeNames(foo.getNodes()),
+                "Expected nodes order mismatch");
     }
 
     @Test
-    public void testNodeDefinition() throws RepositoryException {
+    void testNodeDefinition() throws RepositoryException {
         Node node1 = this.session.getRootNode().getNode("node1");
         List<Node> unprotectedNodes = getUnprotectedChildNodes(node1);
-        assertEquals("Should have one unprotected child node", 1, unprotectedNodes.size());
+        assertEquals(1, unprotectedNodes.size(), "Should have one unprotected child node");
     }
 
     public static List<Node> getUnprotectedChildNodes(Node src) throws RepositoryException {
@@ -284,14 +283,14 @@ public class MockNodeTest extends AbstractItemTest {
             try {
                 names.add(((Node) node).getName());
             } catch (RepositoryException e) {
-                Assert.fail(e.getMessage());
+                fail(e.getMessage());
             }
         });
         return names.toArray(new String[names.size()]);
     }
 
     @Test
-    public void addMixinTest() throws RepositoryException {
+    void addMixinTest() throws RepositoryException {
         node1.addMixin("mix:referenceable");
         assertEquals(
                 "mix:referenceable",
@@ -299,12 +298,12 @@ public class MockNodeTest extends AbstractItemTest {
     }
 
     @Test
-    public void addBlankMixinTest() throws RepositoryException {
+    void addBlankMixinTest() {
         assertThrows(NoSuchNodeTypeException.class, () -> node1.addMixin(""));
     }
 
     @Test
-    public void addMixinsTest() throws RepositoryException {
+    void addMixinsTest() throws RepositoryException {
         node1.addMixin("mix:referenceable");
         node1.addMixin("mix:taggable");
         node1.addMixin("mix:mixin");
@@ -312,7 +311,7 @@ public class MockNodeTest extends AbstractItemTest {
     }
 
     @Test
-    public void removeMixinTest() throws RepositoryException {
+    void removeMixinTest() throws RepositoryException {
         node1.addMixin("mix:taggable");
         node1.addMixin("mix:mixin");
         node1.removeMixin("mix:taggable");
@@ -323,7 +322,7 @@ public class MockNodeTest extends AbstractItemTest {
     }
 
     @Test
-    public void removeBlankMixin() {
+    void removeBlankMixin() {
         assertThrows(NoSuchNodeTypeException.class, () -> node1.removeMixin(""));
     }
 
@@ -331,7 +330,7 @@ public class MockNodeTest extends AbstractItemTest {
      * Test SLING-11786
      */
     @Test
-    public void isNodeTypeTest() throws RepositoryException {
+    void isNodeTypeTest() throws RepositoryException {
         // check primary type
         assertTrue(node1.isNodeType(node1.getPrimaryNodeType().getName()));
 
@@ -344,24 +343,24 @@ public class MockNodeTest extends AbstractItemTest {
     }
 
     @Test
-    public void testIsSameForNodeComparedToItself() throws RepositoryException {
+    void testIsSameForNodeComparedToItself() throws RepositoryException {
         assertTrue(this.node1.isSame(this.node1));
     }
 
     @Test
-    public void testIsSameForNodeComparedToSameNode() throws RepositoryException {
+    void testIsSameForNodeComparedToSameNode() throws RepositoryException {
         // a different object referencing the same node
         Node node1ref = this.rootNode.getNode("node1");
         assertTrue(this.node1.isSame(node1ref));
     }
 
     @Test
-    public void testIsSameForNodeComparedToDifferentNode() throws RepositoryException {
+    void testIsSameForNodeComparedToDifferentNode() throws RepositoryException {
         assertFalse(this.node1.isSame(this.node11));
     }
 
     @Test
-    public void testIsSameForNodeFromDifferentRepository() throws RepositoryException {
+    void testIsSameForNodeFromDifferentRepository() throws RepositoryException {
         Repository otherRepository = MockJcr.newRepository();
         Session otherSession = otherRepository.login();
         Node otherNode1 = otherSession.getRootNode().addNode("node1");
@@ -369,7 +368,7 @@ public class MockNodeTest extends AbstractItemTest {
     }
 
     @Test
-    public void testIsSameForNodeFromDifferentWorkspace() throws RepositoryException {
+    void testIsSameForNodeFromDifferentWorkspace() throws RepositoryException {
         Session otherSession = session.getRepository().login("otherWorkspace");
         Node otherRootNode = otherSession.getRootNode();
         Node otherNode1 = otherRootNode.addNode("node1");
@@ -378,7 +377,7 @@ public class MockNodeTest extends AbstractItemTest {
     }
 
     @Test
-    public void testAccept() throws RepositoryException {
+    void testAccept() throws RepositoryException {
         Node foo = this.session.getRootNode().addNode("foo");
         foo.addNode("child100");
         foo.addNode("child10");
@@ -431,8 +430,7 @@ public class MockNodeTest extends AbstractItemTest {
      * SLING-11874 auto-set created/lastModified prop values when appropriate
      */
     @Test
-    public void testAddNodeCreatesSystemGeneratedAutoPropertyValues()
-            throws RepositoryException, IOException, ParseException {
+    void testAddNodeCreatesSystemGeneratedAutoPropertyValues() throws RepositoryException, IOException, ParseException {
         loadNodeTypes();
         Node foo = this.session.getRootNode().addNode("foo", JcrConstants.NT_HIERARCHYNODE);
         Node versionFoo = this.session.getRootNode().addNode("versionFoo", JcrConstants.NT_VERSION);
@@ -447,7 +445,7 @@ public class MockNodeTest extends AbstractItemTest {
      * SLING-11874 auto-set created/lastModified prop values when appropriate
      */
     @Test
-    public void testAddMixinCreatesSystemGeneratedAutoPropertyValues()
+    void testAddMixinCreatesSystemGeneratedAutoPropertyValues()
             throws RepositoryException, IOException, ParseException {
         loadNodeTypes();
 
@@ -473,7 +471,7 @@ public class MockNodeTest extends AbstractItemTest {
      * SLING-11874 To test created and lastModified props are not autocreated when not declared in their mixins
      */
     @Test
-    public void testAddNodeDoesNotCreateNonMixinCreatedAndLastModified()
+    void testAddNodeDoesNotCreateNonMixinCreatedAndLastModified()
             throws RepositoryException, IOException, ParseException {
         loadNodeTypes();
 

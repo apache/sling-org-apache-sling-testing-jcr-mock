@@ -38,18 +38,18 @@ import java.util.List;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.jackrabbit.value.BinaryValue;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.assertArrayEquals;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertArrayEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class MockPropertyTest extends AbstractItemTest {
+class MockPropertyTest extends AbstractItemTest {
 
     @Test
-    public void testRemove() throws RepositoryException {
+    void testRemove() throws RepositoryException {
         this.node1.setProperty("prop1", "value1");
         Property prop1 = this.node1.getProperty("prop1");
         assertEquals("value1", prop1.getString());
@@ -59,7 +59,7 @@ public class MockPropertyTest extends AbstractItemTest {
     }
 
     @Test
-    public void testString() throws RepositoryException {
+    void testString() throws RepositoryException {
         this.node1.setProperty("prop1", "value1");
         Property prop1 = this.node1.getProperty("prop1");
         assertEquals("value1", prop1.getString());
@@ -81,7 +81,7 @@ public class MockPropertyTest extends AbstractItemTest {
     }
 
     @Test
-    public void testStringSetNullViaNode() throws RepositoryException {
+    void testStringSetNullViaNode() throws RepositoryException {
         this.node1.setProperty("prop1", "value1");
 
         this.node1.setProperty("prop1", (String) null);
@@ -89,7 +89,7 @@ public class MockPropertyTest extends AbstractItemTest {
     }
 
     @Test
-    public void testStringSetNullViaProp() throws RepositoryException {
+    void testStringSetNullViaProp() throws RepositoryException {
         this.node1.setProperty("prop1", "value1");
 
         this.node1.getProperty("prop1").setValue((String) null);
@@ -97,21 +97,21 @@ public class MockPropertyTest extends AbstractItemTest {
     }
 
     @Test
-    public void testStringArray() throws RepositoryException {
+    void testStringArray() throws RepositoryException {
         String[] value1 = new String[] {"aaa", "bbb"};
         this.node1.setProperty("prop1", value1);
         Property prop1 = this.node1.getProperty("prop1");
 
         Value[] values = prop1.getValues();
         for (int i = 0; i < values.length; i++) {
-            assertEquals("value #" + i, value1[i], values[i].getString());
+            assertEquals(value1[i], values[i].getString(), "value #" + i);
         }
 
         String[] value2 = new String[] {"cc"};
         prop1.setValue(value2);
         values = prop1.getValues();
         for (int i = 0; i < values.length; i++) {
-            assertEquals("value #" + i, value2[i], values[i].getString());
+            assertEquals(value2[i], values[i].getString(), "value #" + i);
         }
 
         assertTrue(prop1.isMultiple());
@@ -120,7 +120,7 @@ public class MockPropertyTest extends AbstractItemTest {
     }
 
     @Test
-    public void testStringArraySetNullViaNode() throws RepositoryException {
+    void testStringArraySetNullViaNode() throws RepositoryException {
         String[] value1 = new String[] {"aaa", "bbb"};
         this.node1.setProperty("prop1", value1);
 
@@ -129,7 +129,7 @@ public class MockPropertyTest extends AbstractItemTest {
     }
 
     @Test
-    public void testStringArraySetNullViaProp() throws RepositoryException {
+    void testStringArraySetNullViaProp() throws RepositoryException {
         String[] value1 = new String[] {"aaa", "bbb"};
         this.node1.setProperty("prop1", value1);
 
@@ -138,7 +138,7 @@ public class MockPropertyTest extends AbstractItemTest {
     }
 
     @Test
-    public void testBoolean() throws RepositoryException {
+    void testBoolean() throws RepositoryException {
         this.node1.setProperty("prop1", true);
         Property prop1 = this.node1.getProperty("prop1");
         assertEquals(true, prop1.getBoolean());
@@ -150,7 +150,7 @@ public class MockPropertyTest extends AbstractItemTest {
     }
 
     @Test
-    public void testDouble() throws RepositoryException {
+    void testDouble() throws RepositoryException {
         this.node1.setProperty("prop1", 1.5d);
         Property prop1 = this.node1.getProperty("prop1");
         assertEquals(1.5d, prop1.getDouble(), 0.001d);
@@ -162,7 +162,7 @@ public class MockPropertyTest extends AbstractItemTest {
     }
 
     @Test
-    public void testLong() throws RepositoryException {
+    void testLong() throws RepositoryException {
         this.node1.setProperty("prop1", 5L);
         Property prop1 = this.node1.getProperty("prop1");
         assertEquals(5L, prop1.getLong());
@@ -174,7 +174,7 @@ public class MockPropertyTest extends AbstractItemTest {
     }
 
     @Test
-    public void testBigDecimal() throws RepositoryException {
+    void testBigDecimal() throws RepositoryException {
         this.node1.setProperty("prop1", new BigDecimal("1.5"));
         Property prop1 = this.node1.getProperty("prop1");
         assertEquals(new BigDecimal("1.5"), prop1.getDecimal());
@@ -186,7 +186,7 @@ public class MockPropertyTest extends AbstractItemTest {
     }
 
     @Test
-    public void testBigDecimalSetNullViaNode() throws RepositoryException {
+    void testBigDecimalSetNullViaNode() throws RepositoryException {
         this.node1.setProperty("prop1", new BigDecimal("1.5"));
 
         this.node1.setProperty("prop1", (BigDecimal) null);
@@ -194,7 +194,7 @@ public class MockPropertyTest extends AbstractItemTest {
     }
 
     @Test
-    public void testBigDecimalSetNullViaProp() throws RepositoryException {
+    void testBigDecimalSetNullViaProp() throws RepositoryException {
         this.node1.setProperty("prop1", new BigDecimal("1.5"));
 
         this.node1.getProperty("prop1").setValue((BigDecimal) null);
@@ -202,7 +202,7 @@ public class MockPropertyTest extends AbstractItemTest {
     }
 
     @Test
-    public void testCalendar() throws RepositoryException {
+    void testCalendar() throws RepositoryException {
         Calendar value1 = Calendar.getInstance();
 
         this.node1.setProperty("prop1", value1);
@@ -219,7 +219,7 @@ public class MockPropertyTest extends AbstractItemTest {
     }
 
     @Test
-    public void testCalendarSetNullViaNode() throws RepositoryException {
+    void testCalendarSetNullViaNode() throws RepositoryException {
         Calendar value1 = Calendar.getInstance();
         this.node1.setProperty("prop1", value1);
 
@@ -228,7 +228,7 @@ public class MockPropertyTest extends AbstractItemTest {
     }
 
     @Test
-    public void testCalendarSetNullViaProp() throws RepositoryException {
+    void testCalendarSetNullViaProp() throws RepositoryException {
         Calendar value1 = Calendar.getInstance();
         this.node1.setProperty("prop1", value1);
 
@@ -237,7 +237,7 @@ public class MockPropertyTest extends AbstractItemTest {
     }
 
     @Test
-    public void testBinary() throws RepositoryException, IOException {
+    void testBinary() throws RepositoryException, IOException {
         byte[] value1 = new byte[] {0x01, 0x01, 0x03};
 
         this.node1.setProperty("prop1", new BinaryValue(value1).getBinary());
@@ -255,7 +255,7 @@ public class MockPropertyTest extends AbstractItemTest {
     }
 
     @Test
-    public void testBinarySetNullViaNode() throws RepositoryException {
+    void testBinarySetNullViaNode() throws RepositoryException {
         byte[] value1 = new byte[] {0x01, 0x01, 0x03};
         this.node1.setProperty("prop1", new BinaryValue(value1).getBinary());
 
@@ -264,7 +264,7 @@ public class MockPropertyTest extends AbstractItemTest {
     }
 
     @Test
-    public void testBinarySetNullViaProp() throws RepositoryException {
+    void testBinarySetNullViaProp() throws RepositoryException {
         byte[] value1 = new byte[] {0x01, 0x01, 0x03};
         this.node1.setProperty("prop1", new BinaryValue(value1).getBinary());
 
@@ -274,7 +274,7 @@ public class MockPropertyTest extends AbstractItemTest {
 
     @SuppressWarnings("deprecation")
     @Test
-    public void testInputStream() throws RepositoryException, IOException {
+    void testInputStream() throws RepositoryException, IOException {
         byte[] value1 = new byte[] {0x01, 0x01, 0x03};
 
         this.node1.setProperty("prop1", new ByteArrayInputStream(value1));
@@ -289,7 +289,7 @@ public class MockPropertyTest extends AbstractItemTest {
 
     @SuppressWarnings("deprecation")
     @Test
-    public void testInputStreamSetNullViaNode() throws RepositoryException {
+    void testInputStreamSetNullViaNode() throws RepositoryException {
         byte[] value1 = new byte[] {0x01, 0x01, 0x03};
         this.node1.setProperty("prop1", new ByteArrayInputStream(value1));
 
@@ -299,7 +299,7 @@ public class MockPropertyTest extends AbstractItemTest {
 
     @SuppressWarnings("deprecation")
     @Test
-    public void testInputStreamSetNullViaProp() throws RepositoryException {
+    void testInputStreamSetNullViaProp() throws RepositoryException {
         byte[] value1 = new byte[] {0x01, 0x01, 0x03};
         this.node1.setProperty("prop1", new ByteArrayInputStream(value1));
 
@@ -308,7 +308,7 @@ public class MockPropertyTest extends AbstractItemTest {
     }
 
     @Test
-    public void testValue() throws RepositoryException {
+    void testValue() throws RepositoryException {
         this.node1.setProperty("prop1", this.session.getValueFactory().createValue("value1"));
         Property prop1 = this.node1.getProperty("prop1");
         assertEquals("value1", prop1.getString());
@@ -324,7 +324,7 @@ public class MockPropertyTest extends AbstractItemTest {
     }
 
     @Test
-    public void testValueSetNullViaNode() throws RepositoryException {
+    void testValueSetNullViaNode() throws RepositoryException {
         this.node1.setProperty("prop1", this.session.getValueFactory().createValue("value1"));
 
         this.node1.setProperty("prop1", (Value) null);
@@ -332,7 +332,7 @@ public class MockPropertyTest extends AbstractItemTest {
     }
 
     @Test
-    public void testValueSetNullViaProp() throws RepositoryException {
+    void testValueSetNullViaProp() throws RepositoryException {
         this.node1.setProperty("prop1", this.session.getValueFactory().createValue("value1"));
 
         this.node1.getProperty("prop1").setValue((Value) null);
@@ -340,7 +340,7 @@ public class MockPropertyTest extends AbstractItemTest {
     }
 
     @Test
-    public void testValueArray() throws RepositoryException {
+    void testValueArray() throws RepositoryException {
         Value[] value1 = new Value[] {
             this.session.getValueFactory().createValue("aaa"),
             this.session.getValueFactory().createValue("bbb")
@@ -350,14 +350,14 @@ public class MockPropertyTest extends AbstractItemTest {
 
         Value[] values = prop1.getValues();
         for (int i = 0; i < values.length; i++) {
-            assertEquals("value #" + i, value1[i].getString(), values[i].getString());
+            assertEquals(value1[i].getString(), values[i].getString(), "value #" + i);
         }
 
         Value[] value2 = new Value[] {this.session.getValueFactory().createValue("cc")};
         prop1.setValue(value2);
         values = prop1.getValues();
         for (int i = 0; i < values.length; i++) {
-            assertEquals("value #" + i, value2[i].getString(), values[i].getString());
+            assertEquals(value2[i].getString(), values[i].getString(), "value #" + i);
         }
 
         assertTrue(prop1.isMultiple());
@@ -366,7 +366,7 @@ public class MockPropertyTest extends AbstractItemTest {
     }
 
     @Test
-    public void testValueArraySetNullViaNode() throws RepositoryException {
+    void testValueArraySetNullViaNode() throws RepositoryException {
         Value[] value1 = new Value[] {
             this.session.getValueFactory().createValue("aaa"),
             this.session.getValueFactory().createValue("bbb")
@@ -378,7 +378,7 @@ public class MockPropertyTest extends AbstractItemTest {
     }
 
     @Test
-    public void testValueArraySetNullViaProp() throws RepositoryException {
+    void testValueArraySetNullViaProp() throws RepositoryException {
         Value[] value1 = new Value[] {
             this.session.getValueFactory().createValue("aaa"),
             this.session.getValueFactory().createValue("bbb")
@@ -390,7 +390,7 @@ public class MockPropertyTest extends AbstractItemTest {
     }
 
     @Test
-    public void testEmptyArrayGetType() throws RepositoryException {
+    void testEmptyArrayGetType() throws RepositoryException {
         this.node1.setProperty("prop1", new Value[] {});
         Property prop1 = this.node1.getProperty("prop1");
         assertTrue(prop1.isMultiple());
@@ -398,39 +398,39 @@ public class MockPropertyTest extends AbstractItemTest {
     }
 
     @Test
-    public void testSingleValueAsValueArray() throws RepositoryException {
+    void testSingleValueAsValueArray() throws RepositoryException {
         this.node1.setProperty("prop1", this.session.getValueFactory().createValue("value1"));
         Property prop1 = this.node1.getProperty("prop1");
         assertFalse(prop1.isMultiple());
-        assertThrows(ValueFormatException.class, () -> prop1.getValues());
+        assertThrows(ValueFormatException.class, prop1::getValues);
     }
 
     @Test
-    public void testIsSameForPropComparedToItself() throws RepositoryException {
+    void testIsSameForPropComparedToItself() throws RepositoryException {
         assertTrue(this.prop1.isSame(this.prop1));
     }
 
     @Test
-    public void testIsSameForPropComparedToSameProp() throws RepositoryException {
+    void testIsSameForPropComparedToSameProp() throws RepositoryException {
         // a different object referencing the same property
         Property prop1Ref = this.node1.getProperty("prop1");
         assertTrue(this.prop1.isSame(prop1Ref));
     }
 
     @Test
-    public void testIsSameForPropComparedToDifferentPropFromSameParent() throws RepositoryException {
+    void testIsSameForPropComparedToDifferentPropFromSameParent() throws RepositoryException {
         Property prop2 = this.node1.setProperty("prop2", "value2");
         assertFalse(this.prop1.isSame(prop2));
     }
 
     @Test
-    public void testIsSameForPropComparedToPropFromDifferentParent() throws RepositoryException {
+    void testIsSameForPropComparedToPropFromDifferentParent() throws RepositoryException {
         Property prop11 = this.node11.setProperty("prop1", "value1");
         assertFalse(this.prop1.isSame(prop11));
     }
 
     @Test
-    public void testIsSameForPropFromDifferentRepository() throws RepositoryException {
+    void testIsSameForPropFromDifferentRepository() throws RepositoryException {
         Repository otherRepository = MockJcr.newRepository();
         Session otherSession = otherRepository.login();
         Node otherNode1 = otherSession.getRootNode().addNode("node1");
@@ -440,7 +440,7 @@ public class MockPropertyTest extends AbstractItemTest {
     }
 
     @Test
-    public void testIsSameForPropFromDifferentWorkspace() throws RepositoryException {
+    void testIsSameForPropFromDifferentWorkspace() throws RepositoryException {
         Session otherSession = session.getRepository().login("otherWorkspace");
         Node otherRootNode = otherSession.getRootNode();
         Node otherNode1 = otherRootNode.addNode("node1");
@@ -450,7 +450,7 @@ public class MockPropertyTest extends AbstractItemTest {
     }
 
     @Test
-    public void testAccept() throws RepositoryException {
+    void testAccept() throws RepositoryException {
         Property prop = this.node1.setProperty("prop1", "value1");
 
         final List<String> leaveNodes = new ArrayList<>();
